@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using CLIP.Models;
+using System.Collections.Generic;
 
 namespace CLIP.Controllers
 {
@@ -139,7 +140,32 @@ namespace CLIP.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            // Create a list with the available roles (Admin and Plant 21)
+            var roleManager = HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
+            
+            // Create roles if they don't exist
+            if (!roleManager.RoleExists("Admin"))
+            {
+                roleManager.Create(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole("Admin"));
+            }
+            if (!roleManager.RoleExists("Plant 21"))
+            {
+                roleManager.Create(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole("Plant 21"));
+            }
+            
+            // Get all roles
+            var roles = roleManager.Roles.ToList();
+            
+            var model = new RegisterViewModel
+            {
+                RolesList = roles.Select(r => new SelectListItem
+                {
+                    Value = r.Name,
+                    Text = r.Name
+                })
+            };
+            
+            return View(model);
         }
 
         //
@@ -151,10 +177,13 @@ namespace CLIP.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    // Add user to the selected role
+                    result = await UserManager.AddToRoleAsync(user.Id, model.Role);
+                    
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -167,6 +196,15 @@ namespace CLIP.Controllers
                 }
                 AddErrors(result);
             }
+
+            // If validation fails, get the roles list again
+            var roleManager = HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
+            var roles = roleManager.Roles.ToList();
+            model.RolesList = roles.Select(r => new SelectListItem
+            {
+                Value = r.Name,
+                Text = r.Name
+            });
 
             // If we got this far, something failed, redisplay form
             return View(model);
