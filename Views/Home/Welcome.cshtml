@@ -1,0 +1,63 @@
+@{
+    ViewBag.Title = "Welcome to CLIP";
+}
+
+<div class="jumbotron text-center py-5 bg-light">
+    <h1 class="display-4">Welcome to CLIP</h1>
+    <h3 class="text-muted">Certificate, Licensing and Important Permit Management System</h3>
+    <hr class="my-4">
+    <p class="lead">Streamline your regulatory compliance processes with our comprehensive management solution</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-certificate fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Certificates</h3>
+                <p class="card-text">Manage all your critical certificates in one secure location. Track expiration dates, renewal statuses, and maintain detailed records.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-id-card fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Licensing</h3>
+                <p class="card-text">Stay compliant with automated licensing management. Receive notifications before expiration and streamline your renewal process.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="fas fa-file-contract fa-4x mb-3 text-primary"></i>
+                <h3 class="card-title">Important Permits</h3>
+                <p class="card-text">Centralize your permit documentation. Easily access historical records and maintain regulatory compliance across your organization.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4 mb-5">
+    <div class="col-md-6 offset-md-3 text-center">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">Get Started</h2>
+                <p class="card-text">
+                    Please log in or register to access the system and start managing your regulatory compliance documents effectively.
+                </p>
+                <div class="d-grid gap-2 col-8 mx-auto mt-4">
+                    @Html.ActionLink("Log in", "Login", "Account", null, new { @class = "btn btn-primary btn-lg mb-3" })
+                    @Html.ActionLink("Register", "Register", "Account", null, new { @class = "btn btn-outline-primary btn-lg" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+} 
