@@ -13,12 +13,14 @@ namespace CLIP.Models
         public ApplicationUser()
         {
             UserPlants = new HashSet<UserPlant>();
+            UserCompetencies = new HashSet<UserCompetency>();
         }
 
         public string EmpID { get; set; }
 
-        // Navigation property
+        // Navigation properties
         public virtual ICollection<UserPlant> UserPlants { get; set; }
+        public virtual ICollection<UserCompetency> UserCompetencies { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -53,7 +55,7 @@ namespace CLIP.Models
             // Configure UserCompetency relationships
             modelBuilder.Entity<UserCompetency>()
                 .HasRequired(uc => uc.User)
-                .WithMany()
+                .WithMany(u => u.UserCompetencies)
                 .HasForeignKey(uc => uc.UserId)
                 .WillCascadeOnDelete(false);
 

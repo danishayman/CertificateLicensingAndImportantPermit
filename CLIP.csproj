@@ -172,6 +172,7 @@
     <Compile Include="Controllers\CompetencyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\UserCompetencyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -281,6 +282,11 @@
     <Content Include="Views\Competency\Add.cshtml" />
     <Content Include="Views\Competency\Index.cshtml" />
     <Content Include="Views\Competency\Edit.cshtml" />
+    <Content Include="Views\UserCompetency\Assign.cshtml" />
+    <Content Include="Views\UserCompetency\Edit.cshtml" />
+    <Content Include="Views\UserCompetency\Index.cshtml" />
+    <Content Include="Views\UserCompetency\MyCompetencies.cshtml" />
+    <Content Include="Views\UserCompetency\UserCompetencies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
