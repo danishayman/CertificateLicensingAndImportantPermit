@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - CLIP | Certificate, Licensing and Important Permit</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -11,18 +11,36 @@
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @if (Request.IsAuthenticated)
+            {
+                <div class="navbar-brand d-flex align-items-center">
+                    <img src="~/Images/logo.png" alt="CLIP Logo" height="30" class="me-2" />
+                    @Html.ActionLink("CLIP", "Index", "Home", new { area = "" }, new { @class = "text-decoration-none text-white" })
+                </div>
+            }
+            else
+            {
+                <div class="navbar-brand d-flex align-items-center">
+                    <img src="~/Images/logo.png" alt="CLIP Logo" height="30" class="me-2" />
+                    @Html.ActionLink("CLIP", "Welcome", "Home", new { area = "" }, new { @class = "text-decoration-none text-white" })
+                </div>
+            }
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                @if (Request.IsAuthenticated)
+                {
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
-                 @Html.Partial("_LoginPartial")
+                }
+                <div class="ms-auto">
+                    @Html.Partial("_LoginPartial")
+                </div>
             </div>
         </div>
     </nav>
@@ -30,7 +48,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; @DateTime.Now.Year - CLIP | Certificate, Licensing and Important Permit Management System</p>
         </footer>
     </div>
 
