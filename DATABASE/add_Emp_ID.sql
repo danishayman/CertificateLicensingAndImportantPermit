@@ -1,0 +1,17 @@
+ALTER TABLE [CLIP].[dbo].[AspNetUsers]
+ADD [EmpID] NVARCHAR(50) NULL;
+
+SELECT TOP (1000) [Id]
+  ,[Email]
+	,[EmpID]
+  ,[EmailConfirmed]
+  ,[PasswordHash]
+  ,[SecurityStamp]
+  ,[PhoneNumber]
+  ,[PhoneNumberConfirmed]
+  ,[TwoFactorEnabled]
+  ,[LockoutEndDateUtc]
+  ,[LockoutEnabled]
+  ,[AccessFailedCount]
+  ,[UserName]
+FROM [CLIP].[dbo].[AspNetUsers]

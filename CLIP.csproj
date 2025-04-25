@@ -178,10 +178,26 @@
     <Compile Include="Migrations\202504240642424_InitIdentity.Designer.cs">
       <DependentUpon>202504240642424_InitIdentity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504250259166_AddEmpIDToApplicationUser.cs" />
+    <Compile Include="Migrations\202504250259166_AddEmpIDToApplicationUser.Designer.cs">
+      <DependentUpon>202504250259166_AddEmpIDToApplicationUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504250320145_AddCompetencyTables.cs" />
+    <Compile Include="Migrations\202504250320145_AddCompetencyTables.Designer.cs">
+      <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.cs" />
+    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
+      <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Plant.cs" />
+    <Compile Include="Models\UserCompetency.cs" />
+    <Compile Include="Models\UserPlant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -292,6 +308,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202504240642424_InitIdentity.resx">
       <DependentUpon>202504240642424_InitIdentity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250259166_AddEmpIDToApplicationUser.resx">
+      <DependentUpon>202504250259166_AddEmpIDToApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250320145_AddCompetencyTables.resx">
+      <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250338135_AddPlantAndUserPlantTables.resx">
+      <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

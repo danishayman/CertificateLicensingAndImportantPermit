@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -9,6 +10,16 @@ namespace CLIP.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+        {
+            UserPlants = new HashSet<UserPlant>();
+        }
+
+        public string EmpID { get; set; }
+
+        // Navigation property
+        public virtual ICollection<UserPlant> UserPlants { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -28,6 +39,42 @@ namespace CLIP.Models
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        public DbSet<CompetencyModule> CompetencyModules { get; set; }
+        public DbSet<UserCompetency> UserCompetencies { get; set; }
+        public DbSet<Plant> Plants { get; set; }
+        public DbSet<UserPlant> UserPlants { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure UserCompetency relationships
+            modelBuilder.Entity<UserCompetency>()
+                .HasRequired(uc => uc.User)
+                .WithMany()
+                .HasForeignKey(uc => uc.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserCompetency>()
+                .HasRequired(uc => uc.CompetencyModule)
+                .WithMany(cm => cm.UserCompetencies)
+                .HasForeignKey(uc => uc.CompetencyModuleId)
+                .WillCascadeOnDelete(false);
+
+            // Configure UserPlant relationships
+            modelBuilder.Entity<UserPlant>()
+                .HasRequired(up => up.User)
+                .WithMany(u => u.UserPlants)
+                .HasForeignKey(up => up.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserPlant>()
+                .HasRequired(up => up.Plant)
+                .WithMany(p => p.UserPlants)
+                .HasForeignKey(up => up.PlantId)
+                .WillCascadeOnDelete(false);
         }
     }
 }
