@@ -1,0 +1,89 @@
+@model IEnumerable<CLIP.Models.CompetencyModule>
+@{
+    ViewBag.Title = "Competency Modules";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Competency Modules</h1>
+        <a href="@Url.Action("AddCompetency", "Home")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Competency
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">No competency modules have been added yet. Click the button above to add your first competency module.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Module Name</th>
+                            <th>Description</th>
+                            <th>Validity (Months)</th>
+                            <th>Mandatory</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var module in Model)
+                        {
+                            <tr>
+                                <td>@module.ModuleName</td>
+                                <td>@(string.IsNullOrEmpty(module.Description) ? "-" : module.Description)</td>
+                                <td>@module.ValidityMonths</td>
+                                <td>
+                                    @if (module.IsMandatory)
+                                    {
+                                        <span class="badge bg-primary">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">No</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                    @using (Html.BeginForm("DeleteCompetency", "Home", new { id = module.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Are you sure you want to delete this competency module? This action cannot be undone.');">
+                                            Delete
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+} 
