@@ -41,14 +41,11 @@ namespace CLIP.Controllers
             return View();
         }
 
+        // Redirect to the new Competency controller for backward compatibility
         [Authorize]
         public ActionResult Competency()
         {
-            // Get list of all competency modules
-            var db = new ApplicationDbContext();
-            var competencyModules = db.CompetencyModules.ToList();
-            
-            return View(competencyModules);
+            return RedirectToAction("Index", "Competency");
         }
 
         [Authorize]
