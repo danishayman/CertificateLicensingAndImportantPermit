@@ -83,7 +83,7 @@ namespace CLIP.Controllers
             }
 
             // Now sign in with the username instead of email
-            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, false, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -91,7 +91,7 @@ namespace CLIP.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
