@@ -101,5 +101,51 @@ namespace CLIP.Controllers
             
             return RedirectToAction("Competency");
         }
+
+        [Authorize]
+        public ActionResult EditCompetency(int id)
+        {
+            var db = new ApplicationDbContext();
+            var competency = db.CompetencyModules.Find(id);
+            
+            if (competency == null)
+            {
+                TempData["ErrorMessage"] = "Competency module not found.";
+                return RedirectToAction("Competency");
+            }
+            
+            return View(competency);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditCompetency(CompetencyModule model)
+        {
+            if (ModelState.IsValid)
+            {
+                var db = new ApplicationDbContext();
+                var competency = db.CompetencyModules.Find(model.Id);
+                
+                if (competency == null)
+                {
+                    TempData["ErrorMessage"] = "Competency module not found.";
+                    return RedirectToAction("Competency");
+                }
+                
+                // Update the competency properties
+                competency.ModuleName = model.ModuleName;
+                competency.Description = model.Description;
+                competency.ValidityMonths = model.ValidityMonths;
+                competency.IsMandatory = model.IsMandatory;
+                
+                db.SaveChanges();
+                
+                TempData["SuccessMessage"] = "Competency module updated successfully.";
+                return RedirectToAction("Competency");
+            }
+            
+            return View(model);
+        }
     }
 }

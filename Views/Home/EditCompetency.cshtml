@@ -1,0 +1,65 @@
+@model CLIP.Models.CompetencyModule
+@{
+    ViewBag.Title = "Edit Competency Module";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Edit Competency Module</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("EditCompetency", "Home", FormMethod.Post, new { @class = "needs-validation" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Id)
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+                        
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ModuleName, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.ModuleName, new { @class = "form-control", placeholder = "Enter module name" })
+                            @Html.ValidationMessageFor(m => m.ModuleName, "", new { @class = "text-danger" })
+                        </div>
+                        
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Description, new { @class = "form-label" })
+                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Enter module description", rows = 3 })
+                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Months)", new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter validity period" })
+                                @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    @Html.CheckBoxFor(m => m.IsMandatory, new { @class = "form-check-input" })
+                                    @Html.LabelFor(m => m.IsMandatory, "Is this module mandatory?", new { @class = "form-check-label" })
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a href="@Url.Action("Competency", "Home")" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+} 
