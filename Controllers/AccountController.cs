@@ -162,6 +162,10 @@ namespace CLIP.Controllers
             
             // Get all roles
             var roles = roleManager.Roles.ToList();
+
+            // Get all plants
+            var dbContext = new ApplicationDbContext();
+            var plants = dbContext.Plants.ToList();
             
             var model = new RegisterViewModel
             {
@@ -169,6 +173,11 @@ namespace CLIP.Controllers
                 {
                     Value = r.Name,
                     Text = r.Name
+                }),
+                PlantsList = plants.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.PlantName
                 })
             };
             
@@ -191,6 +200,22 @@ namespace CLIP.Controllers
                     // Add user to the selected role
                     result = await UserManager.AddToRoleAsync(user.Id, model.Role);
                     
+                    // Save the selected plants for this user
+                    if (model.SelectedPlantIds != null && model.SelectedPlantIds.Any())
+                    {
+                        var plantDbContext = new ApplicationDbContext();
+                        foreach (var plantId in model.SelectedPlantIds)
+                        {
+                            var userPlant = new UserPlant
+                            {
+                                UserId = user.Id,
+                                PlantId = plantId
+                            };
+                            plantDbContext.UserPlants.Add(userPlant);
+                        }
+                        plantDbContext.SaveChanges();
+                    }
+                    
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -211,6 +236,15 @@ namespace CLIP.Controllers
             {
                 Value = r.Name,
                 Text = r.Name
+            });
+
+            // Get plants list again
+            var formDbContext = new ApplicationDbContext();
+            var plants = formDbContext.Plants.ToList();
+            model.PlantsList = plants.Select(p => new SelectListItem
+            {
+                Value = p.Id.ToString(),
+                Text = p.PlantName
             });
 
             // If we got this far, something failed, redisplay form
