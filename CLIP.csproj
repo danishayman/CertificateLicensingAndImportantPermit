@@ -182,10 +182,6 @@
     <Compile Include="Migrations\202504250259166_AddEmpIDToApplicationUser.Designer.cs">
       <DependentUpon>202504250259166_AddEmpIDToApplicationUser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202504250320145_AddCompetencyTables.cs" />
-    <Compile Include="Migrations\202504250320145_AddCompetencyTables.Designer.cs">
-      <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CompetencyModule.cs" />
@@ -305,9 +301,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504250259166_AddEmpIDToApplicationUser.resx">
       <DependentUpon>202504250259166_AddEmpIDToApplicationUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202504250320145_AddCompetencyTables.resx">
-      <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
