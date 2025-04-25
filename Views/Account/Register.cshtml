@@ -26,6 +26,12 @@
                     </div>
                     
                     <div class="mb-3">
+                        @Html.LabelFor(m => m.EmpID, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.EmpID, new { @class = "form-control", placeholder = "Enter your Employee ID" })
+                        @Html.ValidationMessageFor(m => m.EmpID, "", new { @class = "text-danger" })
+                    </div>
+                    
+                    <div class="mb-3">
                         @Html.LabelFor(m => m.Password, new { @class = "form-label" })
                         @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Create a password" })
                     </div>
