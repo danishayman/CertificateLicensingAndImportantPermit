@@ -31,5 +31,26 @@ namespace CLIP.Models
         {
             return new ApplicationDbContext();
         }
+
+        public DbSet<CompetencyModule> CompetencyModules { get; set; }
+        public DbSet<UserCompetency> UserCompetencies { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure UserCompetency relationships
+            modelBuilder.Entity<UserCompetency>()
+                .HasRequired(uc => uc.User)
+                .WithMany()
+                .HasForeignKey(uc => uc.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserCompetency>()
+                .HasRequired(uc => uc.CompetencyModule)
+                .WithMany(cm => cm.UserCompetencies)
+                .HasForeignKey(uc => uc.CompetencyModuleId)
+                .WillCascadeOnDelete(false);
+        }
     }
 }
