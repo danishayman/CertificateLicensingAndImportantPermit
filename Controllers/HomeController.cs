@@ -54,6 +54,8 @@ namespace CLIP.Controllers
             return View();
         }
 
+
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
@@ -143,6 +145,7 @@ namespace CLIP.Controllers
             }
             
             return View(model);
+
         }
     }
 }
