@@ -1,0 +1,194 @@
+@model IEnumerable<CLIP.Models.UserCompetency>
+@{
+    ViewBag.Title = "My Competencies";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Competencies</h1>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">You don't have any competencies assigned yet. Please contact your administrator to assign competencies to you.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Competency Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="display-4">@Model.Count()</div>
+                                    <span>Total</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="display-4 text-success">@Model.Count(uc => uc.Status == "Completed")</div>
+                                    <span>Completed</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="display-4 text-info">@Model.Count(uc => 
+                                        uc.Status == "Requested" || 
+                                        uc.Status == "Course attended" || 
+                                        uc.Status == "Examination passed" || 
+                                        uc.Status == "FTR Submitted" || 
+                                        uc.Status == "Interview")</div>
+                                    <span>In Progress</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="display-4 text-danger">@Model.Count(uc => uc.Status == "Expired")</div>
+                                    <span>Expired</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-0">Active Competencies</h5>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by module or status...">
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Competency Module</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Completion Date</th>
+                            <th>Expiry Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="competencyTableBody">
+                        @foreach (var item in Model.Where(c => c.Status != "Expired"))
+                        {
+                            <tr data-module="@item.CompetencyModule.ModuleName" data-status="@item.Status">
+                                <td>
+                                    <div>@item.CompetencyModule.ModuleName</div>
+                                    <small class="text-muted">@(item.CompetencyModule.IsMandatory ? "Mandatory" : "Optional")</small>
+                                </td>
+                                <td>@(string.IsNullOrEmpty(item.CompetencyModule.Description) ? "-" : item.CompetencyModule.Description)</td>
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case "Requested":
+                                            <span class="badge bg-secondary">Requested</span>
+                                            break;
+                                        case "Course attended":
+                                            <span class="badge bg-info">Course attended</span>
+                                            break;
+                                        case "Examination passed":
+                                            <span class="badge bg-success">Examination passed</span>
+                                            break;
+                                        case "FTR Submitted":
+                                            <span class="badge bg-success">FTR Submitted</span>
+                                            break;
+                                        case "Interview":
+                                            <span class="badge bg-success">Interview</span>
+                                            break;
+                                        case "Completed":
+                                            <span class="badge bg-success">Completed</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>
+                                <td>
+                                    @if (item.ExpiryDate.HasValue)
+                                    {
+                                        if (item.ExpiryDate.Value < DateTime.Today.AddMonths(1))
+                                        {
+                                            <span class="text-warning">@item.ExpiryDate.Value.ToShortDateString()</span>
+                                        }
+                                        else
+                                        {
+                                            @item.ExpiryDate.Value.ToShortDateString()
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @* Check for expired competencies *@
+        if (Model.Any(c => c.Status == "Expired"))
+        {
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Expired Competencies</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Competency Module</th>
+                                <th>Description</th>
+                                <th>Completion Date</th>
+                                <th>Expiry Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Where(c => c.Status == "Expired"))
+                            {
+                                <tr>
+                                    <td>
+                                        <div>@item.CompetencyModule.ModuleName</div>
+                                        <small class="text-muted">@(item.CompetencyModule.IsMandatory ? "Mandatory" : "Optional")</small>
+                                    </td>
+                                    <td>@(string.IsNullOrEmpty(item.CompetencyModule.Description) ? "-" : item.CompetencyModule.Description)</td>
+                                    <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>
+                                    <td><span class="text-danger">@item.ExpiryDate.Value.ToShortDateString()</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Search filtering
+            $("#searchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                
+                $("#competencyTableBody tr").filter(function () {
+                    var moduleMatch = $(this).data("module").toLowerCase().indexOf(value) > -1;
+                    var statusMatch = $(this).data("status").toLowerCase().indexOf(value) > -1;
+                    $(this).toggle(moduleMatch || statusMatch);
+                });
+            });
+        });
+    </script>
+} 

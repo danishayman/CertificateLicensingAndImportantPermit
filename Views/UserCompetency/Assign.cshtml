@@ -1,0 +1,111 @@
+@model CLIP.Models.UserCompetency
+@{
+    ViewBag.Title = "Assign Competency";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h2 class="h4 mb-0">Assign Competency to User</h2>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Assign", "UserCompetency", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label for="UserId" class="form-label">User</label>
+                            <select id="UserId" name="UserId" class="form-select" required>
+                                <option value="">Select a user</option>
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.Id">@(string.IsNullOrEmpty(user.EmpID) ? user.UserName : user.EmpID + " - " + user.UserName)</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a user.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="CompetencyModuleId" class="form-label">Competency Module</label>
+                            <select id="CompetencyModuleId" name="CompetencyModuleId" class="form-select" required>
+                                <option value="">Select a competency module</option>
+                                @foreach (var module in ViewBag.CompetencyModules)
+                                {
+                                    <option value="@module.Id">@module.ModuleName</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a competency module.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Status" class="form-label">Status</label>
+                            <select id="Status" name="Status" class="form-select" required>
+                                <option value="Requested">Requested</option>
+                                <option value="Course attended">Course attended</option>
+                                <option value="Examination passed">Examination passed</option>
+                                <option value="FTR Submitted">FTR Submitted</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a status.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="CompletionDate" class="form-label">Completion Date (if already completed)</label>
+                            <input type="date" class="form-control" id="CompletionDate" name="CompletionDate">
+                            <small class="text-muted">Leave blank if not yet completed.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Remarks" class="form-label">Remarks</label>
+                            <textarea class="form-control" id="Remarks" name="Remarks" rows="3"></textarea>
+                            <small class="text-muted">Optional notes about this competency assignment.</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="@Url.Action("Index", "UserCompetency")" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Assign Competency</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Bootstrap form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        });
+    </script>
+} 

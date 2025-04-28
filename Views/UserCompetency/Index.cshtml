@@ -1,0 +1,225 @@
+@model IEnumerable<CLIP.Models.UserCompetency>
+@{
+    ViewBag.Title = "User Competencies";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>User Competencies</h1>
+        <a href="@Url.Action("Assign", "UserCompetency")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Assign Competency
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">No competencies have been assigned to users yet. Click the button above to assign your first competency.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by name, module or status...">
+                    </div>
+                    <div class="col-md-3">
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="Requested">Requested</option>
+                            <option value="Course attended">Course attended</option>
+                            <option value="Examination passed">Examination passed</option>
+                            <option value="FTR Submitted">FTR Submitted</option>
+                            <option value="Interview">Interview</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="sortOrder" class="form-select">
+                            <option value="name">Sort by Name</option>
+                            <option value="module">Sort by Module</option>
+                            <option value="status">Sort by Status</option>
+                            <option value="expiry">Sort by Expiry Date</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User</th>
+                            <th>Competency Module</th>
+                            <th>Status</th>
+                            <th>Completion Date</th>
+                            <th>Expiry Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="competencyTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr data-name="@item.User.UserName" data-module="@item.CompetencyModule.ModuleName" data-status="@item.Status">
+                                <td>
+                                    <a href="@Url.Action("UserCompetencies", "UserCompetency", new { userId = item.UserId })">
+                                        @item.User.UserName
+                                    </a>
+                                </td>
+                                <td>@item.CompetencyModule.ModuleName</td>
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case "Requested":
+                                            <span class="badge bg-secondary">Requested</span>
+                                            break;
+                                        case "Course attended":
+                                            <span class="badge bg-info">Course attended</span>
+                                            break;
+                                        case "Examination passed":
+                                            <span class="badge bg-success">Examination passed</span>
+                                            break;
+                                        case "FTR Submitted":
+                                            <span class="badge bg-success">FTR Submitted</span>
+                                            break;
+                                        case "Interview":
+                                            <span class="badge bg-success">Interview</span>
+                                            break;
+                                        case "Completed":
+                                            <span class="badge bg-success">Completed</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>
+                                <td>
+                                    @if (item.ExpiryDate.HasValue)
+                                    {
+                                        if (item.ExpiryDate.Value < DateTime.Today)
+                                        {
+                                            <span class="text-danger">@item.ExpiryDate.Value.ToShortDateString()</span>
+                                        }
+                                        else if (item.ExpiryDate.Value < DateTime.Today.AddMonths(1))
+                                        {
+                                            <span class="text-warning">@item.ExpiryDate.Value.ToShortDateString()</span>
+                                        }
+                                        else
+                                        {
+                                            @item.ExpiryDate.Value.ToShortDateString()
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", "UserCompetency", new { id = item.Id })" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    @using (Html.BeginForm("Delete", "UserCompetency", new { id = item.Id }, FormMethod.Post, new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                onclick="return confirm('Are you sure you want to remove this competency assignment? This action cannot be undone.');">
+                                            <i class="fas fa-trash me-1"></i>Remove
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script>
+        $(document).ready(function () {
+            // Search filtering
+            $("#searchInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                filterTable();
+            });
+
+            // Status filtering
+            $("#statusFilter").on("change", function () {
+                filterTable();
+            });
+
+            // Sorting
+            $("#sortOrder").on("change", function () {
+                sortTable();
+            });
+
+            function filterTable() {
+                var searchValue = $("#searchInput").val().toLowerCase();
+                var statusFilter = $("#statusFilter").val();
+
+                $("#competencyTableBody tr").filter(function () {
+                    var nameMatch = $(this).data("name").toLowerCase().indexOf(searchValue) > -1;
+                    var moduleMatch = $(this).data("module").toLowerCase().indexOf(searchValue) > -1;
+                    var statusMatch = $(this).data("status").toLowerCase().indexOf(searchValue) > -1;
+                    var textMatch = nameMatch || moduleMatch || statusMatch;
+                    
+                    var statusFilterMatch = statusFilter === "" || $(this).data("status") === statusFilter;
+                    
+                    $(this).toggle(textMatch && statusFilterMatch);
+                });
+            }
+
+            function sortTable() {
+                var sortBy = $("#sortOrder").val();
+                var rows = $("#competencyTableBody tr").toArray();
+                
+                rows.sort(function(a, b) {
+                    var keyA, keyB;
+                    
+                    switch(sortBy) {
+                        case "name":
+                            keyA = $(a).data("name").toLowerCase();
+                            keyB = $(b).data("name").toLowerCase();
+                            break;
+                        case "module":
+                            keyA = $(a).data("module").toLowerCase();
+                            keyB = $(b).data("module").toLowerCase();
+                            break;
+                        case "status":
+                            keyA = $(a).data("status").toLowerCase();
+                            keyB = $(b).data("status").toLowerCase();
+                            break;
+                        case "expiry":
+                            keyA = $(a).find("td:eq(4)").text();
+                            keyB = $(b).find("td:eq(4)").text();
+                            break;
+                    }
+                    
+                    return keyA > keyB ? 1 : keyA < keyB ? -1 : 0;
+                });
+                
+                $.each(rows, function(index, row) {
+                    $("#competencyTableBody").append(row);
+                });
+            }
+        });
+    </script>
+} 

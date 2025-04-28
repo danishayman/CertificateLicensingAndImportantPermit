@@ -169,8 +169,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CompetencyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\UserCompetencyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -186,17 +188,31 @@
     <Compile Include="Migrations\202504250320145_AddCompetencyTables.Designer.cs">
       <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.cs" />
-    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
-      <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.cs" />
-    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.Designer.cs">
-      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202504250944483_AddAreaPlant.cs" />
-    <Compile Include="Migrations\202504250944483_AddAreaPlant.Designer.cs">
-      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.cs" />
+<Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
+    <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.cs" />
+<Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.Designer.cs">
+    <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504250944483_AddAreaPlant.cs" />
+<Compile Include="Migrations\202504250944483_AddAreaPlant.Designer.cs">
+    <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.cs" />
+<Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.Designer.cs">
+    <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504280151239_AllowNullValidity.cs" />
+<Compile Include="Migrations\202504280151239_AllowNullValidity.Designer.cs">
+    <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
+</Compile>
+<Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.cs" />
+<Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.Designer.cs">
+    <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
+</Compile>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -284,6 +300,17 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Competency\AddCompetency.cshtml" />
+    <Content Include="Views\Competency\Competency.cshtml" />
+    <Content Include="Views\Competency\EditCompetency.cshtml" />
+    <Content Include="Views\Competency\Add.cshtml" />
+    <Content Include="Views\Competency\Index.cshtml" />
+    <Content Include="Views\Competency\Edit.cshtml" />
+    <Content Include="Views\UserCompetency\Assign.cshtml" />
+    <Content Include="Views\UserCompetency\Edit.cshtml" />
+    <Content Include="Views\UserCompetency\Index.cshtml" />
+    <Content Include="Views\UserCompetency\MyCompetencies.cshtml" />
+    <Content Include="Views\UserCompetency\UserCompetencies.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -327,13 +354,22 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504250338135_AddPlantAndUserPlantTables.resx">
       <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202504250921370_AddMonitoringModuleTable.resx">
-      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202504250944483_AddAreaPlant.resx">
-      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
-    </EmbeddedResource>
+</EmbeddedResource>
+<EmbeddedResource Include="Migrations\202504250921370_AddMonitoringModuleTable.resx">
+  <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+</EmbeddedResource>
+<EmbeddedResource Include="Migrations\202504250944483_AddAreaPlant.resx">
+  <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+</EmbeddedResource>
+<EmbeddedResource Include="Migrations\202504280126265_RecreateCompetencyModulesTable.resx">
+  <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
+</EmbeddedResource>
+<EmbeddedResource Include="Migrations\202504280151239_AllowNullValidity.resx">
+  <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
+</EmbeddedResource>
+<EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
+  <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
+</EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
