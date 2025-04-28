@@ -278,6 +278,10 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\SafetyHealthMonitoring.cshtml" />
+    <Content Include="Views\Home\Monitoring.cshtml" />
+    <Content Include="Views\Home\EnvironmentMonitoring.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -301,9 +305,6 @@
     <Content Include="Views\Competency\AddCompetency.cshtml" />
     <Content Include="Views\Competency\Competency.cshtml" />
     <Content Include="Views\Competency\EditCompetency.cshtml" />
-    <Content Include="Views\Competency\Add.cshtml" />
-    <Content Include="Views\Competency\Index.cshtml" />
-    <Content Include="Views\Competency\Edit.cshtml" />
     <Content Include="Views\UserCompetency\Assign.cshtml" />
     <Content Include="Views\UserCompetency\Edit.cshtml" />
     <Content Include="Views\UserCompetency\Index.cshtml" />
@@ -368,6 +369,13 @@
     <EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
       <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Monitoring\Index.cshtml" />
+    <Content Include="Views\Monitoring\Edit.cshtml" />
+    <Content Include="Views\Monitoring\Details.cshtml" />
+    <Content Include="Views\Monitoring\Delete.cshtml" />
+    <Content Include="Views\Monitoring\Create.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
