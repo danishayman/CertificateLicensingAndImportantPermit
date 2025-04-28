@@ -13,12 +13,10 @@ namespace CLIP.Models
         public int Id { get; set; }
         
         [Required]
-        [StringLength(100)]
         public string ModuleName { get; set; }
         
         public string Description { get; set; }
-        
-        public int ValidityMonths { get; set; }
+                public int ValidityMonths { get; set; }
         
         public bool IsMandatory { get; set; }
 
