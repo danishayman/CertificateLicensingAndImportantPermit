@@ -53,7 +53,7 @@
                             <tr>
                                 <td>@module.ModuleName</td>
                                 <td>@(string.IsNullOrEmpty(module.Description) ? "-" : module.Description)</td>
-                                <td>@module.ValidityMonths</td>
+                                <td>@(module.ValidityMonths.HasValue ? module.ValidityMonths.ToString() : "No validity")</td>
                                 <td>
                                     @if (module.IsMandatory)
                                     {

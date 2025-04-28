@@ -71,7 +71,10 @@ namespace CLIP.Controllers
                     var competencyModule = db.CompetencyModules.Find(model.CompetencyModuleId);
                     if (competencyModule != null)
                     {
-                        model.ExpiryDate = model.CompletionDate.Value.AddMonths(competencyModule.ValidityMonths);
+                        if (competencyModule.ValidityMonths.HasValue)
+                        {
+                            model.ExpiryDate = model.CompletionDate.Value.AddMonths(competencyModule.ValidityMonths.Value);
+                        }
                     }
                 }
                 
@@ -147,7 +150,10 @@ namespace CLIP.Controllers
                     var competencyModule = db.CompetencyModules.Find(userCompetency.CompetencyModuleId);
                     if (competencyModule != null)
                     {
-                        userCompetency.ExpiryDate = userCompetency.CompletionDate.Value.AddMonths(competencyModule.ValidityMonths);
+                        if (competencyModule.ValidityMonths.HasValue)
+                        {
+                            userCompetency.ExpiryDate = userCompetency.CompletionDate.Value.AddMonths(competencyModule.ValidityMonths.Value);
+                        }
                     }
                 }
                 

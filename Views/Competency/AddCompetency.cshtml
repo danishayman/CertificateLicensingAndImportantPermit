@@ -31,6 +31,12 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Months)", new { @class = "form-label" })
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="form-check me-3">
+                                        <input type="checkbox" id="noValidityPeriod" class="form-check-input" />
+                                        <label class="form-check-label" for="noValidityPeriod">No validity period</label>
+                                    </div>
+                                </div>
                                 @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter validity period" })
                                 @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
                             </div>
@@ -61,4 +67,22 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+    <script>
+        $(document).ready(function() {
+            $('#noValidityPeriod').change(function() {
+                if($(this).is(':checked')) {
+                    $('#ValidityMonths').val('').prop('disabled', true);
+                } else {
+                    $('#ValidityMonths').prop('disabled', false);
+                }
+            });
+            
+            // Set initial state if the model has no validity months
+            if (!$('#ValidityMonths').val()) {
+                $('#noValidityPeriod').prop('checked', true);
+                $('#ValidityMonths').prop('disabled', true);
+            }
+        });
+    </script>
 } 
