@@ -77,6 +77,16 @@ namespace CLIP.Models
                 .WithMany(p => p.UserPlants)
                 .HasForeignKey(up => up.PlantId)
                 .WillCascadeOnDelete(false);
+
+            // Configure unique constraint for CompetencyModule.ModuleName
+            modelBuilder.Entity<CompetencyModule>()
+                .Property(c => c.ModuleName)
+                .IsRequired()
+                .HasMaxLength(256);
+                
+            modelBuilder.Entity<CompetencyModule>()
+                .HasIndex(c => c.ModuleName)
+                .IsUnique();
         }
     }
 }

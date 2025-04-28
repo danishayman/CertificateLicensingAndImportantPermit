@@ -85,5 +85,5 @@ GO
 
 -- Insert default roles
 INSERT INTO [dbo].[AspNetRoles] ([Id], [Name]) 
-VALUES (NEWID(), 'Admin'), (NEWID(), 'Plant 21');
+VALUES (NEWID(), 'Admin'), (NEWID(), 'User');
 GO

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Data.Entity.Infrastructure;
 using CLIP.Models;
 
 namespace CLIP.Controllers
@@ -33,11 +34,35 @@ namespace CLIP.Controllers
             if (ModelState.IsValid)
             {
                 var db = new ApplicationDbContext();
-                db.CompetencyModules.Add(model);
-                db.SaveChanges();
-                
-                TempData["SuccessMessage"] = "Competency module added successfully.";
-                return RedirectToAction("Index");
+
+                // Check for existing module with the same name
+                bool nameExists = db.CompetencyModules.Any(c => c.ModuleName == model.ModuleName);
+                if (nameExists)
+                {
+                    ModelState.AddModelError("ModuleName", "A competency module with this name already exists.");
+                    return View("AddCompetency", model);
+                }
+
+                try
+                {
+                    db.CompetencyModules.Add(model);
+                    db.SaveChanges();
+                    
+                    TempData["SuccessMessage"] = "Competency module added successfully.";
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException?.InnerException?.Message?.Contains("unique constraint") == true ||
+                        ex.InnerException?.InnerException?.Message?.Contains("duplicate") == true)
+                    {
+                        ModelState.AddModelError("ModuleName", "A competency module with this name already exists.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
+                    }
+                }
             }
             
             return View("AddCompetency", model);
@@ -73,17 +98,42 @@ namespace CLIP.Controllers
                     TempData["ErrorMessage"] = "Competency module not found.";
                     return RedirectToAction("Index");
                 }
+
+                // Check for existing module with the same name (excluding current module)
+                bool nameExists = db.CompetencyModules
+                    .Any(c => c.ModuleName == model.ModuleName && c.Id != model.Id);
                 
-                // Update the competency properties
-                competency.ModuleName = model.ModuleName;
-                competency.Description = model.Description;
-                competency.ValidityMonths = model.ValidityMonths;
-                competency.IsMandatory = model.IsMandatory;
+                if (nameExists)
+                {
+                    ModelState.AddModelError("ModuleName", "A competency module with this name already exists.");
+                    return View("EditCompetency", model);
+                }
                 
-                db.SaveChanges();
-                
-                TempData["SuccessMessage"] = "Competency module updated successfully.";
-                return RedirectToAction("Index");
+                try
+                {
+                    // Update the competency properties
+                    competency.ModuleName = model.ModuleName;
+                    competency.Description = model.Description;
+                    competency.ValidityMonths = model.ValidityMonths;
+                    competency.IsMandatory = model.IsMandatory;
+                    
+                    db.SaveChanges();
+                    
+                    TempData["SuccessMessage"] = "Competency module updated successfully.";
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    if (ex.InnerException?.InnerException?.Message?.Contains("unique constraint") == true ||
+                        ex.InnerException?.InnerException?.Message?.Contains("duplicate") == true)
+                    {
+                        ModelState.AddModelError("ModuleName", "A competency module with this name already exists.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, contact your system administrator.");
+                    }
+                }
             }
             
             return View("EditCompetency", model);

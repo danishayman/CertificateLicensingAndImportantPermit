@@ -200,6 +200,10 @@
     <Compile Include="Migrations\202504280151239_AllowNullValidity.Designer.cs">
       <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.cs" />
+    <Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.Designer.cs">
+      <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CompetencyModule.cs" />
@@ -344,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504280151239_AllowNullValidity.resx">
       <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
+      <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
