@@ -165,7 +165,16 @@
                                     </td>
                                     <td>@(string.IsNullOrEmpty(item.CompetencyModule.Description) ? "-" : item.CompetencyModule.Description)</td>
                                     <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>
-                                    <td><span class="text-danger">@item.ExpiryDate.Value.ToShortDateString()</span></td>
+                                    <td>
+                                        @if (item.ExpiryDate.HasValue)
+                                        {
+                                            <span class="text-danger">@item.ExpiryDate.Value.ToShortDateString()</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger">-</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
