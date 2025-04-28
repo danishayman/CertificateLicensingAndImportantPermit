@@ -38,7 +38,12 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="d-flex flex-column align-items-center">
-                                    <div class="display-4 text-info">@Model.Count(uc => uc.Status == "In Progress")</div>
+                                    <div class="display-4 text-info">@Model.Count(uc => 
+                                        uc.Status == "Requested" || 
+                                        uc.Status == "Course attended" || 
+                                        uc.Status == "Examination passed" || 
+                                        uc.Status == "FTR Submitted" || 
+                                        uc.Status == "Interview")</div>
                                     <span>In Progress</span>
                                 </div>
                             </div>
@@ -102,7 +107,10 @@
                                             break;
                                         case "Interview":
                                             <span class="badge bg-success">Interview</span>
-                                            
+                                            break;
+                                        case "Completed":
+                                            <span class="badge bg-success">Completed</span>
+                                            break;
                                     }
                                 </td>
                                 <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>
@@ -130,7 +138,8 @@
             </div>
         </div>
 
-        @if (Model.Any(c => c.Status == "Expired"))
+        @* Check for expired competencies *@
+        if (Model.Any(c => c.Status == "Expired"))
         {
             <div class="card shadow-sm">
                 <div class="card-header bg-light">
