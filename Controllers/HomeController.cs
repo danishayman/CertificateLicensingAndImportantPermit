@@ -39,5 +39,23 @@ namespace CLIP.Controllers
             }
             return View();
         }
+
+        [Authorize]
+        public ActionResult Monitoring()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult EnvironmentMonitoring()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult SafetyHealthMonitoring()
+        {
+            return View();
+        }
     }
 }
