@@ -144,10 +144,10 @@ namespace CLIP.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public ActionResult Register()
         {
-            // Create a list with the available roles (Admin and Plant 21)
+            // Create a list with the available roles (Admin and User)
             var roleManager = HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
             
             // Create roles if they don't exist
@@ -155,9 +155,9 @@ namespace CLIP.Controllers
             {
                 roleManager.Create(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole("Admin"));
             }
-            if (!roleManager.RoleExists("Plant 21"))
+            if (!roleManager.RoleExists("User"))
             {
-                roleManager.Create(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole("Plant 21"));
+                roleManager.Create(new Microsoft.AspNet.Identity.EntityFramework.IdentityRole("User"));
             }
             
             // Get all roles
@@ -187,7 +187,7 @@ namespace CLIP.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {

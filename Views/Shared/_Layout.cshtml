@@ -34,7 +34,17 @@
                 {
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Environment", "Environment", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Competency", "Competency", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="competencyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Competency
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="competencyDropdown">
+                            <li>@Html.ActionLink("Competency Modules", "Index", "Competency", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("User Competencies", "Index", "UserCompetency", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>@Html.ActionLink("My Competencies", "MyCompetencies", "UserCompetency", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
                     <li>@Html.ActionLink("Permit", "Permit", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Monitoring", "Monitoring", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
