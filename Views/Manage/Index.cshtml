@@ -7,6 +7,16 @@
     <h2 id="title">@ViewBag.Title.</h2>
 
     <p class="text-success">@ViewBag.StatusMessage</p>
+    
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="mb-4">
+            <a href="@Url.Action("Register", "Account")" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Register New User
+            </a>
+        </div>
+    }
+    
     <div>
         <h4>Change your account settings</h4>
         <hr />
