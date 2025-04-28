@@ -190,11 +190,21 @@
     <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
       <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.cs" />
+    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.Designer.cs">
+      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504250944483_AddAreaPlant.cs" />
+    <Compile Include="Migrations\202504250944483_AddAreaPlant.Designer.cs">
+      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AreaPlant.cs" />
     <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MonitoringModule.cs" />
     <Compile Include="Models\Plant.cs" />
     <Compile Include="Models\UserCompetency.cs" />
     <Compile Include="Models\UserPlant.cs" />
@@ -317,6 +327,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504250338135_AddPlantAndUserPlantTables.resx">
       <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250921370_AddMonitoringModuleTable.resx">
+      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250944483_AddAreaPlant.resx">
+      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
