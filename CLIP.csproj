@@ -188,31 +188,29 @@
     <Compile Include="Migrations\202504250320145_AddCompetencyTables.Designer.cs">
       <DependentUpon>202504250320145_AddCompetencyTables.cs</DependentUpon>
     </Compile>
-</Compile>
-<Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.cs" />
-<Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
-    <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
-</Compile>
-<Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.cs" />
-<Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.Designer.cs">
-    <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
-</Compile>
-<Compile Include="Migrations\202504250944483_AddAreaPlant.cs" />
-<Compile Include="Migrations\202504250944483_AddAreaPlant.Designer.cs">
-    <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
-</Compile>
-<Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.cs" />
-<Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.Designer.cs">
-    <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
-</Compile>
-<Compile Include="Migrations\202504280151239_AllowNullValidity.cs" />
-<Compile Include="Migrations\202504280151239_AllowNullValidity.Designer.cs">
-    <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
-</Compile>
-<Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.cs" />
-<Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.Designer.cs">
-    <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
-</Compile>
+    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.cs" />
+    <Compile Include="Migrations\202504250338135_AddPlantAndUserPlantTables.Designer.cs">
+      <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.cs" />
+    <Compile Include="Migrations\202504250921370_AddMonitoringModuleTable.Designer.cs">
+      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504250944483_AddAreaPlant.cs" />
+    <Compile Include="Migrations\202504250944483_AddAreaPlant.Designer.cs">
+      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.cs" />
+    <Compile Include="Migrations\202504280126265_RecreateCompetencyModulesTable.Designer.cs">
+      <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504280151239_AllowNullValidity.cs" />
+    <Compile Include="Migrations\202504280151239_AllowNullValidity.Designer.cs">
+      <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.cs" />
+    <Compile Include="Migrations\202504280158101_MakeCompetencyNameUnique.Designer.cs">
+      <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -354,22 +352,22 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504250338135_AddPlantAndUserPlantTables.resx">
       <DependentUpon>202504250338135_AddPlantAndUserPlantTables.cs</DependentUpon>
-</EmbeddedResource>
-<EmbeddedResource Include="Migrations\202504250921370_AddMonitoringModuleTable.resx">
-  <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
-</EmbeddedResource>
-<EmbeddedResource Include="Migrations\202504250944483_AddAreaPlant.resx">
-  <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
-</EmbeddedResource>
-<EmbeddedResource Include="Migrations\202504280126265_RecreateCompetencyModulesTable.resx">
-  <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
-</EmbeddedResource>
-<EmbeddedResource Include="Migrations\202504280151239_AllowNullValidity.resx">
-  <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
-</EmbeddedResource>
-<EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
-  <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
-</EmbeddedResource>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250921370_AddMonitoringModuleTable.resx">
+      <DependentUpon>202504250921370_AddMonitoringModuleTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504250944483_AddAreaPlant.resx">
+      <DependentUpon>202504250944483_AddAreaPlant.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504280126265_RecreateCompetencyModulesTable.resx">
+      <DependentUpon>202504280126265_RecreateCompetencyModulesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504280151239_AllowNullValidity.resx">
+      <DependentUpon>202504280151239_AllowNullValidity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
+      <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -401,7 +399,7 @@
   </ProjectExtensions>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them. For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
     <Error Condition="!Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
