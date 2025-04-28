@@ -73,7 +73,12 @@
                         </div>
                         <div class="col-md-3">
                             <div class="d-flex flex-column align-items-center">
-                                <div class="display-4 text-info">@Model.Count(uc => uc.Status == "In Progress")</div>
+                                <div class="display-4 text-info">@Model.Count(uc => 
+                                    uc.Status == "Requested" || 
+                                    uc.Status == "Course attended" || 
+                                    uc.Status == "Examination passed" || 
+                                    uc.Status == "FTR Submitted" || 
+                                    uc.Status == "Interview")</div>
                                 <span>In Progress</span>
                             </div>
                         </div>
@@ -131,20 +136,23 @@
                                 <td>
                                     @switch (item.Status)
                                     {
-                                        case "Not Started":
-                                            <span class="badge bg-secondary">Not Started</span>
+                                        case "Requested":
+                                            <span class="badge bg-secondary">Requested</span>
                                             break;
-                                        case "In Progress":
-                                            <span class="badge bg-info">In Progress</span>
+                                        case "Course attended":
+                                            <span class="badge bg-info">Course attended</span>
+                                            break;
+                                        case "Examination passed":
+                                            <span class="badge bg-success">Examination passed</span>
+                                            break;
+                                        case "FTR Submitted":
+                                            <span class="badge bg-success">FTR Submitted</span>
+                                            break;
+                                        case "Interview":
+                                            <span class="badge bg-success">Interview</span>
                                             break;
                                         case "Completed":
                                             <span class="badge bg-success">Completed</span>
-                                            break;
-                                        case "Expired":
-                                            <span class="badge bg-danger">Expired</span>
-                                            break;
-                                        default:
-                                            <span class="badge bg-secondary">@item.Status</span>
                                             break;
                                     }
                                 </td>

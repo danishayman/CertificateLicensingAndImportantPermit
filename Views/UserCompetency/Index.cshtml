@@ -44,10 +44,12 @@
                     <div class="col-md-3">
                         <select id="statusFilter" class="form-select">
                             <option value="">All Statuses</option>
-                            <option value="Not Started">Not Started</option>
-                            <option value="In Progress">In Progress</option>
+                            <option value="Requested">Requested</option>
+                            <option value="Course attended">Course attended</option>
+                            <option value="Examination passed">Examination passed</option>
+                            <option value="FTR Submitted">FTR Submitted</option>
+                            <option value="Interview">Interview</option>
                             <option value="Completed">Completed</option>
-                            <option value="Expired">Expired</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -85,20 +87,23 @@
                                 <td>
                                     @switch (item.Status)
                                     {
-                                        case "Not Started":
-                                            <span class="badge bg-secondary">Not Started</span>
+                                        case "Requested":
+                                            <span class="badge bg-secondary">Requested</span>
                                             break;
-                                        case "In Progress":
-                                            <span class="badge bg-info">In Progress</span>
+                                        case "Course attended":
+                                            <span class="badge bg-info">Course attended</span>
+                                            break;
+                                        case "Examination passed":
+                                            <span class="badge bg-success">Examination passed</span>
+                                            break;
+                                        case "FTR Submitted":
+                                            <span class="badge bg-success">FTR Submitted</span>
+                                            break;
+                                        case "Interview":
+                                            <span class="badge bg-success">Interview</span>
                                             break;
                                         case "Completed":
                                             <span class="badge bg-success">Completed</span>
-                                            break;
-                                        case "Expired":
-                                            <span class="badge bg-danger">Expired</span>
-                                            break;
-                                        default:
-                                            <span class="badge bg-secondary">@item.Status</span>
                                             break;
                                     }
                                 </td>

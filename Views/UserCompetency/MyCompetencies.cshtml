@@ -88,18 +88,21 @@
                                 <td>
                                     @switch (item.Status)
                                     {
-                                        case "Not Started":
-                                            <span class="badge bg-secondary">Not Started</span>
+                                        case "Requested":
+                                            <span class="badge bg-secondary">Requested</span>
                                             break;
-                                        case "In Progress":
-                                            <span class="badge bg-info">In Progress</span>
+                                        case "Course attended":
+                                            <span class="badge bg-info">Course attended</span>
                                             break;
-                                        case "Completed":
-                                            <span class="badge bg-success">Completed</span>
+                                        case "Examination passed":
+                                            <span class="badge bg-success">Examination passed</span>
                                             break;
-                                        default:
-                                            <span class="badge bg-secondary">@item.Status</span>
+                                        case "FTR Submitted":
+                                            <span class="badge bg-success">FTR Submitted</span>
                                             break;
+                                        case "Interview":
+                                            <span class="badge bg-success">Interview</span>
+                                            
                                     }
                                 </td>
                                 <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>

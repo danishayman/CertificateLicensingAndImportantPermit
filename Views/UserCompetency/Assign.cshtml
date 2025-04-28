@@ -51,6 +51,21 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="Status" class="form-label">Status</label>
+                            <select id="Status" name="Status" class="form-select" required>
+                                <option value="Requested">Requested</option>
+                                <option value="Course attended">Course attended</option>
+                                <option value="Examination passed">Examination passed</option>
+                                <option value="FTR Submitted">FTR Submitted</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a status.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="CompletionDate" class="form-label">Completion Date (if already completed)</label>
                             <input type="date" class="form-control" id="CompletionDate" name="CompletionDate">
                             <small class="text-muted">Leave blank if not yet completed.</small>

@@ -61,8 +61,8 @@ namespace CLIP.Controllers
                     return View(model);
                 }
                 
-                // Set initial status to "Not Started"
-                model.Status = "Not Started";
+                // Status is now set from the form dropdown
+                // model.Status = "Not Started";
                 
                 // Calculate expiry date if completion date is provided
                 if (model.CompletionDate.HasValue)
@@ -108,13 +108,15 @@ namespace CLIP.Controllers
                 return RedirectToAction("Index");
             }
             
-            // Prepare status dropdown items
+            // Prepare status dropdown items with new options
             ViewBag.Statuses = new List<string> 
             {
-                "Not Started",
-                "In Progress",
-                "Completed",
-                "Expired"
+                "Requested",
+                "Course attended",
+                "Examination passed",
+                "FTR Submitted",
+                "Interview",
+                "Completed"
             };
             
             return View(userCompetency);
@@ -166,10 +168,12 @@ namespace CLIP.Controllers
             // If we got this far, something failed; reload form
             ViewBag.Statuses = new List<string> 
             {
-                "Not Started",
-                "In Progress",
-                "Completed",
-                "Expired"
+                "Requested",
+                "Course attended",
+                "Examination passed",
+                "FTR Submitted",
+                "Interview",
+                "Completed"
             };
             
             return View(model);
