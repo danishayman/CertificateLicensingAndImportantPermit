@@ -64,7 +64,7 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter current location of the machine" } })
                         @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
-                        <small class="text-muted">Optional: Physical location where the machine is placed</small>
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Optional: Physical location where the machine is placed</small>
                     </div>
                 </div>
 
@@ -73,7 +73,7 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.Department, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter department name" } })
                         @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
-                        <small class="text-muted">Optional: Department responsible for the machine</small>
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Optional: Department responsible for the machine</small>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.HostInfo, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter original owner info" } })
                         @Html.ValidationMessageFor(model => model.HostInfo, "", new { @class = "text-danger" })
-                        <small class="text-muted">Optional: First time machine registered owner</small>
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Optional: First time machine registered owner</small>
                     </div>
                 </div>
 
@@ -91,7 +91,7 @@
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.ResidentInfo, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter current owner info" } })
                         @Html.ValidationMessageFor(model => model.ResidentInfo, "", new { @class = "text-danger" })
-                        <small class="text-muted">Optional: Current machine owner or responsible person</small>
+                        <small class="text-muted"><i class="bi bi-info-circle"></i> Optional: Machine current location</small>
                     </div>
                 </div>
 
