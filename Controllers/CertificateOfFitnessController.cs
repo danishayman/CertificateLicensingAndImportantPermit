@@ -5,6 +5,7 @@ using System.Net;
 using System.Web.Mvc;
 using CLIP.Models;
 using Microsoft.AspNet.Identity;
+using System.Collections.Generic;
 
 namespace CLIP.Controllers
 {
@@ -14,9 +15,52 @@ namespace CLIP.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: CertificateOfFitness
-        public ActionResult Index()
+        public ActionResult Index(string searchString, string sortOrder, int? plantFilter)
         {
+            ViewBag.CurrentSearch = searchString;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.PlantSortParam = sortOrder == "plant_asc" ? "plant_desc" : "plant_asc";
+            ViewBag.DateSortParam = sortOrder == "date_asc" ? "date_desc" : "date_asc";
+            ViewBag.CurrentPlantFilter = plantFilter;
+
+            // Get all plants for dropdown filter
+            var plants = db.Plants.OrderBy(p => p.PlantName).ToList();
+            ViewBag.Plants = new SelectList(plants, "Id", "PlantName");
+
             var certificates = db.CertificateOfFitness.Include(c => c.Plant);
+            
+            // Apply plant filter
+            if (plantFilter.HasValue)
+            {
+                certificates = certificates.Where(c => c.PlantId == plantFilter);
+            }
+            
+            // Apply search filter (only by registration number)
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                certificates = certificates.Where(c => c.RegistrationNo.Contains(searchString));
+            }
+            
+            // Apply sorting
+            switch (sortOrder)
+            {
+                case "plant_desc":
+                    certificates = certificates.OrderByDescending(c => c.Plant.PlantName);
+                    break;
+                case "plant_asc":
+                    certificates = certificates.OrderBy(c => c.Plant.PlantName);
+                    break;
+                case "date_desc":
+                    certificates = certificates.OrderByDescending(c => c.ExpiryDate);
+                    break;
+                case "date_asc":
+                    certificates = certificates.OrderBy(c => c.ExpiryDate);
+                    break;
+                default:
+                    certificates = certificates.OrderBy(c => c.Plant.PlantName);
+                    break;
+            }
+            
             return View(certificates.ToList());
         }
 
