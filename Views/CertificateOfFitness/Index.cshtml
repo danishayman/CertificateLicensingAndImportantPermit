@@ -36,9 +36,9 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label"><i class="bi bi-search"></i> Search by Registration Number</label>
+                <label class="form-label"><i class="bi bi-search"></i> Search by Registration Number or Machine Name</label>
                 <div class="input-group">
-                    @Html.TextBox("searchString", ViewBag.CurrentSearch as string, new { @class = "form-control", placeholder = "Enter registration number..." })
+                    @Html.TextBox("searchString", ViewBag.CurrentSearch as string, new { @class = "form-control", placeholder = "Enter registration number or machine name..." })
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="bi bi-search"></i> Search
                     </button>
@@ -82,6 +82,9 @@
                     @Html.DisplayNameFor(model => model.RegistrationNo)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.MachineName)
+                </th>
+                <th>
                     <a href="@Url.Action("Index", "CertificateOfFitness", new { sortOrder = ViewBag.DateSortParam, searchString = ViewBag.CurrentSearch, plantFilter = ViewBag.CurrentPlantFilter })" class="text-dark text-decoration-none">
                         @Html.DisplayNameFor(model => model.ExpiryDate)
                         @if (ViewBag.CurrentSort == "date_asc")
@@ -98,6 +101,9 @@
                         }
                     </a>
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -105,7 +111,7 @@
             @if (Model.Count() == 0)
             {
                 <tr>
-                    <td colspan="4" class="text-center py-4">
+                    <td colspan="6" class="text-center py-4">
                         <i class="bi bi-info-circle text-info fs-4 d-block mb-2"></i>
                         @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch as string) || ViewBag.CurrentPlantFilter != null)
                         {
@@ -139,7 +145,28 @@
                             @Html.DisplayFor(modelItem => item.RegistrationNo)
                         </td>
                         <td>
+                            @Html.DisplayFor(modelItem => item.MachineName)
+                        </td>
+                        <td>
                             @item.ExpiryDate.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            @{
+                                string badgeClass = "bg-secondary";
+                                switch (item.Status)
+                                {
+                                    case "Active":
+                                        badgeClass = "bg-success";
+                                        break;
+                                    case "Expiring Soon":
+                                        badgeClass = "bg-warning text-dark";
+                                        break;
+                                    case "Expired":
+                                        badgeClass = "bg-danger";
+                                        break;
+                                }
+                            }
+                            <span class="badge @badgeClass">@item.Status</span>
                         </td>
                         <td>
                             <a href="@Url.Action("Details", "CertificateOfFitness", new { id = item.Id })" class="btn btn-info btn-sm">

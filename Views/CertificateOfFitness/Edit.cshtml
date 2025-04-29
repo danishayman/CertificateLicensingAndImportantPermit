@@ -33,10 +33,43 @@
                 </div>
 
                 <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.MachineName, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.MachineName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MachineName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
                     @Html.LabelFor(model => model.ExpiryDate, new { @class = "col-md-2 col-form-label" })
                     <div class="col-md-10">
                         @Html.EditorFor(model => model.ExpiryDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
                         @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+                        <small class="text-muted">Status will be updated automatically based on expiry date.</small>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Status, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="alert alert-info">
+                            <small>Status will be set automatically as:</small>
+                            <ul class="mb-0 small">
+                                <li>"Active" if expiry date is more than 60 days in the future</li>
+                                <li>"Expiring Soon" if expiry date is within 60 days</li>
+                                <li>"Expired" if expiry date has passed</li>
+                            </ul>
+                        </div>
+                        @Html.HiddenFor(model => model.Status)
+                        <div>Current status: <span class="badge bg-secondary">@Model.Status</span></div>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Remarks, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", rows = 3 })
+                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
                     </div>
                 </div>
 

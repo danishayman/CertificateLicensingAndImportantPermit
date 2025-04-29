@@ -22,6 +22,15 @@ namespace CLIP.Models
         [DataType(DataType.Date)]
         public DateTime ExpiryDate { get; set; }
 
+        [Display(Name = "Machine Name")]
+        public string MachineName { get; set; }
+
+        [Display(Name = "Status")]
+        public string Status { get; set; }
+
+        [Display(Name = "Remarks")]
+        public string Remarks { get; set; }
+
         [ForeignKey("PlantId")]
         public virtual Plant Plant { get; set; }
     }

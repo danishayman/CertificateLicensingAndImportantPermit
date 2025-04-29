@@ -14,6 +14,20 @@ namespace CLIP.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        // Helper method to calculate status based on expiry date
+        private string CalculateStatus(DateTime expiryDate)
+        {
+            DateTime today = DateTime.Today;
+            DateTime expiringSoonDate = expiryDate.AddDays(-60);
+
+            if (today > expiryDate)
+                return "Expired";
+            else if (today >= expiringSoonDate)
+                return "Expiring Soon";
+            else
+                return "Active";
+        }
+
         // GET: CertificateOfFitness
         public ActionResult Index(string searchString, string sortOrder, int? plantFilter)
         {
@@ -35,10 +49,11 @@ namespace CLIP.Controllers
                 certificates = certificates.Where(c => c.PlantId == plantFilter);
             }
             
-            // Apply search filter (only by registration number)
+            // Apply search filter (search by registration number or machine name)
             if (!string.IsNullOrEmpty(searchString))
             {
-                certificates = certificates.Where(c => c.RegistrationNo.Contains(searchString));
+                certificates = certificates.Where(c => c.RegistrationNo.Contains(searchString) || 
+                                                     c.MachineName.Contains(searchString));
             }
             
             // Apply sorting
@@ -91,10 +106,13 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate")] CertificateOfFitness certificateOfFitness)
+        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness)
         {
             if (ModelState.IsValid)
             {
+                // Set status based on expiry date
+                certificateOfFitness.Status = CalculateStatus(certificateOfFitness.ExpiryDate);
+                
                 db.CertificateOfFitness.Add(certificateOfFitness);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -125,10 +143,13 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate")] CertificateOfFitness certificateOfFitness)
+        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness)
         {
             if (ModelState.IsValid)
             {
+                // Set status based on expiry date
+                certificateOfFitness.Status = CalculateStatus(certificateOfFitness.ExpiryDate);
+                
                 db.Entry(certificateOfFitness).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
