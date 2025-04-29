@@ -1,0 +1,187 @@
+@{
+    ViewBag.Title = "Monitoring Schedule";
+    var monitoringTypes = ViewBag.MonitoringTypes;
+    var plants = ViewBag.Plants;
+    var data = ViewBag.Data;
+    var currentYear = ViewBag.CurrentYear;
+    var monthNames = ViewBag.MonthNames;
+}
+
+<h2>Monitoring Schedule</h2>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="btn-group">
+            @Html.ActionLink("List View", "Index", null, new { @class = "btn btn-outline-primary" })
+            @Html.ActionLink("Schedule View", "Schedule", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Manage Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-success float-right">
+            <i class="fas fa-plus"></i> Add New Record
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>@currentYear Monitoring Schedule</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-bordered monitoring-schedule">
+                <thead>
+                    <tr class="bg-light">
+                        <th rowspan="2" style="width: 5%;">No.</th>
+                        <th rowspan="2" style="width: 15%;">Type of Monitoring</th>
+                        <th rowspan="2" style="width: 10%;">Area</th>
+                        <th rowspan="2" style="width: 5%;">Freq</th>
+                        <th colspan="12" class="text-center">@currentYear</th>
+                    </tr>
+                    <tr class="bg-light">
+                        @for (int month = 0; month < 12; month++)
+                        {
+                            <th class="text-center" style="width: 5%;">@monthNames[month].Substring(0, 3)</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int categoryCount = 0;
+                        string currentCategory = null;
+                    }
+                    
+                    @foreach (var monitoring in monitoringTypes)
+                    {
+                        if (currentCategory != monitoring.MonitoringCategory)
+                        {
+                            currentCategory = monitoring.MonitoringCategory;
+                            categoryCount++;
+                            
+                            <tr class="bg-secondary text-white">
+                                <td class="align-middle">@categoryCount</td>
+                                <td class="align-middle" colspan="14">@monitoring.MonitoringCategory</td>
+                            </tr>
+                        }
+                        
+                        bool hasAnyPlantForMonitoring = data.ContainsKey(monitoring.MonitoringID) && data[monitoring.MonitoringID].Any();
+                        
+                        if (hasAnyPlantForMonitoring)
+                        {
+                            foreach (var plantId in data[monitoring.MonitoringID].Keys)
+                            {
+                                // Find the plant by ID without using a lambda expression
+                                dynamic plantFound = null;
+                                foreach (var p in plants) {
+                                    if (p.Id == plantId) {
+                                        plantFound = p;
+                                        break;
+                                    }
+                                }
+                                
+                                if (plantFound == null) {
+                                    continue;
+                                }
+                                
+                                var records = data[monitoring.MonitoringID][plantId];
+                                
+                                foreach (var area in records.Select(r => r.Area).Distinct())
+                                {
+                                    var areaRecords = records.Where(r => r.Area == area).ToList();
+                                    
+                                    <tr>
+                                        <td></td>
+                                        <td>@monitoring.MonitoringName</td>
+                                        <td>
+                                            @plantFound.PlantName
+                                            @if (!string.IsNullOrEmpty(area))
+                                            {
+                                                <span>@area</span>
+                                            }
+                                        </td>
+                                        <td>@monitoring.MonitoringFreq</td>
+                                        
+                                        @for (int month = 0; month < 12; month++)
+                                        {
+                                            <td class="text-center">
+                                                @{
+                                                    var monthRecords = areaRecords.Where(r => 
+                                                        (r.QuoteDate.HasValue && r.QuoteDate.Value.Month == month + 1 && r.QuoteDate.Value.Year == currentYear) ||
+                                                        (r.WorkDate.HasValue && r.WorkDate.Value.Month == month + 1 && r.WorkDate.Value.Year == currentYear) ||
+                                                        (r.ExpDate.HasValue && r.ExpDate.Value.Month == month + 1 && r.ExpDate.Value.Year == currentYear)
+                                                    ).ToList();
+                                                    
+                                                    foreach (var record in monthRecords)
+                                                    {
+                                                        string bgClass = "bg-secondary"; // Gray for quote stage
+                                                        
+                                                        if (record.WorkCompleteDate.HasValue)
+                                                        {
+                                                            bgClass = "bg-success"; // Green for completed
+                                                        }
+                                                        else if (record.WorkDate.HasValue)
+                                                        {
+                                                            bgClass = "bg-warning"; // Yellow for in progress
+                                                        }
+                                                        
+                                                        <div class="@bgClass" style="height: 24px; width: 100%;">
+                                                            <a href="@Url.Action("Details", new { id = record.Id })" class="d-block w-100 h-100 text-white">
+                                                                &nbsp;
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td></td>
+                                <td>@monitoring.MonitoringName</td>
+                                <td colspan="14" class="text-center">No scheduled monitoring</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>Legend</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bg-secondary" style="width: 24px; height: 24px;"></div>
+                    <div class="ml-2">Request Quotation</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bg-warning" style="width: 24px; height: 24px;"></div>
+                    <div class="ml-2">WIP (Work In Progress)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="bg-success" style="width: 24px; height: 24px;"></div>
+                    <div class="ml-2">Perform work completed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .monitoring-schedule th, .monitoring-schedule td {
+        padding: 4px;
+        font-size: 0.9rem;
+    }
+</style> 

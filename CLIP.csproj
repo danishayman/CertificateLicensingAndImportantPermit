@@ -173,6 +173,8 @@
     <Compile Include="Controllers\CompetencyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MonitoringController.cs" />
+    <Compile Include="Controllers\PlantMonitoringController.cs" />
     <Compile Include="Controllers\UserCompetencyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -220,7 +222,9 @@
     <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Monitoring.cs" />
     <Compile Include="Models\Plant.cs" />
+    <Compile Include="Models\PlantMonitoring.cs" />
     <Compile Include="Models\UserCompetency.cs" />
     <Compile Include="Models\UserPlant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -314,9 +318,22 @@
     <Content Include="Views\CertificateOfFitness\Edit.cshtml" />
     <Content Include="Views\CertificateOfFitness\Index.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Monitoring\Create.cshtml" />
+    <Content Include="Views\Monitoring\Delete.cshtml" />
+    <Content Include="Views\Monitoring\Details.cshtml" />
+    <Content Include="Views\Monitoring\Edit.cshtml" />
+    <Content Include="Views\Monitoring\Index.cshtml" />
+    <Content Include="Views\PlantMonitoring\Create.cshtml" />
+    <Content Include="Views\PlantMonitoring\Delete.cshtml" />
+    <Content Include="Views\PlantMonitoring\Details.cshtml" />
+    <Content Include="Views\PlantMonitoring\Edit.cshtml" />
+    <Content Include="Views\PlantMonitoring\Index.cshtml" />
+    <Content Include="Views\PlantMonitoring\Schedule.cshtml" />
+    <Content Include="Views\PlantMonitoring\UpdateStatus.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\MonitoringSchedule\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
