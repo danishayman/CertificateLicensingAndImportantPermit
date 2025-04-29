@@ -169,6 +169,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CertificateOfFitnessController.cs" />
     <Compile Include="Controllers\CompetencyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AreaPlant.cs" />
+    <Compile Include="Models\CertificateOfFitness.cs" />
     <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -309,6 +311,12 @@
     <Content Include="Views\UserCompetency\Index.cshtml" />
     <Content Include="Views\UserCompetency\MyCompetencies.cshtml" />
     <Content Include="Views\UserCompetency\UserCompetencies.cshtml" />
+    <Content Include="Views\CertificateOfFitness\Create.cshtml" />
+    <Content Include="Views\CertificateOfFitness\Delete.cshtml" />
+    <Content Include="Views\CertificateOfFitness\Details.cshtml" />
+    <Content Include="Views\CertificateOfFitness\Edit.cshtml" />
+    <Content Include="Views\CertificateOfFitness\Index.cshtml" />
+    <Content Include="Views\Home\Welcome.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

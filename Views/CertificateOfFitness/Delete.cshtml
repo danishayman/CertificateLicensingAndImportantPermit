@@ -1,0 +1,55 @@
+@model CLIP.Models.CertificateOfFitness
+
+@{
+    ViewBag.Title = "Delete Certificate of Fitness";
+}
+
+<h1>Delete Certificate of Fitness</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0">Are you sure you want to delete this?</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.Plant.PlantName)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.Plant.PlantName)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.RegistrationNo)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.RegistrationNo)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.ExpiryDate)
+            </div>
+            <div class="col-md-9">
+                @Model.ExpiryDate.ToString("MM/dd/yyyy")
+            </div>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+                <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        }
+    </div>
+</div> 

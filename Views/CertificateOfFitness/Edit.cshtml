@@ -1,0 +1,60 @@
+@model CLIP.Models.CertificateOfFitness
+
+@{
+    ViewBag.Title = "Edit Certificate of Fitness";
+}
+
+<h1>Edit Certificate of Fitness</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.Id)
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.PlantId, "Plant", new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("PlantId", null, new { @class = "form-select" })
+                        @Html.ValidationMessageFor(model => model.PlantId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.RegistrationNo, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.RegistrationNo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.RegistrationNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.ExpiryDate, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.ExpiryDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                        @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="offset-md-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                        <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+} 

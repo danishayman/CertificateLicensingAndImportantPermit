@@ -1,0 +1,50 @@
+@model CLIP.Models.CertificateOfFitness
+
+@{
+    ViewBag.Title = "Certificate of Fitness Details";
+}
+
+<h1>Certificate of Fitness Details</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.Plant.PlantName)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.Plant.PlantName)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.RegistrationNo)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.RegistrationNo)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.ExpiryDate)
+            </div>
+            <div class="col-md-9">
+                @Model.ExpiryDate.ToString("MM/dd/yyyy")
+            </div>
+        </div>
+
+        <div class="mt-4">
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="@Url.Action("Edit", "CertificateOfFitness", new { id = Model.Id })" class="btn btn-warning">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+            }
+            <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div> 
