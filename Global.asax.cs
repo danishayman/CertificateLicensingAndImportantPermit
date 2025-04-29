@@ -35,10 +35,13 @@ namespace CLIP
                     // Sample plants
                     var plants = new List<Plant>
                     {
-                        new Plant { PlantName = "Plant 01 - Bayan Lepas" },
-                        new Plant { PlantName = "Plant 02 - Batu Kawan" },
-                        new Plant { PlantName = "Plant 03 - Kulim" },
-                        new Plant { PlantName = "Plant 04 - Manila" }
+                        new Plant { PlantName = "Plant 1" },
+                        new Plant { PlantName = "Plant 13" },
+                        new Plant { PlantName = "Plant 3" },
+                        new Plant { PlantName = "Plant 21" },
+                        new Plant { PlantName = "Plant 34" },
+                        new Plant { PlantName = "Plant 5" },
+                        new Plant { PlantName = "Plant 55" }
                     };
                     
                     plants.ForEach(p => context.Plants.Add(p));
