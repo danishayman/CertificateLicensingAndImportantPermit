@@ -49,6 +49,7 @@ namespace CLIP.Models
         public DbSet<UserPlant> UserPlants { get; set; }
         public DbSet<AreaPlant> AreaPlants { get; set; }
         public DbSet<MonitoringModule> MonitoringModules { get; set; }
+        public DbSet<CertificateOfFitness> CertificateOfFitness { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -89,6 +90,14 @@ namespace CLIP.Models
             modelBuilder.Entity<CompetencyModule>()
                 .HasIndex(c => c.ModuleName)
                 .IsUnique();
+
+            // Configure CertificateOfFitness relationships
+            modelBuilder.Entity<CertificateOfFitness>()
+                .ToTable("CertificateOfFitness")
+                .HasRequired(cf => cf.Plant)
+                .WithMany()
+                .HasForeignKey(cf => cf.PlantId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

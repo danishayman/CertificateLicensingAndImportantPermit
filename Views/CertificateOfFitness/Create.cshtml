@@ -1,0 +1,161 @@
+@model CLIP.Models.CertificateOfFitness
+
+@{
+    ViewBag.Title = "Create Certificate of Fitness";
+}
+
+<h1>Create Certificate of Fitness</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        @using (Html.BeginForm("Create", "CertificateOfFitness", FormMethod.Post, new { enctype = "multipart/form-data" })) 
+        {
+            @Html.AntiForgeryToken()
+            
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.PlantId, "Plant", new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.DropDownList("PlantId", null, new { @class = "form-select" })
+                        @Html.ValidationMessageFor(model => model.PlantId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.RegistrationNo, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.RegistrationNo, new { htmlAttributes = new { @class = "form-control" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Registration Number must be unique across all certificates">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.RegistrationNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.MachineName, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.MachineName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MachineName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.ExpiryDate, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.ExpiryDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Status will be set automatically based on expiry date">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.ExpiryDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Status, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.HiddenFor(model => model.Status)
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Location, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter current location of the machine" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Optional: Physical location where the machine is placed">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Department, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.Department, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter department name" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Optional: Department responsible for the machine">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.HostInfo, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.HostInfo, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter original owner info" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Optional: First time machine registered owner">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.HostInfo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.ResidentInfo, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.ResidentInfo, new { htmlAttributes = new { @class = "form-control", placeholder = "Enter current owner info" } })
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Optional: Machine current location">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.ResidentInfo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    @Html.LabelFor(model => model.Remarks, new { @class = "col-md-2 col-form-label" })
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(model => model.Remarks, new { @class = "form-control", rows = 3 })
+                        @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group row mb-3">
+                    <label class="col-md-2 col-form-label">PDF Document</label>
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <input type="file" name="pdfDocument" class="form-control" accept=".pdf" />
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Upload a PDF document of the certificate">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="offset-md-2 col-md-10">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                        <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+} 

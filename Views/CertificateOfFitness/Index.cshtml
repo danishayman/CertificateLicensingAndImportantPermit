@@ -1,0 +1,199 @@
+@model IEnumerable<CLIP.Models.CertificateOfFitness>
+
+@{
+    ViewBag.Title = "Certificates of Fitness";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Certificates of Fitness</h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <a href="@Url.Action("Create", "CertificateOfFitness")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Certificate
+        </a>
+    }
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        @using (Html.BeginForm("Index", "CertificateOfFitness", FormMethod.Get, new { @class = "row g-3" }))
+        {
+            <div class="col-md-4">
+                <label class="form-label"><i class="bi bi-funnel"></i> Filter by Plant</label>
+                <select name="plantFilter" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- All Plants --</option>
+                    @foreach (var plant in ViewBag.Plants)
+                    {
+                        if (ViewBag.CurrentPlantFilter != null && int.Parse(plant.Value) == ViewBag.CurrentPlantFilter)
+                        {
+                            <option value="@plant.Value" selected>@plant.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@plant.Value">@plant.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-search"></i> Search by Registration Number or Machine Name</label>
+                <div class="input-group">
+                    @Html.TextBox("searchString", ViewBag.CurrentSearch as string, new { @class = "form-control", placeholder = "Enter registration number or machine name..." })
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+                <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch as string) || ViewBag.CurrentPlantFilter != null)
+                {
+                    <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Clear Filters
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="bg-light">
+            <tr>
+                <th>
+                    <a href="@Url.Action("Index", "CertificateOfFitness", new { sortOrder = ViewBag.PlantSortParam, searchString = ViewBag.CurrentSearch, plantFilter = ViewBag.CurrentPlantFilter })" class="text-dark text-decoration-none">
+                        @Html.DisplayNameFor(model => model.Plant.PlantName)
+                        @if (ViewBag.CurrentSort == "plant_asc")
+                        {
+                            <i class="bi bi-sort-alpha-down"></i>
+                        }
+                        else if (ViewBag.CurrentSort == "plant_desc")
+                        {
+                            <i class="bi bi-sort-alpha-up"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-arrow-down-up text-muted"></i>
+                        }
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RegistrationNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MachineName)
+                </th>
+                <th>
+                    <a href="@Url.Action("Index", "CertificateOfFitness", new { sortOrder = ViewBag.DateSortParam, searchString = ViewBag.CurrentSearch, plantFilter = ViewBag.CurrentPlantFilter })" class="text-dark text-decoration-none">
+                        @Html.DisplayNameFor(model => model.ExpiryDate)
+                        @if (ViewBag.CurrentSort == "date_asc")
+                        {
+                            <i class="bi bi-sort-numeric-down"></i>
+                        }
+                        else if (ViewBag.CurrentSort == "date_desc")
+                        {
+                            <i class="bi bi-sort-numeric-up"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-arrow-down-up text-muted"></i>
+                        }
+                    </a>
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>Document</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="bi bi-info-circle text-info fs-4 d-block mb-2"></i>
+                        @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch as string) || ViewBag.CurrentPlantFilter != null)
+                        {
+                            <p class="mb-1">No certificates found matching your filters.</p>
+                            <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-outline-primary btn-sm mt-2">
+                                <i class="bi bi-arrow-clockwise"></i> Show All Certificates
+                            </a>
+                        }
+                        else
+                        {
+                            <p>No certificates of fitness have been added yet.</p>
+                            if (User.IsInRole("Admin"))
+                            {
+                                <a href="@Url.Action("Create", "CertificateOfFitness")" class="btn btn-primary btn-sm mt-2">
+                                    <i class="bi bi-plus-circle"></i> Add New Certificate
+                                </a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Plant.PlantName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RegistrationNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MachineName)
+                        </td>
+                        <td>
+                            @item.ExpiryDate.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            @{
+                                string badgeClass = "bg-secondary";
+                                switch (item.Status)
+                                {
+                                    case "Active":
+                                        badgeClass = "bg-success";
+                                        break;
+                                    case "Expiring Soon":
+                                        badgeClass = "bg-warning text-dark";
+                                        break;
+                                    case "Expired":
+                                        badgeClass = "bg-danger";
+                                        break;
+                                }
+                            }
+                            <span class="badge @badgeClass">@item.Status</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.DocumentPath))
+                            {
+                                <a href="@Url.Action("ViewDocument", "CertificateOfFitness", new { id = item.Id })" class="btn btn-sm btn-outline-primary" title="View PDF Document" target="_blank">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </a>
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "CertificateOfFitness", new { id = item.Id })" class="btn btn-info btn-sm">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="@Url.Action("Edit", "CertificateOfFitness", new { id = item.Id })" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a href="@Url.Action("Delete", "CertificateOfFitness", new { id = item.Id })" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div> 

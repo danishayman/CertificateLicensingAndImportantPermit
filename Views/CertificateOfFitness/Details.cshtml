@@ -1,0 +1,161 @@
+@model CLIP.Models.CertificateOfFitness
+
+@{
+    ViewBag.Title = "Certificate of Fitness Details";
+}
+
+<h1>Certificate of Fitness Details</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.Plant.PlantName)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.Plant.PlantName)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.RegistrationNo)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.RegistrationNo)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.MachineName)
+            </div>
+            <div class="col-md-9">
+                @Html.DisplayFor(model => model.MachineName)
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.ExpiryDate)
+            </div>
+            <div class="col-md-9">
+                @Model.ExpiryDate.ToString("MM/dd/yyyy")
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                @Html.DisplayNameFor(model => model.Status)
+            </div>
+            <div class="col-md-9">
+                @{
+                    string badgeClass = "bg-secondary";
+                    switch (Model.Status)
+                    {
+                        case "Active":
+                            badgeClass = "bg-success";
+                            break;
+                        case "Expiring Soon":
+                            badgeClass = "bg-warning text-dark";
+                            break;
+                        case "Expired":
+                            badgeClass = "bg-danger";
+                            break;
+                    }
+                }
+                <span class="badge @badgeClass">@Model.Status</span>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Location))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Location)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Location)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Department))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Department)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Department)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.HostInfo))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.HostInfo)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.HostInfo)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ResidentInfo))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.ResidentInfo)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.ResidentInfo)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Remarks))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Remarks)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Remarks)
+                </div>
+            </div>
+        }
+
+        <div class="row mb-3">
+            <div class="col-md-3 fw-bold">
+                PDF Document
+            </div>
+            <div class="col-md-9">
+                @if (!string.IsNullOrEmpty(Model.DocumentPath))
+                {
+                    <a href="@Url.Action("ViewDocument", "CertificateOfFitness", new { id = Model.Id })" class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> View Certificate Document
+                    </a>
+                }
+                else
+                {
+                    <span class="text-muted">No document attached</span>
+                }
+            </div>
+        </div>
+
+        <div class="mt-4">
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="@Url.Action("Edit", "CertificateOfFitness", new { id = Model.Id })" class="btn btn-warning">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </a>
+            }
+            <a href="@Url.Action("Index", "CertificateOfFitness")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div> 
