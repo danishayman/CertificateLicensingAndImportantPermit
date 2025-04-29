@@ -16,6 +16,18 @@ namespace CLIP.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        // Method to check if registration number is unique
+        [HttpGet]
+        public JsonResult IsRegistrationNoAvailable(string registrationNo, int? id)
+        {
+            // Check if the registration number exists and doesn't belong to the current record (in case of editing)
+            bool isAvailable = !db.CertificateOfFitness.Any(c => 
+                c.RegistrationNo.Equals(registrationNo, StringComparison.OrdinalIgnoreCase) && 
+                (id == null || c.Id != id.Value));
+                
+            return Json(isAvailable, JsonRequestBehavior.AllowGet);
+        }
+
         // Helper method to calculate status based on expiry date
         private string CalculateStatus(DateTime expiryDate)
         {
@@ -110,6 +122,15 @@ namespace CLIP.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,Location,HostInfo,Department,ResidentInfo")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
+            // Check for unique registration number
+            bool isDuplicate = db.CertificateOfFitness.Any(c => 
+                c.RegistrationNo.Equals(certificateOfFitness.RegistrationNo, StringComparison.OrdinalIgnoreCase));
+            
+            if (isDuplicate)
+            {
+                ModelState.AddModelError("RegistrationNo", "This Registration Number is already in use.");
+            }
+            
             if (ModelState.IsValid)
             {
                 // Set status based on expiry date
@@ -168,6 +189,16 @@ namespace CLIP.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,DocumentPath,Location,HostInfo,Department,ResidentInfo")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
+            // Check for unique registration number (excluding current record)
+            bool isDuplicate = db.CertificateOfFitness.Any(c => 
+                c.RegistrationNo.Equals(certificateOfFitness.RegistrationNo, StringComparison.OrdinalIgnoreCase) && 
+                c.Id != certificateOfFitness.Id);
+            
+            if (isDuplicate)
+            {
+                ModelState.AddModelError("RegistrationNo", "This Registration Number is already in use.");
+            }
+            
             if (ModelState.IsValid)
             {
                 // Set status based on expiry date

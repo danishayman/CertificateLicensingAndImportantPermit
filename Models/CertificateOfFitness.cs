@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
+using System.Web.Mvc;
 
 namespace CLIP.Models
 {
@@ -16,6 +17,7 @@ namespace CLIP.Models
 
         [Required]
         [Display(Name = "Registration Number")]
+        [Remote("IsRegistrationNoAvailable", "CertificateOfFitness", AdditionalFields = "Id", ErrorMessage = "This Registration Number is already in use.")]
         public string RegistrationNo { get; set; }
 
         [Required]
