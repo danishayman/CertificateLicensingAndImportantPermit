@@ -48,7 +48,6 @@ namespace CLIP.Models
         public DbSet<Plant> Plants { get; set; }
         public DbSet<UserPlant> UserPlants { get; set; }
         public DbSet<AreaPlant> AreaPlants { get; set; }
-        public DbSet<MonitoringModule> MonitoringModules { get; set; }
         public DbSet<CertificateOfFitness> CertificateOfFitness { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

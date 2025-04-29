@@ -220,7 +220,6 @@
     <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\MonitoringModule.cs" />
     <Compile Include="Models\Plant.cs" />
     <Compile Include="Models\UserCompetency.cs" />
     <Compile Include="Models\UserPlant.cs" />
@@ -280,9 +279,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Home\SafetyHealthMonitoring.cshtml" />
-    <Content Include="Views\Home\Monitoring.cshtml" />
-    <Content Include="Views\Home\EnvironmentMonitoring.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -377,13 +373,6 @@
     <EmbeddedResource Include="Migrations\202504280158101_MakeCompetencyNameUnique.resx">
       <DependentUpon>202504280158101_MakeCompetencyNameUnique.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Monitoring\Index.cshtml" />
-    <Content Include="Views\Monitoring\Edit.cshtml" />
-    <Content Include="Views\Monitoring\Details.cshtml" />
-    <Content Include="Views\Monitoring\Delete.cshtml" />
-    <Content Include="Views\Monitoring\Create.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
