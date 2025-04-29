@@ -68,14 +68,65 @@
             </div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">
-                @Html.DisplayNameFor(model => model.Remarks)
+        @if (!string.IsNullOrEmpty(Model.Location))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Location)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Location)
+                </div>
             </div>
-            <div class="col-md-9">
-                @Html.DisplayFor(model => model.Remarks)
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Department))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Department)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Department)
+                </div>
             </div>
-        </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.HostInfo))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.HostInfo)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.HostInfo)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ResidentInfo))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.ResidentInfo)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.ResidentInfo)
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Remarks))
+        {
+            <div class="row mb-3">
+                <div class="col-md-3 fw-bold">
+                    @Html.DisplayNameFor(model => model.Remarks)
+                </div>
+                <div class="col-md-9">
+                    @Html.DisplayFor(model => model.Remarks)
+                </div>
+            </div>
+        }
 
         <div class="row mb-3">
             <div class="col-md-3 fw-bold">

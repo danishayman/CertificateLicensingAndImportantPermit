@@ -108,7 +108,7 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
+        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,Location,HostInfo,Department,ResidentInfo")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
             if (ModelState.IsValid)
             {
@@ -166,7 +166,7 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,DocumentPath")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
+        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,DocumentPath,Location,HostInfo,Department,ResidentInfo")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
             if (ModelState.IsValid)
             {

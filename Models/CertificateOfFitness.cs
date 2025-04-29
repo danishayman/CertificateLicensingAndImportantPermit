@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace CLIP.Models
 {
@@ -33,6 +34,20 @@ namespace CLIP.Models
 
         [Display(Name = "PDF Document")]
         public string DocumentPath { get; set; }
+
+        [Display(Name = "Location")]
+        public string Location { get; set; }
+
+        [Display(Name = "Host Info")]
+        [Description("First time machine registered owner")]
+        public string HostInfo { get; set; }
+
+        [Display(Name = "Department")]
+        public string Department { get; set; }
+
+        [Display(Name = "Resident Info")]
+        [Description("Machine current location/owner")]
+        public string ResidentInfo { get; set; }
 
         [ForeignKey("PlantId")]
         public virtual Plant Plant { get; set; }
