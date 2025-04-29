@@ -31,6 +31,9 @@ namespace CLIP.Models
         [Display(Name = "Remarks")]
         public string Remarks { get; set; }
 
+        [Display(Name = "PDF Document")]
+        public string DocumentPath { get; set; }
+
         [ForeignKey("PlantId")]
         public virtual Plant Plant { get; set; }
     }

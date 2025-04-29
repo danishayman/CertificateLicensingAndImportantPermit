@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using CLIP.Models;
 using Microsoft.AspNet.Identity;
 using System.Collections.Generic;
+using System.IO;
+using System.Web;
 
 namespace CLIP.Controllers
 {
@@ -106,12 +108,33 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness)
+        public ActionResult Create([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
             if (ModelState.IsValid)
             {
                 // Set status based on expiry date
                 certificateOfFitness.Status = CalculateStatus(certificateOfFitness.ExpiryDate);
+                
+                // Handle PDF document upload
+                if (pdfDocument != null && pdfDocument.ContentLength > 0)
+                {
+                    // Create folder if it doesn't exist
+                    string uploadFolder = Server.MapPath("~/Views/CertificateOfFitness/Uploads");
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+
+                    // Create unique filename
+                    string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}_{Path.GetFileName(pdfDocument.FileName)}";
+                    string filePath = Path.Combine(uploadFolder, fileName);
+                    
+                    // Save file
+                    pdfDocument.SaveAs(filePath);
+                    
+                    // Store filename in the database
+                    certificateOfFitness.DocumentPath = fileName;
+                }
                 
                 db.CertificateOfFitness.Add(certificateOfFitness);
                 db.SaveChanges();
@@ -143,12 +166,43 @@ namespace CLIP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks")] CertificateOfFitness certificateOfFitness)
+        public ActionResult Edit([Bind(Include = "Id,PlantId,RegistrationNo,ExpiryDate,MachineName,Status,Remarks,DocumentPath")] CertificateOfFitness certificateOfFitness, HttpPostedFileBase pdfDocument)
         {
             if (ModelState.IsValid)
             {
                 // Set status based on expiry date
                 certificateOfFitness.Status = CalculateStatus(certificateOfFitness.ExpiryDate);
+                
+                // Handle PDF document upload
+                if (pdfDocument != null && pdfDocument.ContentLength > 0)
+                {
+                    // Create folder if it doesn't exist
+                    string uploadFolder = Server.MapPath("~/Views/CertificateOfFitness/Uploads");
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+                    
+                    // Delete old file if exists
+                    if (!string.IsNullOrEmpty(certificateOfFitness.DocumentPath))
+                    {
+                        string oldFilePath = Path.Combine(uploadFolder, certificateOfFitness.DocumentPath);
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+
+                    // Create unique filename
+                    string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}_{Path.GetFileName(pdfDocument.FileName)}";
+                    string filePath = Path.Combine(uploadFolder, fileName);
+                    
+                    // Save file
+                    pdfDocument.SaveAs(filePath);
+                    
+                    // Store filename in the database
+                    certificateOfFitness.DocumentPath = fileName;
+                }
                 
                 db.Entry(certificateOfFitness).State = EntityState.Modified;
                 db.SaveChanges();
@@ -181,9 +235,43 @@ namespace CLIP.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             CertificateOfFitness certificateOfFitness = db.CertificateOfFitness.Find(id);
+            
+            // Delete the associated PDF file if it exists
+            if (!string.IsNullOrEmpty(certificateOfFitness.DocumentPath))
+            {
+                string filePath = Path.Combine(Server.MapPath("~/Views/CertificateOfFitness/Uploads"), certificateOfFitness.DocumentPath);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+            
             db.CertificateOfFitness.Remove(certificateOfFitness);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        // GET: CertificateOfFitness/ViewDocument/5
+        public ActionResult ViewDocument(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            
+            CertificateOfFitness certificate = db.CertificateOfFitness.Find(id);
+            if (certificate == null || string.IsNullOrEmpty(certificate.DocumentPath))
+            {
+                return HttpNotFound();
+            }
+            
+            string filePath = Path.Combine(Server.MapPath("~/Views/CertificateOfFitness/Uploads"), certificate.DocumentPath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return HttpNotFound();
+            }
+            
+            return File(filePath, "application/pdf");
         }
 
         protected override void Dispose(bool disposing)
