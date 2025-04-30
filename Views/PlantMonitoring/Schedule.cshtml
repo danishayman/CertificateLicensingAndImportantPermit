@@ -1,3 +1,4 @@
+@using System.Linq
 @{
     ViewBag.Title = "Monitoring Schedule";
     var monitoringTypes = ViewBag.MonitoringTypes;
@@ -63,7 +64,7 @@
                             </tr>
                         }
                         
-                        bool hasAnyPlantForMonitoring = data.ContainsKey(monitoring.MonitoringID) && data[monitoring.MonitoringID].Any();
+                        bool hasAnyPlantForMonitoring = data != null && data.ContainsKey(monitoring.MonitoringID) && data[monitoring.MonitoringID].Count > 0;
                         
                         if (hasAnyPlantForMonitoring)
                         {
@@ -71,22 +72,48 @@
                             {
                                 // Find the plant by ID without using a lambda expression
                                 dynamic plantFound = null;
-                                foreach (var p in plants) {
-                                    if (p.Id == plantId) {
-                                        plantFound = p;
-                                        break;
+                                if (plants != null)
+                                {
+                                    foreach (var p in plants)
+                                    {
+                                        if (p.Id == plantId)
+                                        {
+                                            plantFound = p;
+                                            break;
+                                        }
                                     }
                                 }
                                 
-                                if (plantFound == null) {
+                                if (plantFound == null)
+                                {
                                     continue;
                                 }
                                 
                                 var records = data[monitoring.MonitoringID][plantId];
+                                var distinctAreas = new List<string>();
                                 
-                                foreach (var area in records.Select(r => r.Area).Distinct())
+                                // Get distinct areas manually
+                                foreach (var record in records)
                                 {
-                                    var areaRecords = records.Where(r => r.Area == area).ToList();
+                                    string recordArea = record.Area ?? string.Empty;
+                                    if (!distinctAreas.Contains(recordArea))
+                                    {
+                                        distinctAreas.Add(recordArea);
+                                    }
+                                }
+                                
+                                foreach (var area in distinctAreas)
+                                {
+                                    // Get records for this area manually
+                                    var areaRecords = new List<dynamic>();
+                                    foreach (var record in records)
+                                    {
+                                        string recordArea = record.Area ?? string.Empty;
+                                        if (recordArea == area)
+                                        {
+                                            areaRecords.Add(record);
+                                        }
+                                    }
                                     
                                     <tr>
                                         <td></td>
@@ -104,21 +131,47 @@
                                         {
                                             <td class="text-center">
                                                 @{
-                                                    var monthRecords = areaRecords.Where(r => 
-                                                        (r.QuoteDate.HasValue && r.QuoteDate.Value.Month == month + 1 && r.QuoteDate.Value.Year == currentYear) ||
-                                                        (r.WorkDate.HasValue && r.WorkDate.Value.Month == month + 1 && r.WorkDate.Value.Year == currentYear) ||
-                                                        (r.ExpDate.HasValue && r.ExpDate.Value.Month == month + 1 && r.ExpDate.Value.Year == currentYear)
-                                                    ).ToList();
+                                                    // Filter records for this month manually instead of using LINQ
+                                                    var monthRecords = new List<dynamic>();
+                                                    foreach (var record in areaRecords)
+                                                    {
+                                                        bool matchesMonth = false;
+                                                        
+                                                        // Check each date field
+                                                        if (record.QuoteDate != null && 
+                                                            record.QuoteDate.Month == month + 1 && 
+                                                            record.QuoteDate.Year == currentYear)
+                                                        {
+                                                            matchesMonth = true;
+                                                        }
+                                                        else if (record.WorkDate != null && 
+                                                                record.WorkDate.Month == month + 1 && 
+                                                                record.WorkDate.Year == currentYear)
+                                                        {
+                                                            matchesMonth = true;
+                                                        }
+                                                        else if (record.ExpDate != null && 
+                                                                record.ExpDate.Month == month + 1 && 
+                                                                record.ExpDate.Year == currentYear)
+                                                        {
+                                                            matchesMonth = true;
+                                                        }
+                                                        
+                                                        if (matchesMonth)
+                                                        {
+                                                            monthRecords.Add(record);
+                                                        }
+                                                    }
                                                     
                                                     foreach (var record in monthRecords)
                                                     {
                                                         string bgClass = "bg-secondary"; // Gray for quote stage
                                                         
-                                                        if (record.WorkCompleteDate.HasValue)
+                                                        if (record.WorkCompleteDate != null)
                                                         {
                                                             bgClass = "bg-success"; // Green for completed
                                                         }
-                                                        else if (record.WorkDate.HasValue)
+                                                        else if (record.WorkDate != null)
                                                         {
                                                             bgClass = "bg-warning"; // Yellow for in progress
                                                         }
@@ -166,13 +219,13 @@
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-2">
                     <div class="bg-warning" style="width: 24px; height: 24px;"></div>
-                    <div class="ml-2">WIP (Work In Progress)</div>
+                    <div class="ml-2">Raise ePR</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="d-flex align-items-center mb-2">
                     <div class="bg-success" style="width: 24px; height: 24px;"></div>
-                    <div class="ml-2">Perform work completed</div>
+                    <div class="ml-2">Performing Work</div>
                 </div>
             </div>
         </div>

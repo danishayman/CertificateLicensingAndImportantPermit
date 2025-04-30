@@ -248,6 +248,8 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="DATABASE\initialize.sql" />
+    <Content Include="DATABASE\upd_db.sql" />
+    <Content Include="DATABASE\CREATE_DB29042025.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

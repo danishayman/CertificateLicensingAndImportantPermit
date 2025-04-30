@@ -1,3 +1,4 @@
 {
-    "dotnet.preferCSharpExtension": true
+    "dotnet.preferCSharpExtension": true,
+    "iis.configDir": "${workspaceFolder}\\.vs\\CLIP\\config"
 }
