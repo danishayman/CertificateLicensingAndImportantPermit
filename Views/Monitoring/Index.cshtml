@@ -8,18 +8,17 @@
 
 <div class="row mb-3">
     <div class="col-md-12">
+        <div class="btn-group">
+            @Html.ActionLink("List View", "Index", "PlantMonitoring", null, new { @class = "btn btn-outline-primary" })
+            @Html.ActionLink("Schedule View", "Schedule", "PlantMonitoring", null, new { @class = "btn btn-outline-primary" })
+            @Html.ActionLink("Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-primary" })
+        </div>
         @if (User.IsInRole("Admin"))
         {
-            <a href="@Url.Action("Create")" class="btn btn-success">
+            <a href="@Url.Action("Create")" class="btn btn-success float-right">
                 <i class="fas fa-plus"></i> Add New Monitoring Type
             </a>
         }
-        <a href="@Url.Action("Index", "PlantMonitoring")" class="btn btn-primary">
-            View Monitoring Records
-        </a>
-        <a href="@Url.Action("Schedule", "PlantMonitoring")" class="btn btn-info">
-            <i class="fas fa-calendar-alt"></i> View Schedule
-        </a>
     </div>
 </div>
 
@@ -92,5 +91,5 @@
 
 <hr />
 <div>
-    @Html.ActionLink("Back to Monitoring Dashboard", "Index", "PlantMonitoring", null, new { @class = "btn btn-default" })
+    @Html.ActionLink("Back to Monitoring Dashboard", "Index", "PlantMonitoring", null, new { @class = "btn btn-secondary" })
 </div> 
