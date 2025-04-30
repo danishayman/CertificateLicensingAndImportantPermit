@@ -33,6 +33,6 @@ CREATE TABLE Monitoring (
 
 ALTER TABLE PlantMonitoring
 ADD 
-    QuoteDoc NVARCHAR(50) NULL,
-    ePRDoc NVARCHAR(50) NULL,
-    WorkDoc NVARCHAR(50) NULL;
+    QuoteDoc NVARCHAR(MAX) NULL,
+    ePRDoc NVARCHAR(MAX)NULL,
+    WorkDoc NVARCHAR(MAX) NULL;
