@@ -1,33 +1,215 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model IEnumerable<CLIP.Controllers.HomeController.PlantMachineCount>
+@{
+    ViewBag.Title = "CLIP Dashboard";
 }
 
 <main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4 mb-4 text-center">DASHBOARD</h1>
+        
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-bar-chart-fill me-1"></i>
+                        Machine Count by Plant
+                    </div>
+                    <div class="card-body">
+                        <canvas id="plantMachineChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-pie-chart-fill me-1"></i>
+                        Machine Status Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusPieChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+
+@section scripts {
+    <script>
+        // Register ChartDataLabels plugin
+        Chart.register(ChartDataLabels);
+        
+        // Data from the model - original unordered data
+        var originalPlantNames = [@Html.Raw(string.Join(",", Model.Select(m => "'" + m.PlantName + "'")))];
+        var originalMachineCounts = [@string.Join(",", Model.Select(m => m.MachineCount))];
+        var originalActiveData = [@string.Join(",", Model.Select(m => m.ActiveCount))];
+        var originalExpiringSoonData = [@string.Join(",", Model.Select(m => m.ExpiringSoonCount))];
+        var originalExpiredData = [@string.Join(",", Model.Select(m => m.ExpiredCount))];
+        
+        // Define custom order
+        var customOrder = ["Plant 1", "Plant 3", "Plant 5", "Plant 13", "Plant 55", "Plant 21", "Plant 34"];
+        
+        // Reorder data according to custom order
+        var plantNames = [];
+        var machineCounts = [];
+        var activeData = [];
+        var expiringSoonData = [];
+        var expiredData = [];
+        
+        // Map original data to the custom order
+        customOrder.forEach(function(plantName) {
+            var index = originalPlantNames.indexOf(plantName);
+            if (index !== -1) {
+                plantNames.push(originalPlantNames[index]);
+                machineCounts.push(originalMachineCounts[index]);
+                activeData.push(originalActiveData[index]);
+                expiringSoonData.push(originalExpiringSoonData[index]);
+                expiredData.push(originalExpiredData[index]);
+            }
+        });
+        
+        // Total counts for the pie chart
+        var totalActive = @Model.Sum(m => m.ActiveCount);
+        var totalExpiringSoon = @Model.Sum(m => m.ExpiringSoonCount);
+        var totalExpired = @Model.Sum(m => m.ExpiredCount);
+        
+        // Set up chart colors
+        var activeColor = 'rgba(40, 167, 69, 0.7)';
+        var expiringSoonColor = 'rgba(255, 193, 7, 0.7)';
+        var expiredColor = 'rgba(220, 53, 69, 0.7)';
+        
+        // Create bar chart showing machine counts by plant
+        var plantMachineCtx = document.getElementById('plantMachineChart').getContext('2d');
+        var plantMachineChart = new Chart(plantMachineCtx, {
+            type: 'bar',
+            data: {
+                labels: plantNames,
+                datasets: [
+                    {
+                        label: 'Active',
+                        data: activeData,
+                        backgroundColor: activeColor,
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expiring Soon',
+                        data: expiringSoonData,
+                        backgroundColor: expiringSoonColor,
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expired',
+                        data: expiredData,
+                        backgroundColor: expiredColor,
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Certificate of Fitness by Plant'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            footer: function(tooltipItems) {
+                                let total = 0;
+                                tooltipItems.forEach(function(tooltipItem) {
+                                    const index = tooltipItem.dataIndex;
+                                    // Get value from all datasets for this index
+                                    plantMachineChart.data.datasets.forEach(function(dataset) {
+                                        total += dataset.data[index] || 0;
+                                    });
+                                });
+                                return 'Total: ' + total;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#000',
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: function(value, context) {
+                            // Only show labels for the last dataset in stack
+                            if (context.datasetIndex !== context.chart.data.datasets.length - 1) {
+                                return null;
+                            }
+                            
+                            // Calculate total from all datasets for this index
+                            const index = context.dataIndex;
+                            let total = 0;
+                            context.chart.data.datasets.forEach(function(dataset) {
+                                total += dataset.data[index] || 0;
+                            });
+                            return total;
+                        },
+                        anchor: 'end',
+                        align: 'top',
+                        offset: 0
+                    }
+                }
+            }
+        });
+        
+        // Create pie chart showing status distribution
+        var statusPieCtx = document.getElementById('statusPieChart').getContext('2d');
+        var statusPieChart = new Chart(statusPieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Active', 'Expiring Soon', 'Expired'],
+                datasets: [{
+                    data: [totalActive, totalExpiringSoon, totalExpired],
+                    backgroundColor: [activeColor, expiringSoonColor, expiredColor],
+                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(255, 193, 7, 1)', 'rgba(220, 53, 69, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Certificate of Fitness Status Distribution'
+                    },
+                    datalabels: {
+                        color: '#000',
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: function(value, context) {
+                            return value > 0 ? value : '';
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}
