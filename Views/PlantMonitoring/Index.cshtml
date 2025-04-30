@@ -94,11 +94,18 @@
                             int freq = item.Monitoring.MonitoringFreq;
                             
                             if (freq == 1) { frequencyText = "Monthly"; }
+                            else if (freq == 2) { frequencyText = "Bi-Monthly"; }
                             else if (freq == 3) { frequencyText = "Quarterly"; }
+                            else if (freq == 4) { frequencyText = "4 Months"; }
                             else if (freq == 6) { frequencyText = "Half-Yearly"; }
+                            else if (freq == 8) { frequencyText = "8 Months"; }
                             else if (freq == 12) { frequencyText = "Yearly"; }
+                            else if (freq == 15) { frequencyText = "15 Months"; }
+                            else if (freq == 18) { frequencyText = "18 Months"; }
                             else if (freq == 24) { frequencyText = "Every 2 Years"; }
                             else if (freq == 36) { frequencyText = "Every 3 Years"; }
+                            else if (freq == 48) { frequencyText = "Every 4 Years"; }
+                            else if (freq == 60) { frequencyText = "Every 5 Years"; }
                             else { frequencyText = $"Every {freq} months"; }
                         }
                         @frequencyText

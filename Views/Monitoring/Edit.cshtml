@@ -34,7 +34,49 @@
         <div class="form-group">
             @Html.LabelFor(model => model.MonitoringFreq, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.MonitoringFreq, ViewBag.FrequencyList as SelectList, new { @class = "form-control" })
+                @{
+                    // Check if current value is in the predefined list
+                    bool isCustomValue = true;
+                    int[] standardValues = new int[] { 1, 3, 6, 12, 24, 36 };
+                    
+                    if (standardValues.Contains(Model.MonitoringFreq))
+                    {
+                        isCustomValue = false;
+                        @Html.DropDownListFor(model => model.MonitoringFreq, ViewBag.FrequencyList as SelectList, new { @class = "form-control", id = "frequencyDropdown" })
+                    }
+                    else
+                    {
+                        // Add the current value to dropdown options
+                        var items = ViewBag.FrequencyList as SelectList;
+                        var itemsList = items.Items.Cast<SelectListItem>().ToList();
+                        
+                        // Add the current custom value
+                        itemsList.Add(new SelectListItem
+                        {
+                            Text = "Current: Every " + Model.MonitoringFreq + " months",
+                            Value = Model.MonitoringFreq.ToString(),
+                            Selected = true
+                        });
+                        
+                        @Html.DropDownList("MonitoringFreq", new SelectList(itemsList, "Value", "Text"), new { @class = "form-control", id = "frequencyDropdown" })
+                    }
+                }
+                
+                <div id="customFrequencyContainer" style="display: none; margin-top: 10px;">
+                    <div class="input-group">
+                        <input type="number" id="customFrequency" class="form-control" min="1" max="120" placeholder="Enter number of months" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">months</span>
+                        </div>
+                    </div>
+                    <small class="text-muted">Enter a value between 1 and 120 months (10 years)</small>
+                    <div id="customFrequencyNotice" class="alert alert-info mt-2" style="display: none;">
+                        <i class="fas fa-info-circle"></i> Custom frequency will be saved as <span id="customFrequencyValue"></span> months.
+                    </div>
+                    <div id="customFrequencyError" class="alert alert-danger mt-2" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i> Please enter a valid frequency between 1 and 120 months.
+                    </div>
+                </div>
                 @Html.ValidationMessageFor(model => model.MonitoringFreq, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -50,4 +92,55 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Handle custom frequency dropdown
+            $('#frequencyDropdown').change(function () {
+                if ($(this).val() === 'custom') {
+                    $('#customFrequencyContainer').show();
+                    $('#customFrequencyError').hide();
+                } else {
+                    $('#customFrequencyContainer').hide();
+                    $('#customFrequencyError').hide();
+                    $('#customFrequencyNotice').hide();
+                }
+            });
+
+            // Validate custom frequency as user types
+            $('#customFrequency').on('input', function() {
+                var customValue = $(this).val();
+                
+                if (customValue && !isNaN(customValue) && parseInt(customValue) >= 1 && parseInt(customValue) <= 120) {
+                    $('#customFrequencyValue').text(customValue);
+                    $('#customFrequencyNotice').show();
+                    $('#customFrequencyError').hide();
+                } else {
+                    $('#customFrequencyNotice').hide();
+                    if (customValue) { // Only show error if something is entered
+                        $('#customFrequencyError').show();
+                    } else {
+                        $('#customFrequencyError').hide();
+                    }
+                }
+            });
+
+            // Set the custom value when submitting the form
+            $('form').submit(function (e) {
+                if ($('#frequencyDropdown').val() === 'custom') {
+                    var customValue = $('#customFrequency').val();
+                    if (customValue && !isNaN(customValue) && parseInt(customValue) >= 1 && parseInt(customValue) <= 120) {
+                        $('#frequencyDropdown').append($('<option>', {
+                            value: customValue,
+                            text: customValue
+                        }));
+                        $('#frequencyDropdown').val(customValue);
+                    } else {
+                        e.preventDefault();
+                        $('#customFrequencyError').show();
+                        $('#customFrequency').focus();
+                    }
+                }
+            });
+        });
+    </script>
 } 
