@@ -91,6 +91,20 @@
                     <dd class="col-sm-6">
                         @(string.IsNullOrEmpty(Model.QuoteUserAssign) ? "Not assigned" : Model.QuoteUserAssign)
                     </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.QuoteDoc))
+                        {
+                            <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </dd>
                 </dl>
             </div>
         </div>
@@ -122,6 +136,20 @@
                     <dd class="col-sm-6">
                         @(string.IsNullOrEmpty(Model.EprUserAssign) ? "Not assigned" : Model.EprUserAssign)
                     </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.EprDoc))
+                        {
+                            <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </dd>
                 </dl>
             </div>
         </div>
@@ -152,6 +180,20 @@
                     <dt class="col-sm-6">Assigned To:</dt>
                     <dd class="col-sm-6">
                         @(string.IsNullOrEmpty(Model.WorkUserAssign) ? "Not assigned" : Model.WorkUserAssign)
+                    </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.WorkDoc))
+                        {
+                            <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
                     </dd>
                 </dl>
             </div>

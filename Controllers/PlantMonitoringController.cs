@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using CLIP.Models;
 using System.Globalization;
+using System.IO;
 
 namespace CLIP.Controllers
 {
@@ -286,35 +287,105 @@ namespace CLIP.Controllers
         // POST: PlantMonitoring/UpdateStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateStatus(int id, PlantMonitoring model)
+        public ActionResult UpdateStatus(int id, PlantMonitoring model, HttpPostedFileBase quoteDocument, HttpPostedFileBase eprDocument, HttpPostedFileBase workDocument)
         {
-            var plantMonitoring = db.PlantMonitorings.Find(id);
-            if (plantMonitoring == null)
+            if (ModelState.IsValid)
+            {
+                var plantMonitoring = db.PlantMonitorings.Find(id);
+                if (plantMonitoring == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Update properties
+                plantMonitoring.ExpDate = model.ExpDate;
+                plantMonitoring.Remarks = model.Remarks;
+                
+                // Quotation Phase
+                plantMonitoring.QuoteDate = model.QuoteDate;
+                plantMonitoring.QuoteSubmitDate = model.QuoteSubmitDate;
+                plantMonitoring.QuoteCompleteDate = model.QuoteCompleteDate;
+                plantMonitoring.QuoteUserAssign = model.QuoteUserAssign;
+                
+                // Preparation Phase
+                plantMonitoring.EprDate = model.EprDate;
+                plantMonitoring.EprSubmitDate = model.EprSubmitDate;
+                plantMonitoring.EprCompleteDate = model.EprCompleteDate;
+                plantMonitoring.EprUserAssign = model.EprUserAssign;
+                
+                // Work Execution Phase
+                plantMonitoring.WorkDate = model.WorkDate;
+                plantMonitoring.WorkSubmitDate = model.WorkSubmitDate;
+                plantMonitoring.WorkCompleteDate = model.WorkCompleteDate;
+                plantMonitoring.WorkUserAssign = model.WorkUserAssign;
+
+                // Handle file uploads
+                if (quoteDocument != null && quoteDocument.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileName(quoteDocument.FileName);
+                    string uniqueFileName = $"Quote_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                    string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                    
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    
+                    quoteDocument.SaveAs(path);
+                    plantMonitoring.QuoteDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+                }
+
+                if (eprDocument != null && eprDocument.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileName(eprDocument.FileName);
+                    string uniqueFileName = $"EPR_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                    string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                    
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    
+                    eprDocument.SaveAs(path);
+                    plantMonitoring.EprDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+                }
+
+                if (workDocument != null && workDocument.ContentLength > 0)
+                {
+                    string fileName = Path.GetFileName(workDocument.FileName);
+                    string uniqueFileName = $"Work_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                    string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                    
+                    // Ensure directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    
+                    workDocument.SaveAs(path);
+                    plantMonitoring.WorkDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+                }
+
+                db.Entry(plantMonitoring).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return RedirectToAction("Details", new { id = plantMonitoring.Id });
+            }
+
+            // If we got this far, something failed, redisplay form
+            var plantMonitoringFromDb = db.PlantMonitorings
+                .Include(p => p.Plant)
+                .Include(p => p.Monitoring)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (plantMonitoringFromDb == null)
             {
                 return HttpNotFound();
             }
 
-            // Update status fields
-            plantMonitoring.QuoteDate = model.QuoteDate;
-            plantMonitoring.QuoteSubmitDate = model.QuoteSubmitDate;
-            plantMonitoring.QuoteCompleteDate = model.QuoteCompleteDate;
-            plantMonitoring.QuoteUserAssign = model.QuoteUserAssign;
+            // Copy document paths back from DB entity to model to preserve them
+            model.QuoteDoc = plantMonitoringFromDb.QuoteDoc;
+            model.EprDoc = plantMonitoringFromDb.EprDoc;
+            model.WorkDoc = plantMonitoringFromDb.WorkDoc;
             
-            plantMonitoring.EprDate = model.EprDate;
-            plantMonitoring.EprSubmitDate = model.EprSubmitDate;
-            plantMonitoring.EprCompleteDate = model.EprCompleteDate;
-            plantMonitoring.EprUserAssign = model.EprUserAssign;
-            
-            plantMonitoring.WorkDate = model.WorkDate;
-            plantMonitoring.WorkSubmitDate = model.WorkSubmitDate;
-            plantMonitoring.WorkCompleteDate = model.WorkCompleteDate;
-            plantMonitoring.WorkUserAssign = model.WorkUserAssign;
-            
-            plantMonitoring.ExpDate = model.ExpDate;
-            plantMonitoring.Remarks = model.Remarks;
+            // Set navigation properties
+            model.Plant = plantMonitoringFromDb.Plant;
+            model.Monitoring = plantMonitoringFromDb.Monitoring;
 
-            db.SaveChanges();
-            return RedirectToAction("Details", new { id = id });
+            return View(model);
         }
 
         protected override void Dispose(bool disposing)

@@ -29,3 +29,10 @@ CREATE TABLE Monitoring (
     MonitoringCategory NVARCHAR(100),
     MonitoringFreq NVARCHAR(50)
 );
+
+
+ALTER TABLE PlantMonitoring
+ADD 
+    QuoteDoc NVARCHAR(50) NULL,
+    ePRDoc NVARCHAR(50) NULL,
+    WorkDoc NVARCHAR(50) NULL;

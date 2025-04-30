@@ -44,6 +44,10 @@ namespace CLIP.Models
         [Display(Name = "Quotation Assigned To")]
         public string QuoteUserAssign { get; set; }
 
+        [StringLength(500)]
+        [Display(Name = "Quotation Document")]
+        public string QuoteDoc { get; set; }
+
         // Preparation Phase
         [Display(Name = "Preparation Date")]
         [DataType(DataType.Date)]
@@ -64,6 +68,10 @@ namespace CLIP.Models
         [Display(Name = "Preparation Assigned To")]
         public string EprUserAssign { get; set; }
 
+        [StringLength(500)]
+        [Display(Name = "ePR Document")]
+        public string EprDoc { get; set; }
+
         // Work Execution Phase
         [Display(Name = "Work Date")]
         [DataType(DataType.Date)]
@@ -83,6 +91,10 @@ namespace CLIP.Models
         [StringLength(100)]
         [Display(Name = "Work Assigned To")]
         public string WorkUserAssign { get; set; }
+
+        [StringLength(500)]
+        [Display(Name = "Work Document")]
+        public string WorkDoc { get; set; }
 
         [Display(Name = "Remarks")]
         public string Remarks { get; set; }

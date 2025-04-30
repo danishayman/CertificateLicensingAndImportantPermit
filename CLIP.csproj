@@ -223,6 +223,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Monitoring.cs" />
+    <Compile Include="Models\MonitoringDocument.cs" />
     <Compile Include="Models\Plant.cs" />
     <Compile Include="Models\PlantMonitoring.cs" />
     <Compile Include="Models\UserCompetency.cs" />
@@ -271,6 +272,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Uploads\Monitoring\Quote_1_20250430141133_MONTHLY_INSPECTION.txt" />
+    <Content Include="Uploads\Monitoring\Quote_1_20250430141825_MONTHLY_INSPECTION.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -332,6 +335,8 @@
     <Content Include="Views\PlantMonitoring\Index.cshtml" />
     <Content Include="Views\PlantMonitoring\Schedule.cshtml" />
     <Content Include="Views\PlantMonitoring\UpdateStatus.cshtml" />
+    <Content Include="Views\PlantMonitoring\DeleteDocument.cshtml" />
+    <Content Include="Views\PlantMonitoring\Documents.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
