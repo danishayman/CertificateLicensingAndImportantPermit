@@ -6,6 +6,7 @@
     var data = ViewBag.Data;
     var currentYear = ViewBag.CurrentYear;
     var monthNames = ViewBag.MonthNames;
+    var isAdmin = ViewBag.IsAdmin;
 }
 
 <h2>Monitoring Schedule</h2>
@@ -15,11 +16,14 @@
         <div class="btn-group">
             @Html.ActionLink("List View", "Index", null, new { @class = "btn btn-outline-primary" })
             @Html.ActionLink("Schedule View", "Schedule", null, new { @class = "btn btn-primary" })
-            @Html.ActionLink("Manage Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
+            @Html.ActionLink("Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
         </div>
-        <a href="@Url.Action("Create")" class="btn btn-success float-right">
-            <i class="fas fa-plus"></i> Add New Record
-        </a>
+        @if (isAdmin)
+        {
+            <a href="@Url.Action("Create")" class="btn btn-success float-right">
+                <i class="fas fa-plus"></i> Add New Record
+            </a>
+        }
     </div>
 </div>
 

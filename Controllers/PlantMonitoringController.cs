@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using CLIP.Models;
 using System.Globalization;
 using System.IO;
+using Microsoft.AspNet.Identity;
 
 namespace CLIP.Controllers
 {
@@ -25,6 +26,18 @@ namespace CLIP.Controllers
                 .Include(p => p.Monitoring)
                 .AsQueryable();
 
+            // Filter by user's plants if user is not admin
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userPlantIds = db.UserPlants
+                    .Where(up => up.UserId == userId)
+                    .Select(up => up.PlantId)
+                    .ToList();
+                
+                query = query.Where(p => userPlantIds.Contains(p.PlantID));
+            }
+            
             // Apply filters if provided
             if (!string.IsNullOrEmpty(category))
             {
@@ -75,7 +88,21 @@ namespace CLIP.Controllers
             }
 
             // Load plants and monitoring categories for filtering
-            ViewBag.Plants = db.Plants.OrderBy(p => p.PlantName).ToList();
+            // If user is admin, get all plants, otherwise get only the user's plants
+            if (User.IsInRole("Admin"))
+            {
+                ViewBag.Plants = db.Plants.OrderBy(p => p.PlantName).ToList();
+            }
+            else
+            {
+                var userId = User.Identity.GetUserId();
+                ViewBag.Plants = db.UserPlants
+                    .Where(up => up.UserId == userId)
+                    .Select(up => up.Plant)
+                    .OrderBy(p => p.PlantName)
+                    .ToList();
+            }
+            
             ViewBag.Categories = db.Monitorings
                 .Select(m => m.MonitoringCategory)
                 .Distinct()
@@ -110,14 +137,40 @@ namespace CLIP.Controllers
                 .ThenBy(m => m.MonitoringName)
                 .ToList();
 
-            // Get all plants
-            var plants = db.Plants.OrderBy(p => p.PlantName).ToList();
+            // Get plants based on user role
+            var plants = new List<Plant>();
+            if (User.IsInRole("Admin"))
+            {
+                plants = db.Plants.OrderBy(p => p.PlantName).ToList();
+            }
+            else
+            {
+                var userId = User.Identity.GetUserId();
+                plants = db.UserPlants
+                    .Where(up => up.UserId == userId)
+                    .Select(up => up.Plant)
+                    .OrderBy(p => p.PlantName)
+                    .ToList();
+            }
 
-            // Get all plant monitoring records
-            var plantMonitorings = db.PlantMonitorings
+            // Get plant monitoring records based on user role
+            var plantMonitoringsQuery = db.PlantMonitorings
                 .Include(p => p.Plant)
                 .Include(p => p.Monitoring)
-                .ToList();
+                .AsQueryable();
+
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userPlantIds = db.UserPlants
+                    .Where(up => up.UserId == userId)
+                    .Select(up => up.PlantId)
+                    .ToList();
+                
+                plantMonitoringsQuery = plantMonitoringsQuery.Where(p => userPlantIds.Contains(p.PlantID));
+            }
+
+            var plantMonitorings = plantMonitoringsQuery.ToList();
 
             // Create a dictionary to group by monitoring type and plant
             var currentYear = DateTime.Now.Year;
@@ -154,6 +207,7 @@ namespace CLIP.Controllers
             ViewBag.Data = data;
             ViewBag.CurrentYear = currentYear;
             ViewBag.MonthNames = CultureInfo.CurrentCulture.DateTimeFormat.MonthNames;
+            ViewBag.IsAdmin = User.IsInRole("Admin");
 
             return View();
         }
@@ -174,10 +228,26 @@ namespace CLIP.Controllers
             {
                 return HttpNotFound();
             }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            ViewBag.IsAdmin = User.IsInRole("Admin");
             return View(plantMonitoring);
         }
 
         // GET: PlantMonitoring/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             ViewBag.PlantID = new SelectList(db.Plants.OrderBy(p => p.PlantName), "Id", "PlantName");
@@ -188,6 +258,7 @@ namespace CLIP.Controllers
         // POST: PlantMonitoring/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Create(PlantMonitoring plantMonitoring)
         {
             if (ModelState.IsValid)
@@ -203,6 +274,7 @@ namespace CLIP.Controllers
         }
 
         // GET: PlantMonitoring/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -222,6 +294,7 @@ namespace CLIP.Controllers
         // POST: PlantMonitoring/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(PlantMonitoring plantMonitoring)
         {
             if (ModelState.IsValid)
@@ -236,6 +309,7 @@ namespace CLIP.Controllers
         }
 
         // GET: PlantMonitoring/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -257,6 +331,7 @@ namespace CLIP.Controllers
         // POST: PlantMonitoring/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
             PlantMonitoring plantMonitoring = db.PlantMonitorings.Find(id);
@@ -281,6 +356,21 @@ namespace CLIP.Controllers
             {
                 return HttpNotFound();
             }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            ViewBag.IsAdmin = User.IsInRole("Admin");
             return View(plantMonitoring);
         }
 
@@ -295,6 +385,19 @@ namespace CLIP.Controllers
                 if (plantMonitoring == null)
                 {
                     return HttpNotFound();
+                }
+
+                // Check if user has access to this plant monitoring record
+                if (!User.IsInRole("Admin"))
+                {
+                    var userId = User.Identity.GetUserId();
+                    var userHasAccessToPlant = db.UserPlants
+                        .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                    
+                    if (!userHasAccessToPlant)
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    }
                 }
 
                 // Update properties
@@ -385,6 +488,7 @@ namespace CLIP.Controllers
             model.Plant = plantMonitoringFromDb.Plant;
             model.Monitoring = plantMonitoringFromDb.Monitoring;
 
+            ViewBag.IsAdmin = User.IsInRole("Admin");
             return View(model);
         }
 
