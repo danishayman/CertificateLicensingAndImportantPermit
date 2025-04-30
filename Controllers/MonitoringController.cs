@@ -145,15 +145,16 @@ namespace CLIP.Controllers
             };
             ViewBag.CategoryList = new SelectList(categoryList, "Value", "Text");
             
-            // Frequencies
+            // Frequencies in months
             var frequencyList = new List<SelectListItem>
             {
                 new SelectListItem { Text = "-- Select Frequency --", Value = "" },
-                new SelectListItem { Text = "Yearly", Value = "Yearly" },
-                new SelectListItem { Text = "Every 3 Years", Value = "Every 3 Years" },
-                new SelectListItem { Text = "Half-Yearly", Value = "Half-Yearly" },
-                new SelectListItem { Text = "Quarterly", Value = "Quarterly" },
-                new SelectListItem { Text = "Monthly", Value = "Monthly" }
+                new SelectListItem { Text = "Monthly (1)", Value = "1" },
+                new SelectListItem { Text = "Quarterly (3)", Value = "3" },
+                new SelectListItem { Text = "Half-Yearly (6)", Value = "6" },
+                new SelectListItem { Text = "Yearly (12)", Value = "12" },
+                new SelectListItem { Text = "Every 2 Years (24)", Value = "24" },
+                new SelectListItem { Text = "Every 3 Years (36)", Value = "36" }
             };
             ViewBag.FrequencyList = new SelectList(frequencyList, "Value", "Text");
         }
