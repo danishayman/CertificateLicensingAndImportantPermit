@@ -139,6 +139,14 @@ namespace CLIP.Controllers
                 // Handle PDF document upload
                 if (pdfDocument != null && pdfDocument.ContentLength > 0)
                 {
+                    // Check file size (20MB limit)
+                    if (pdfDocument.ContentLength > 20 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("", "The PDF document exceeds the maximum file size of 20MB.");
+                        ViewBag.PlantId = new SelectList(db.Plants, "Id", "PlantName", certificateOfFitness.PlantId);
+                        return View(certificateOfFitness);
+                    }
+
                     // Create folder if it doesn't exist
                     string uploadFolder = Server.MapPath("~/Views/CertificateOfFitness/Uploads");
                     if (!Directory.Exists(uploadFolder))
@@ -207,6 +215,14 @@ namespace CLIP.Controllers
                 // Handle PDF document upload
                 if (pdfDocument != null && pdfDocument.ContentLength > 0)
                 {
+                    // Check file size (20MB limit)
+                    if (pdfDocument.ContentLength > 20 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("", "The PDF document exceeds the maximum file size of 20MB.");
+                        ViewBag.PlantId = new SelectList(db.Plants, "Id", "PlantName", certificateOfFitness.PlantId);
+                        return View(certificateOfFitness);
+                    }
+
                     // Create folder if it doesn't exist
                     string uploadFolder = Server.MapPath("~/Views/CertificateOfFitness/Uploads");
                     if (!Directory.Exists(uploadFolder))

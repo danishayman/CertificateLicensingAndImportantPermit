@@ -425,6 +425,24 @@ namespace CLIP.Controllers
                 // Handle file uploads
                 if (quoteDocument != null && quoteDocument.ContentLength > 0)
                 {
+                    // Check file size (20MB limit)
+                    if (quoteDocument.ContentLength > 20 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("", "The quote document exceeds the maximum file size of 20MB.");
+                        var quoteDocumentValidationEntity = db.PlantMonitorings
+                            .Include(p => p.Plant)
+                            .Include(p => p.Monitoring)
+                            .FirstOrDefault(p => p.Id == id);
+                        
+                        if (quoteDocumentValidationEntity != null)
+                        {
+                            model.Plant = quoteDocumentValidationEntity.Plant;
+                            model.Monitoring = quoteDocumentValidationEntity.Monitoring;
+                        }
+                        ViewBag.IsAdmin = User.IsInRole("Admin");
+                        return View(model);
+                    }
+
                     string fileName = Path.GetFileName(quoteDocument.FileName);
                     string uniqueFileName = $"Quote_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
                     string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
@@ -438,6 +456,24 @@ namespace CLIP.Controllers
 
                 if (eprDocument != null && eprDocument.ContentLength > 0)
                 {
+                    // Check file size (20MB limit)
+                    if (eprDocument.ContentLength > 20 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("", "The EPR document exceeds the maximum file size of 20MB.");
+                        var eprDocumentValidationEntity = db.PlantMonitorings
+                            .Include(p => p.Plant)
+                            .Include(p => p.Monitoring)
+                            .FirstOrDefault(p => p.Id == id);
+                        
+                        if (eprDocumentValidationEntity != null)
+                        {
+                            model.Plant = eprDocumentValidationEntity.Plant;
+                            model.Monitoring = eprDocumentValidationEntity.Monitoring;
+                        }
+                        ViewBag.IsAdmin = User.IsInRole("Admin");
+                        return View(model);
+                    }
+
                     string fileName = Path.GetFileName(eprDocument.FileName);
                     string uniqueFileName = $"EPR_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
                     string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
@@ -451,6 +487,24 @@ namespace CLIP.Controllers
 
                 if (workDocument != null && workDocument.ContentLength > 0)
                 {
+                    // Check file size (20MB limit)
+                    if (workDocument.ContentLength > 20 * 1024 * 1024)
+                    {
+                        ModelState.AddModelError("", "The work document exceeds the maximum file size of 20MB.");
+                        var workDocumentValidationEntity = db.PlantMonitorings
+                            .Include(p => p.Plant)
+                            .Include(p => p.Monitoring)
+                            .FirstOrDefault(p => p.Id == id);
+                        
+                        if (workDocumentValidationEntity != null)
+                        {
+                            model.Plant = workDocumentValidationEntity.Plant;
+                            model.Monitoring = workDocumentValidationEntity.Monitoring;
+                        }
+                        ViewBag.IsAdmin = User.IsInRole("Admin");
+                        return View(model);
+                    }
+
                     string fileName = Path.GetFileName(workDocument.FileName);
                     string uniqueFileName = $"Work_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
                     string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
