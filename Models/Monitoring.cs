@@ -21,13 +21,14 @@ namespace CLIP.Models
         [Display(Name = "Monitoring Name")]
         public string MonitoringName { get; set; }
 
-        [StringLength(100)]
+        [Required]
+        [StringLength(50)]
         [Display(Name = "Category")]
         public string MonitoringCategory { get; set; }
 
-        [StringLength(50)]
-        [Display(Name = "Frequency")]
-        public string MonitoringFreq { get; set; }
+        [Required]
+        [Display(Name = "Frequency (Months)")]
+        public int MonitoringFreq { get; set; }
 
         // Navigation property
         public virtual ICollection<PlantMonitoring> PlantMonitorings { get; set; }

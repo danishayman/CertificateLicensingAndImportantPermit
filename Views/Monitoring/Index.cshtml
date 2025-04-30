@@ -53,7 +53,21 @@
                 <tr>
                     <td>@Html.DisplayFor(modelItem => item.MonitoringName)</td>
                     <td>@Html.DisplayFor(modelItem => item.MonitoringCategory)</td>
-                    <td>@Html.DisplayFor(modelItem => item.MonitoringFreq)</td>
+                    <td>
+                        @{
+                            string frequencyText = "Unknown";
+                            int freq = item.MonitoringFreq;
+                            
+                            if (freq == 1) { frequencyText = "Monthly"; }
+                            else if (freq == 3) { frequencyText = "Quarterly"; }
+                            else if (freq == 6) { frequencyText = "Half-Yearly"; }
+                            else if (freq == 12) { frequencyText = "Yearly"; }
+                            else if (freq == 24) { frequencyText = "Every 2 Years"; }
+                            else if (freq == 36) { frequencyText = "Every 3 Years"; }
+                            else { frequencyText = $"Every {freq} months"; }
+                        }
+                        @frequencyText
+                    </td>
                     <td>
                         <div class="btn-group">
                             <a href="@Url.Action("Details", new { id = item.MonitoringID })" class="btn btn-sm btn-info">
