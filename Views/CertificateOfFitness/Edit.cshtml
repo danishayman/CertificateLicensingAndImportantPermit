@@ -130,20 +130,21 @@
                 <div class="form-group row mb-3">
                     <label class="col-md-2 col-form-label">PDF Document</label>
                     <div class="col-md-10">
+                        <div class="input-group">
+                            <input type="file" name="pdfDocument" class="form-control file-upload" accept=".pdf" data-max-size="20" />
+                            <span class="input-group-text" data-bs-toggle="tooltip" title="Upload a new PDF document of the certificate (Max size: 20MB)">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </div>
+                        <small class="form-text text-muted">Max file size: 20MB</small>
                         @if (!string.IsNullOrEmpty(Model.DocumentPath))
                         {
-                            <div class="mb-2">
-                                <a href="@Url.Action("ViewDocument", "CertificateOfFitness", new { id = Model.Id })" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <div class="mt-2">
+                                <a href="@Url.Content(Model.DocumentPath)" target="_blank" class="btn btn-sm btn-info">
                                     <i class="bi bi-file-earmark-pdf"></i> View Current Document
                                 </a>
                             </div>
                         }
-                        <div class="input-group">
-                            <input type="file" name="pdfDocument" class="form-control" accept=".pdf" />
-                            <span class="input-group-text" data-bs-toggle="tooltip" title="Upload a new PDF document to replace the current one (leave empty to keep the current document)">
-                                <i class="bi bi-info-circle"></i>
-                            </span>
-                        </div>
                     </div>
                 </div>
 
@@ -167,6 +168,41 @@
     <script>
         $(function () {
             $('[data-bs-toggle="tooltip"]').tooltip();
+            
+            // File size validation
+            $('.file-upload').on('change', function() {
+                var fileInput = $(this)[0];
+                var maxSize = parseInt($(this).data('max-size')) * 1024 * 1024; // Convert MB to bytes
+                
+                if (fileInput.files.length > 0) {
+                    var fileSize = fileInput.files[0].size; // in bytes
+                    if (fileSize > maxSize) {
+                        alert('File size exceeds the limit of 20MB. Please choose a smaller file.');
+                        $(this).val(''); // Clear the file input
+                        return false;
+                    }
+                }
+            });
+
+            // Form submission validation
+            $('form').on('submit', function(e) {
+                var isValid = true;
+                $('.file-upload').each(function() {
+                    var fileInput = $(this)[0];
+                    if (fileInput.files.length > 0) {
+                        var maxSize = parseInt($(this).data('max-size')) * 1024 * 1024;
+                        var fileSize = fileInput.files[0].size;
+                        if (fileSize > maxSize) {
+                            alert('File size exceeds the limit of 20MB. Please choose a smaller file.');
+                            $(this).val('');
+                            isValid = false;
+                            return false;
+                        }
+                    }
+                });
+                
+                return isValid;
+            });
         });
     </script>
 } 
