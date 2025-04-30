@@ -9,10 +9,61 @@ namespace CLIP.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+        
         [Authorize]
         public ActionResult Index()
         {
-            return View();
+            var plantCounts = GetPlantMachineCounts();
+            return View(plantCounts);
+        }
+
+        // Class to hold plant/machine data for the dashboard
+        public class PlantMachineCount
+        {
+            public string PlantName { get; set; }
+            public int MachineCount { get; set; }
+            public int ActiveCount { get; set; }
+            public int ExpiringSoonCount { get; set; }
+            public int ExpiredCount { get; set; }
+        }
+
+        // Helper method to get plant machine counts for dashboards
+        private List<PlantMachineCount> GetPlantMachineCounts()
+        {
+            // Get current date
+            var currentDate = DateTime.Now;
+            // Date 30 days from now for "expiring soon" calculation
+            var expiringDate = currentDate.AddDays(30);
+            
+            // Get all plants
+            var plants = db.Plants.ToList();
+            
+            // Get counts for each plant
+            var plantCounts = new List<PlantMachineCount>();
+            
+            foreach (var plant in plants)
+            {
+                // Get certificates for this plant
+                var certificates = db.CertificateOfFitness.Where(c => c.PlantId == plant.Id).ToList();
+                
+                // Count machines by status
+                var activeCount = certificates.Count(c => c.ExpiryDate > expiringDate);
+                var expiringSoonCount = certificates.Count(c => c.ExpiryDate <= expiringDate && c.ExpiryDate >= currentDate);
+                var expiredCount = certificates.Count(c => c.ExpiryDate < currentDate);
+                
+                // Add to results
+                plantCounts.Add(new PlantMachineCount
+                {
+                    PlantName = plant.PlantName,
+                    MachineCount = certificates.Count,
+                    ActiveCount = activeCount,
+                    ExpiringSoonCount = expiringSoonCount,
+                    ExpiredCount = expiredCount
+                });
+            }
+            
+            return plantCounts;
         }
 
         [Authorize]
@@ -38,7 +89,10 @@ namespace CLIP.Controllers
             {
                 return RedirectToAction("Index");
             }
-            return View();
+            
+            // Get plant machine counts for the public dashboard
+            var plantCounts = GetPlantMachineCounts();
+            return View(plantCounts);
         }
 
         // Redirect to the new Competency controller for backward compatibility
