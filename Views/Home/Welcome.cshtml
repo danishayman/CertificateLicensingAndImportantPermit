@@ -9,8 +9,9 @@
 </div>
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">DASHBOARD</h2>
-    
+    <h1 class="text-center mb-4">CERTIFICATE OF FITNESS</h1>
+
+
     <div class="row mb-4">
         <div class="col-md-6 offset-md-3">
             <div class="card bg-primary text-white shadow text-center">
@@ -22,95 +23,66 @@
             </div>
         </div>
     </div>
-    
-    <div class="row">
-        <div class="col-xl-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <i class="fas fa-chart-bar fa-fw me-1"></i>
-                    Machine Count by Plant
-                </div>
-                <div class="card-body">
-                    <canvas id="plantMachineChart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <i class="fas fa-chart-pie fa-fw me-1"></i>
-                    Machine Status Distribution
-                </div>
-                <div class="card-body">
-                    <canvas id="statusPieChart" height="300"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+
+
     <div class="row mb-5">
         <div class="col-md-4 mb-3">
             <div class="card border-success shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-success mb-3">@Model.Sum(m => m.ActiveCount)</h1>
+                    <h1 class="display-1 text-success mb-3">@Model.Sum(m => m.ActiveCount)</h1>
                     <h5 class="text-success">Active Certificates</h5>
-                    <p class="card-text small text-muted">Certificates with more than 30 days until expiration.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
             <div class="card border-warning shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-warning mb-3">@Model.Sum(m => m.ExpiringSoonCount)</h1>
+                    <h1 class="display-1 text-warning mb-3">@Model.Sum(m => m.ExpiringSoonCount)</h1>
                     <h5 class="text-warning">Expiring Soon</h5>
-                    <p class="card-text small text-muted">Certificates expiring within the next 30 days.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
             <div class="card border-danger shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h1 class="display-4 text-danger mb-3">@Model.Sum(m => m.ExpiredCount)</h1>
+                    <h1 class="display-1 text-danger mb-3">@Model.Sum(m => m.ExpiredCount)</h1>
                     <h5 class="text-danger">Expired Certificates</h5>
-                    <p class="card-text small text-muted">Certificates that have passed their expiration date.</p>
                 </div>
             </div>
         </div>
+
+
+
+        <div class="row">
+            <div class="col-xl-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar fa-fw me-1"></i>
+                        Machine Count by Plant
+                    </div>
+                    <div class="card-body">
+                        <canvas id="plantMachineChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie fa-fw me-1"></i>
+                        Machine Status Distribution
+                    </div>
+                    <div class="card-body">
+                        <canvas id="statusPieChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
 
-<div class="row mt-5">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-certificate fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Certificates</h3>
-                <p class="card-text">Manage all your critical certificates in one secure location. Track expiration dates, renewal statuses, and maintain detailed records.</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-id-card fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Licensing</h3>
-                <p class="card-text">Stay compliant with automated licensing management. Receive notifications before expiration and streamline your renewal process.</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body text-center">
-                <i class="fas fa-file-contract fa-4x mb-3 text-primary"></i>
-                <h3 class="card-title">Important Permits</h3>
-                <p class="card-text">Centralize your permit documentation. Easily access historical records and maintain regulatory compliance across your organization.</p>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="row mt-4 mb-5">
     <div class="col-md-6 offset-md-3 text-center">
@@ -129,31 +101,33 @@
 </div>
 
 @section scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+        integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script>
         // Register ChartDataLabels plugin
         Chart.register(ChartDataLabels);
-        
+
         // Data from the model - original unordered data
         var originalPlantNames = [@Html.Raw(string.Join(",", Model.Select(m => "'" + m.PlantName + "'")))];
         var originalMachineCounts = [@string.Join(",", Model.Select(m => m.MachineCount))];
         var originalActiveData = [@string.Join(",", Model.Select(m => m.ActiveCount))];
         var originalExpiringSoonData = [@string.Join(",", Model.Select(m => m.ExpiringSoonCount))];
         var originalExpiredData = [@string.Join(",", Model.Select(m => m.ExpiredCount))];
-        
+
         // Define custom order
         var customOrder = ["Plant 1", "Plant 3", "Plant 5", "Plant 13", "Plant 55", "Plant 21", "Plant 34"];
-        
+
         // Reorder data according to custom order
         var plantNames = [];
         var machineCounts = [];
         var activeData = [];
         var expiringSoonData = [];
         var expiredData = [];
-        
+
         // Map original data to the custom order
-        customOrder.forEach(function(plantName) {
+        customOrder.forEach(function (plantName) {
             var index = originalPlantNames.indexOf(plantName);
             if (index !== -1) {
                 plantNames.push(originalPlantNames[index]);
@@ -163,17 +137,17 @@
                 expiredData.push(originalExpiredData[index]);
             }
         });
-        
+
         // Total counts for the pie chart
         var totalActive = @Model.Sum(m => m.ActiveCount);
         var totalExpiringSoon = @Model.Sum(m => m.ExpiringSoonCount);
         var totalExpired = @Model.Sum(m => m.ExpiredCount);
-        
+
         // Set up chart colors
         var activeColor = 'rgba(40, 167, 69, 0.7)';
         var expiringSoonColor = 'rgba(255, 193, 7, 0.7)';
         var expiredColor = 'rgba(220, 53, 69, 0.7)';
-        
+
         // Create bar chart showing machine counts by plant
         var plantMachineCtx = document.getElementById('plantMachineChart').getContext('2d');
         var plantMachineChart = new Chart(plantMachineCtx, {
@@ -230,12 +204,12 @@
                     },
                     tooltip: {
                         callbacks: {
-                            footer: function(tooltipItems) {
+                            footer: function (tooltipItems) {
                                 let total = 0;
-                                tooltipItems.forEach(function(tooltipItem) {
+                                tooltipItems.forEach(function (tooltipItem) {
                                     const index = tooltipItem.dataIndex;
                                     // Get value from all datasets for this index
-                                    plantMachineChart.data.datasets.forEach(function(dataset) {
+                                    plantMachineChart.data.datasets.forEach(function (dataset) {
                                         total += dataset.data[index] || 0;
                                     });
                                 });
@@ -248,16 +222,16 @@
                         font: {
                             weight: 'bold'
                         },
-                        formatter: function(value, context) {
+                        formatter: function (value, context) {
                             // Only show labels for the last dataset in stack
                             if (context.datasetIndex !== context.chart.data.datasets.length - 1) {
                                 return null;
                             }
-                            
+
                             // Calculate total from all datasets for this index
                             const index = context.dataIndex;
                             let total = 0;
-                            context.chart.data.datasets.forEach(function(dataset) {
+                            context.chart.data.datasets.forEach(function (dataset) {
                                 total += dataset.data[index] || 0;
                             });
                             return total;
@@ -269,7 +243,7 @@
                 }
             }
         });
-        
+
         // Create pie chart showing status distribution
         var statusPieCtx = document.getElementById('statusPieChart').getContext('2d');
         var statusPieChart = new Chart(statusPieCtx, {
@@ -299,7 +273,7 @@
                         font: {
                             weight: 'bold'
                         },
-                        formatter: function(value, context) {
+                        formatter: function (value, context) {
                             return value > 0 ? value : '';
                         }
                     }
@@ -307,4 +281,4 @@
             }
         });
     </script>
-} 
+}
