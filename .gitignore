@@ -97,7 +97,8 @@ orleans.codegen.cs
 *.pubxml
 *.publishsettings
 
-Web.config
-
+# Ignore Web.config in root only
+/Web.config
+# Don't ignore Web.config in subdirectories
 
 UPLOADS/
