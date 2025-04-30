@@ -49,6 +49,8 @@ namespace CLIP.Models
         public DbSet<UserPlant> UserPlants { get; set; }
         public DbSet<AreaPlant> AreaPlants { get; set; }
         public DbSet<CertificateOfFitness> CertificateOfFitness { get; set; }
+        public DbSet<Monitoring> Monitorings { get; set; }
+        public DbSet<PlantMonitoring> PlantMonitorings { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -97,6 +99,27 @@ namespace CLIP.Models
                 .WithMany()
                 .HasForeignKey(cf => cf.PlantId)
                 .WillCascadeOnDelete(false);
+            
+            // Configure PlantMonitoring relationships
+            modelBuilder.Entity<PlantMonitoring>()
+                .HasRequired(pm => pm.Plant)
+                .WithMany()
+                .HasForeignKey(pm => pm.PlantID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlantMonitoring>()
+                .HasRequired(pm => pm.Monitoring)
+                .WithMany(m => m.PlantMonitorings)
+                .HasForeignKey(pm => pm.MonitoringID)
+                .WillCascadeOnDelete(false);
+
+            // Configure Monitoring table name
+            modelBuilder.Entity<Monitoring>()
+                .ToTable("Monitoring");
+            
+            // Configure PlantMonitoring table name
+            modelBuilder.Entity<PlantMonitoring>()
+                .ToTable("PlantMonitoring");
         }
     }
 }

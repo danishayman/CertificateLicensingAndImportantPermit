@@ -173,6 +173,8 @@
     <Compile Include="Controllers\CompetencyController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MonitoringController.cs" />
+    <Compile Include="Controllers\PlantMonitoringController.cs" />
     <Compile Include="Controllers\UserCompetencyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -220,7 +222,10 @@
     <Compile Include="Models\CompetencyModule.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Monitoring.cs" />
+    <Compile Include="Models\MonitoringDocument.cs" />
     <Compile Include="Models\Plant.cs" />
+    <Compile Include="Models\PlantMonitoring.cs" />
     <Compile Include="Models\UserCompetency.cs" />
     <Compile Include="Models\UserPlant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -244,6 +249,8 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="DATABASE\initialize.sql" />
+    <Content Include="DATABASE\upd_db.sql" />
+    <Content Include="DATABASE\CREATE_DB29042025.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -265,6 +272,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Uploads\Monitoring\Quote_1_20250430141133_MONTHLY_INSPECTION.txt" />
+    <Content Include="Uploads\Monitoring\Quote_1_20250430141825_MONTHLY_INSPECTION.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -314,9 +323,24 @@
     <Content Include="Views\CertificateOfFitness\Edit.cshtml" />
     <Content Include="Views\CertificateOfFitness\Index.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Monitoring\Create.cshtml" />
+    <Content Include="Views\Monitoring\Delete.cshtml" />
+    <Content Include="Views\Monitoring\Details.cshtml" />
+    <Content Include="Views\Monitoring\Edit.cshtml" />
+    <Content Include="Views\Monitoring\Index.cshtml" />
+    <Content Include="Views\PlantMonitoring\Create.cshtml" />
+    <Content Include="Views\PlantMonitoring\Delete.cshtml" />
+    <Content Include="Views\PlantMonitoring\Details.cshtml" />
+    <Content Include="Views\PlantMonitoring\Edit.cshtml" />
+    <Content Include="Views\PlantMonitoring\Index.cshtml" />
+    <Content Include="Views\PlantMonitoring\Schedule.cshtml" />
+    <Content Include="Views\PlantMonitoring\UpdateStatus.cshtml" />
+    <Content Include="Views\PlantMonitoring\DeleteDocument.cshtml" />
+    <Content Include="Views\PlantMonitoring\Documents.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\MonitoringSchedule\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

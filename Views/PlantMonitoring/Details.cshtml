@@ -1,0 +1,218 @@
+@model CLIP.Models.PlantMonitoring
+
+@{
+    ViewBag.Title = "Monitoring Record Details";
+}
+
+<h2>Monitoring Record Details</h2>
+
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <div class="btn-group">
+            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Update Status", "UpdateStatus", new { id = Model.Id }, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @class = "btn btn-danger" })
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Monitoring Type:</dt>
+                    <dd class="col-sm-9">@Model.Monitoring.MonitoringName</dd>
+                    
+                    <dt class="col-sm-3">Category:</dt>
+                    <dd class="col-sm-9">@Model.Monitoring.MonitoringCategory</dd>
+                    
+                    <dt class="col-sm-3">Frequency:</dt>
+                    <dd class="col-sm-9">@Model.Monitoring.MonitoringFreq</dd>
+                    
+                    <dt class="col-sm-3">Plant:</dt>
+                    <dd class="col-sm-9">@Model.Plant.PlantName</dd>
+                    
+                    <dt class="col-sm-3">Area:</dt>
+                    <dd class="col-sm-9">@Model.Area</dd>
+                    
+                    <dt class="col-sm-3">Expiry Date:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.ExpDate.HasValue)
+                        {
+                            <span class="@(Model.ExpDate < DateTime.Now ? "text-danger" : (Model.ExpDate < DateTime.Now.AddDays(30) ? "text-warning" : ""))">
+                                @Model.ExpDate.Value.ToString("yyyy-MM-dd")
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Not set</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-3">Current Status:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge @Model.StatusCssClass">@Model.Status</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Quotation Phase</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Start Date:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.QuoteDate.HasValue ? Model.QuoteDate.Value.ToString("yyyy-MM-dd") : "Not started")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Submission:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.QuoteSubmitDate.HasValue ? Model.QuoteSubmitDate.Value.ToString("yyyy-MM-dd") : "Not submitted")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Completion:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.QuoteCompleteDate.HasValue ? Model.QuoteCompleteDate.Value.ToString("yyyy-MM-dd") : "Not completed")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Assigned To:</dt>
+                    <dd class="col-sm-6">
+                        @(string.IsNullOrEmpty(Model.QuoteUserAssign) ? "Not assigned" : Model.QuoteUserAssign)
+                    </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.QuoteDoc))
+                        {
+                            <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Raise ePR Phase</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Start Date:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.EprDate.HasValue ? Model.EprDate.Value.ToString("yyyy-MM-dd") : "Not started")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Submission:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.EprSubmitDate.HasValue ? Model.EprSubmitDate.Value.ToString("yyyy-MM-dd") : "Not submitted")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Completion:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.EprCompleteDate.HasValue ? Model.EprCompleteDate.Value.ToString("yyyy-MM-dd") : "Not completed")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Assigned To:</dt>
+                    <dd class="col-sm-6">
+                        @(string.IsNullOrEmpty(Model.EprUserAssign) ? "Not assigned" : Model.EprUserAssign)
+                    </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.EprDoc))
+                        {
+                            <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Work Execution Phase</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Start Date:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.WorkDate.HasValue ? Model.WorkDate.Value.ToString("yyyy-MM-dd") : "Not started")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Submission:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.WorkSubmitDate.HasValue ? Model.WorkSubmitDate.Value.ToString("yyyy-MM-dd") : "Not submitted")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Completion:</dt>
+                    <dd class="col-sm-6">
+                        @(Model.WorkCompleteDate.HasValue ? Model.WorkCompleteDate.Value.ToString("yyyy-MM-dd") : "Not completed")
+                    </dd>
+                    
+                    <dt class="col-sm-6">Assigned To:</dt>
+                    <dd class="col-sm-6">
+                        @(string.IsNullOrEmpty(Model.WorkUserAssign) ? "Not assigned" : Model.WorkUserAssign)
+                    </dd>
+                    
+                    <dt class="col-sm-6">Document:</dt>
+                    <dd class="col-sm-6">
+                        @if (!string.IsNullOrEmpty(Model.WorkDoc))
+                        {
+                            <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info">
+                                <i class="fas fa-file-download"></i> View
+                            </a>
+                        }
+                        else
+                        {
+                            <span>No document</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Remarks))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Remarks</h5>
+                </div>
+                <div class="card-body">
+                    <p>@Model.Remarks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+} 
