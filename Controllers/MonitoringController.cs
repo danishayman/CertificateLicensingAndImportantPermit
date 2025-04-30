@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -36,6 +37,7 @@ namespace CLIP.Controllers
         }
 
         // GET: Monitoring/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             PopulateDropDownLists();
@@ -45,6 +47,7 @@ namespace CLIP.Controllers
         // POST: Monitoring/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Create([Bind(Include = "MonitoringID,MonitoringName,MonitoringCategory,MonitoringFreq")] Monitoring monitoring)
         {
             if (ModelState.IsValid)
@@ -59,6 +62,7 @@ namespace CLIP.Controllers
         }
 
         // GET: Monitoring/Edit/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -78,6 +82,7 @@ namespace CLIP.Controllers
         // POST: Monitoring/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Edit([Bind(Include = "MonitoringID,MonitoringName,MonitoringCategory,MonitoringFreq")] Monitoring monitoring)
         {
             if (ModelState.IsValid)
@@ -92,6 +97,7 @@ namespace CLIP.Controllers
         }
 
         // GET: Monitoring/Delete/5
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -109,6 +115,7 @@ namespace CLIP.Controllers
         // POST: Monitoring/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult DeleteConfirmed(int id)
         {
             Monitoring monitoring = db.Monitorings.Find(id);
