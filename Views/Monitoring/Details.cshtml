@@ -1,0 +1,41 @@
+@model CLIP.Models.Monitoring
+
+@{
+    ViewBag.Title = "Monitoring Type Details";
+}
+
+<h2>Monitoring Type Details</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.MonitoringName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MonitoringName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MonitoringCategory)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MonitoringCategory)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MonitoringFreq)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MonitoringFreq)
+        </dd>
+    </dl>
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MonitoringID }, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-default" })
+</p> 
