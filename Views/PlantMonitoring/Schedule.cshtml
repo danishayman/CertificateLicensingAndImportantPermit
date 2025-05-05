@@ -190,7 +190,7 @@
         
         <div class="card mb-4 monitoring-item" data-category="@monitoring.MonitoringCategory">
             <div class="card-header">
-                <h5>@monitoring.MonitoringName - @monitoring.MonitoringCategory</h5>
+                <h5>@monitoring.MonitoringCategory - @monitoring.MonitoringName</h5>
             </div>
             <div class="card-body">
                 @foreach (var plantId in data[monitoring.MonitoringID].Keys)
@@ -208,16 +208,52 @@
                     if (plantFound == null) { continue; }
                     
                     <div class="plant-section mb-4" data-plant-id="@plantId">
-                        <h6 class="mb-3 pl-2 border-left border-primary plant-title">@plantFound.PlantName</h6>
+                        <h6 class="mb-3 pl-2 border-left border-primary plant-title">
+                            @plantFound.PlantName
+                            @{
+                                var areas = new HashSet<string>();
+                                foreach (var rec in data[monitoring.MonitoringID][plantId])
+                                {
+                                    if (!string.IsNullOrWhiteSpace(rec.Area))
+                                    {
+                                        areas.Add(rec.Area);
+                                    }
+                                }
+                                if (areas.Count > 0)
+                                {
+                                    <span class="text-muted ml-2">- @string.Join(", ", areas)</span>
+                                }
+                            }
+                        </h6>
                         
                         @foreach (var record in data[monitoring.MonitoringID][plantId])
                                 {
                             <div class="monitoring-record mb-4 p-3 bg-light rounded status-item" data-status="@record.ProcStatus">
                                 <!-- Progress Timeline -->
                                 <div class="progress-tracker-container">
-                                    <div class="progress-tracker-header">
-                                        <h6 class="tracker-title">Process Status</h6>
-                                        <span class="badge @record.ProcStatusCssClass">@record.ProcStatus</span>
+                                    <div class="progress-tracker-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="tracker-title mb-0">Process Status:</h6>
+                                            <span class="badge @record.ProcStatusCssClass" data-toggle="tooltip" data-html="true" 
+                                                  title="@GetStatusTooltip(record)">@record.ProcStatus</span>
+                                        </div>
+                                        <div class="text-right">
+                                            <h6 class="tracker-title mb-0">Expiry Status:</h6>
+                                            <span class="badge @record.ExpStatusCssClass expiry-badge" data-toggle="tooltip" data-html="true"
+                                                  title="@GetExpiryTooltip(record)">
+                                                @record.ExpStatus
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+                                                        {
+                                                            <span> - @record.ExpDate.Value.ToString("dd/MM/yyyy")</span>
+                                                        }
+                                                    }
+                                                    catch { /* Ignore conversion errors */ }
+                                                }
+                                            </span>
+                                        </div>
                                     </div>
                                     
                                     <div class="progress-tracker-horizontal">
@@ -226,7 +262,8 @@
                                         
                                         <!-- Quotation Stage -->
                                         <div class="progress-step-container">
-                                            <div class="progress-circle @(GetStepComplete(record, 1) ? "completed" : GetStepActive(record, 1) ? "active" : "")">
+                                            <div class="progress-circle @(GetStepComplete(record, 1) ? "completed" : GetStepActive(record, 1) ? "active" : "")" 
+                                                 data-toggle="tooltip" data-html="true" title="@GetQuotationTooltip(record)">
                                                 <i class="fas fa-file-contract"></i>
                                                 @if (GetStepComplete(record, 1))
                                                 {
@@ -257,7 +294,8 @@
                                         
                                         <!-- Preparation Stage -->
                                         <div class="progress-step-container">
-                                            <div class="progress-circle @(GetStepComplete(record, 2) ? "completed" : GetStepActive(record, 2) ? "active" : "")">
+                                            <div class="progress-circle @(GetStepComplete(record, 2) ? "completed" : GetStepActive(record, 2) ? "active" : "")"
+                                                 data-toggle="tooltip" data-html="true" title="@GetPreparationTooltip(record)">
                                                 <i class="fas fa-clipboard-check"></i>
                                                 @if (GetStepComplete(record, 2))
                                                 {
@@ -288,7 +326,8 @@
                                         
                                         <!-- Work Stage -->
                                         <div class="progress-step-container">
-                                            <div class="progress-circle @(GetStepComplete(record, 3) ? "completed" : GetStepActive(record, 3) ? "active" : "")">
+                                            <div class="progress-circle @(GetStepComplete(record, 3) ? "completed" : GetStepActive(record, 3) ? "active" : "")"
+                                                 data-toggle="tooltip" data-html="true" title="@GetWorkTooltip(record)">
                                                 <i class="fas fa-tools"></i>
                                                 @if (GetStepComplete(record, 3))
                                                 {
@@ -319,7 +358,8 @@
                                         
                                         <!-- Completion Stage -->
                                         <div class="progress-step-container">
-                                            <div class="progress-circle @(GetStepComplete(record, 4) ? "completed" : GetStepActive(record, 4) ? "active" : "")">
+                                            <div class="progress-circle @(GetStepComplete(record, 4) ? "completed" : GetStepActive(record, 4) ? "active" : "")"
+                                                 data-toggle="tooltip" data-html="true" title="@GetCompletionTooltip(record)">
                                                 <i class="fas fa-certificate"></i>
                                                 @if (GetStepComplete(record, 4))
                                                 {
@@ -346,24 +386,6 @@
                                                     }
                                                 }
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="expiry-status mt-2">
-                                        <div class="expiry-badge-container">
-                                            <span class="badge @record.ExpStatusCssClass expiry-badge">
-                                                @record.ExpStatus
-                                                @{
-                                                    try 
-                                                    {
-                                                        if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
-                                                        {
-                                                            <span> - @record.ExpDate.Value.ToString("dd/MM/yyyy")</span>
-                                                        }
-                                                    }
-                                                    catch { /* Ignore conversion errors */ }
-                                                }
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -406,46 +428,6 @@
     </div>
         }
     }
-</div>
-
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Legend</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="step-icon completed-step">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="ml-2">Completed Step</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="step-icon current-step">
-                        <i class="fas fa-sync"></i>
-                    </div>
-                    <div class="ml-2">Current Step</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="step-icon">
-                        <i class="fas fa-circle"></i>
-                    </div>
-                    <div class="ml-2">Future Step</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="d-flex align-items-center mb-2">
-                    <span class="badge bg-danger">Expired</span>
-                    <div class="ml-2">Expired Record</div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>
@@ -675,11 +657,237 @@
         else
             return "";
     }
+    
+    private string GetStatusTooltip(dynamic record)
+    {
+        string tooltip = "<strong>Process Details:</strong><br>";
+        
+        if (record.ProcStatus == "Quotation Requested")
+        {
+            tooltip += "Request for quotation has been initiated.<br>";
+            if (record.QuoteDate != null && record.QuoteDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.QuoteDate.ToString("dd/MM/yyyy")}<br>";
+            }
+        }
+        else if (record.ProcStatus == "ePR Raised")
+        {
+            tooltip += "Electronic Purchase Requisition has been raised.<br>";
+            if (record.EprDate != null && record.EprDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.EprDate.ToString("dd/MM/yyyy")}<br>";
+            }
+        }
+        else if (record.ProcStatus == "Work In Progress")
+        {
+            tooltip += "Work execution phase has started.<br>";
+            if (record.WorkDate != null && record.WorkDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.WorkDate.ToString("dd/MM/yyyy")}<br>";
+            }
+        }
+        else if (record.ProcStatus == "Completed")
+        {
+            tooltip += "All monitoring work has been completed.<br>";
+            if (record.WorkCompleteDate != null && record.WorkCompleteDate != DateTime.MinValue)
+            {
+                tooltip += $"Completed on: {record.WorkCompleteDate.ToString("dd/MM/yyyy")}<br>";
+            }
+        }
+        else if (record.ProcStatus == "Not Started")
+        {
+            tooltip += "Monitoring process has not yet begun.";
+        }
+        
+        return tooltip;
+    }
+    
+    private string GetExpiryTooltip(dynamic record)
+    {
+        string tooltip = "<strong>Expiry Details:</strong><br>";
+        
+        if (record.ExpStatus == "Expired")
+        {
+            tooltip += "This monitoring record has expired and requires attention.<br>";
+            
+            if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+            {
+                TimeSpan overdue = DateTime.Now - record.ExpDate;
+                tooltip += $"Expired on: {record.ExpDate.ToString("dd/MM/yyyy")}<br>";
+                tooltip += $"Overdue by: {Math.Floor(overdue.TotalDays)} days";
+            }
+        }
+        else if (record.ExpStatus == "Expiring Soon")
+        {
+            tooltip += "This monitoring record will expire soon and requires attention.<br>";
+            
+            if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+            {
+                TimeSpan remaining = record.ExpDate - DateTime.Now;
+                tooltip += $"Expires on: {record.ExpDate.ToString("dd/MM/yyyy")}<br>";
+                tooltip += $"Days remaining: {Math.Ceiling(remaining.TotalDays)}";
+            }
+        }
+        else if (record.ExpStatus == "Valid")
+        {
+            tooltip += "This monitoring record is currently Active.<br>";
+            
+            if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+            {
+                TimeSpan remaining = record.ExpDate - DateTime.Now;
+                tooltip += $"Expires on: {record.ExpDate.ToString("dd/MM/yyyy")}<br>";
+                tooltip += $"Days remaining: {Math.Ceiling(remaining.TotalDays)}";
+            }
+        }
+        else if (record.ExpStatus == "No Expiry")
+        {
+            tooltip += "This monitoring record has no expiration date.";
+        }
+        
+        return tooltip;
+    }
+    
+    private string GetQuotationTooltip(dynamic record)
+    {
+        try
+        {
+            string tooltip = "<strong>Quotation Request</strong><br>";
+            
+            if (record.QuoteDate != null && record.QuoteDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.QuoteDate.ToString("dd/MM/yyyy")}<br>";
+                
+                if (GetStepComplete(record, 1))
+                {
+                    tooltip += "<span class='text-success'>Completed</span><br>";
+                    tooltip += "See Details for completion information";
+                }
+                else
+                {
+                    tooltip += "<span class='text-warning'>In Progress</span><br>";
+                    tooltip += "Click 'Details' for assigned person";
+                }
+            }
+            else
+            {
+                tooltip += "This step has not been started yet.<br>";
+                tooltip += "Go to 'Update Status' to initiate";
+            }
+            
+            return tooltip;
+        }
+        catch
+        {
+            return "<strong>Quotation Request</strong><br>Information not available";
+        }
+    }
+    
+    private string GetPreparationTooltip(dynamic record)
+    {
+        try
+        {
+            string tooltip = "<strong>ePR (Electronic Purchase Requisition)</strong><br>";
+            
+            if (record.EprDate != null && record.EprDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.EprDate.ToString("dd/MM/yyyy")}<br>";
+                
+                if (GetStepComplete(record, 2))
+                {
+                    tooltip += "<span class='text-success'>Completed</span><br>";
+                    tooltip += "See Details for completion information";
+                }
+                else
+                {
+                    tooltip += "<span class='text-warning'>In Progress</span><br>";
+                    tooltip += "Click 'Details' for assigned person";
+                }
+            }
+            else
+            {
+                tooltip += "This step has not been started yet.<br>";
+                tooltip += "Complete previous step first";
+            }
+            
+            return tooltip;
+        }
+        catch
+        {
+            return "<strong>ePR (Electronic Purchase Requisition)</strong><br>Information not available";
+        }
+    }
+    
+    private string GetWorkTooltip(dynamic record)
+    {
+        try
+        {
+            string tooltip = "<strong>Work Execution</strong><br>";
+            
+            if (record.WorkDate != null && record.WorkDate != DateTime.MinValue)
+            {
+                tooltip += $"Started on: {record.WorkDate.ToString("dd/MM/yyyy")}<br>";
+                
+                if (GetStepComplete(record, 3))
+                {
+                    tooltip += "<span class='text-success'>Completed</span><br>";
+                    tooltip += "See Details for completion information";
+                }
+                else
+                {
+                    tooltip += "<span class='text-warning'>In Progress</span><br>";
+                    tooltip += "Click 'Details' for assigned person";
+                }
+            }
+            else
+            {
+                tooltip += "This step has not been started yet.<br>";
+                tooltip += "Complete previous step first";
+            }
+            
+            return tooltip;
+        }
+        catch
+        {
+            return "<strong>Work Execution</strong><br>Information not available";
+        }
+    }
+    
+    private string GetCompletionTooltip(dynamic record)
+    {
+        try
+        {
+            string tooltip = "<strong>Completion</strong><br>";
+            
+            if (record.WorkCompleteDate != null && record.WorkCompleteDate != DateTime.MinValue)
+            {
+                tooltip += $"Completed on: {record.WorkCompleteDate.ToString("dd/MM/yyyy")}<br>";
+                tooltip += "<span class='text-success'>Completed</span><br>";
+                tooltip += "See Details for more information";
+            }
+            else
+            {
+                tooltip += "This step has not been completed yet.<br>";
+                tooltip += "Complete previous steps first";
+            }
+            
+            return tooltip;
+        }
+        catch
+        {
+            return "<strong>Completion</strong><br>Information not available";
+        }
+    }
 }
 
 @section Scripts {
 <script>
     $(document).ready(function() {
+        // Initialize tooltips with proper HTML support
+        $('[data-toggle="tooltip"]').tooltip({
+            html: true,
+            container: 'body'
+        });
+        
         // Filter functionality
         $("#categoryFilter, #plantFilter, #statusFilter").change(function() {
             applyFilters();
