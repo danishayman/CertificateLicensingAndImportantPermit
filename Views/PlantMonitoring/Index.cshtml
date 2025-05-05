@@ -1,171 +1,311 @@
 @model IEnumerable<CLIP.Models.PlantMonitoring>
 
 @{
-    ViewBag.Title = "Monitoring Records";
+    ViewBag.Title = "Monitoring Dashboard";
+    
+    // Calculate statistics
+    int totalRecords = Model.Count();
+    int completedCount = Model.Count(r => r.ProcStatus == "Completed");
+    int inProgressCount = Model.Count(r => r.ProcStatus == "Work In Progress");
+    int eprRaisedCount = Model.Count(r => r.ProcStatus == "ePR Raised");
+    int quotationCount = Model.Count(r => r.ProcStatus == "Quotation Requested");
+    int notStartedCount = Model.Count(r => r.ProcStatus == "Not Started");
+    
+    int expiredCount = Model.Count(r => r.ExpStatus == "Expired");
+    int expiringSoonCount = Model.Count(r => r.ExpStatus == "Expiring Soon");
+    int validCount = Model.Count(r => r.ExpStatus == "Valid");
+    int noExpiryCount = Model.Count(r => r.ExpStatus == "No Expiry");
 }
 
-<h2>Monitoring Records</h2>
-
-<div class="row mb-3">
-    <div class="col-md-12">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt me-2"></i> Monitoring Dashboard</h2>
+    <div>
         <div class="btn-group">
-            @Html.ActionLink("List View", "Index", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Dashboard", "Index", null, new { @class = "btn btn-primary" })
             @Html.ActionLink("Schedule View", "Schedule", null, new { @class = "btn btn-outline-primary" })
             @Html.ActionLink("Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
         </div>
         @if (User.IsInRole("Admin"))
         {
-            <a href="@Url.Action("Create")" class="btn btn-success float-right">
-                <i class="fas fa-plus"></i> Add New Record
+            <a href="@Url.Action("Create")" class="btn btn-success ms-2">
+                <i class="fas fa-plus"></i> Add Record
             </a>
         }
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Filters</h5>
+<!-- Summary Stats -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4">@totalRecords</h1>
+                <p class="lead mb-0">Total Records</p>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <form method="get" class="form-inline">
-            <div class="form-group mr-3 mb-2">
-                <label for="category" class="mr-2">Category:</label>
-                <select id="category" name="category" class="form-control">
-                    <option value="">All Categories</option>
-                    @foreach (var category in ViewBag.Categories)
-                    {
-                        <option value="@category" @(ViewBag.SelectedCategory == category ? "selected" : "")>@category</option>
-                    }
-                </select>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4">@completedCount</h1>
+                <p class="lead mb-0">Completed</p>
             </div>
-            <div class="form-group mr-3 mb-2">
-                <label for="plantId" class="mr-2">Plant:</label>
-                <select id="plantId" name="plantId" class="form-control">
-                    <option value="">All Plants</option>
-                    @foreach (var plant in ViewBag.Plants)
-                    {
-                        <option value="@plant.Id" @(ViewBag.SelectedPlantId == plant.Id ? "selected" : "")>@plant.PlantName</option>
-                    }
-                </select>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4">@expiringSoonCount</h1>
+                <p class="lead mb-0">Expiring Soon</p>
             </div>
-            <div class="form-group mr-3 mb-2">
-                <label for="status" class="mr-2">Status:</label>
-                <select id="status" name="status" class="form-control">
-                    <option value="">All Status</option>
-                    <optgroup label="Process Status">
-                        <option value="Completed" @(ViewBag.SelectedStatus == "Completed" ? "selected" : "")>Completed</option>
-                        <option value="Work In Progress" @(ViewBag.SelectedStatus == "Work In Progress" || ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>Work In Progress</option>
-                        <option value="ePR Raised" @(ViewBag.SelectedStatus == "ePR Raised" || ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>ePR Raised</option>
-                        <option value="Quotation Requested" @(ViewBag.SelectedStatus == "Quotation Requested" || ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>Quotation Requested</option>
-                        <option value="Not Started" @(ViewBag.SelectedStatus == "Not Started" ? "selected" : "")>Not Started</option>
-                    </optgroup>
-                    <optgroup label="Expiration Status">
-                        <option value="Valid" @(ViewBag.SelectedStatus == "Valid" ? "selected" : "")>Valid</option>
-                        <option value="Expiring Soon" @(ViewBag.SelectedStatus == "Expiring Soon" ? "selected" : "")>Expiring Soon</option>
-                        <option value="Expired" @(ViewBag.SelectedStatus == "Expired" ? "selected" : "")>Expired</option>
-                        <option value="No Expiry" @(ViewBag.SelectedStatus == "No Expiry" ? "selected" : "")>No Expiry</option>
-                    </optgroup>
-                </select>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4">@expiredCount</h1>
+                <p class="lead mb-0">Expired</p>
             </div>
-            <button type="submit" class="btn btn-primary mb-2">Filter</button>
-        </form>
+        </div>
     </div>
 </div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>Monitoring Type</th>
-                <th>Category</th>
-                <th>Plant</th>
-                <th>Area</th>
-                <th>Frequency</th>
-                <th>Expiry Date</th>
-                <th>Process Status</th>
-                <th>Expiration Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.Monitoring.MonitoringName</td>
-                    <td>@item.Monitoring.MonitoringCategory</td>
-                    <td>@item.Plant.PlantName</td>
-                    <td>@item.Area</td>
-                    <td>
-                        @{
-                            string frequencyText = "Unknown";
-                            int freq = item.Monitoring.MonitoringFreq;
-                            
-                            if (freq == 1) { frequencyText = "Monthly"; }
-                            else if (freq == 2) { frequencyText = "Bi-Monthly"; }
-                            else if (freq == 3) { frequencyText = "Quarterly"; }
-                            else if (freq == 4) { frequencyText = "4 Months"; }
-                            else if (freq == 6) { frequencyText = "Half-Yearly"; }
-                            else if (freq == 8) { frequencyText = "8 Months"; }
-                            else if (freq == 12) { frequencyText = "Yearly"; }
-                            else if (freq == 15) { frequencyText = "15 Months"; }
-                            else if (freq == 18) { frequencyText = "18 Months"; }
-                            else if (freq == 24) { frequencyText = "Every 2 Years"; }
-                            else if (freq == 36) { frequencyText = "Every 3 Years"; }
-                            else if (freq == 48) { frequencyText = "Every 4 Years"; }
-                            else if (freq == 60) { frequencyText = "Every 5 Years"; }
-                            else { frequencyText = $"Every {freq} months"; }
-                        }
-                        @frequencyText
-                    </td>
-                    <td>
-                        @if (item.ExpDate.HasValue)
-                        {
-                            <span class="@(item.ExpDate < DateTime.Now ? "text-danger" : (item.ExpDate < DateTime.Now.AddDays(30) ? "text-warning" : ""))">
-                                @item.ExpDate.Value.ToString("dd/MM/yyyy")
-                            </span>
-                        }
-                        else
-                        {
-                            <span>Not set</span>
-                        }
-                    </td>
-                    <td>
-                        <span class="badge @item.ProcStatusCssClass text-white">@item.ProcStatus</span>
-                    </td>
-                    <td>
-                        <span class="badge @item.ExpStatusCssClass text-white">@item.ExpStatus</span>
-                    </td>
-                    <td>
-                        <div class="btn-group">
-                            <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info" title="View Details">
-                                <i class="fas fa-info-circle"></i>
+<!-- Process Status Distribution -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5>Process Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="processStatusChart" width="100%" height="200"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="list-group">
+                            <a href="@Url.Action("Index", new { status = "Completed" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-check-circle text-success me-2"></i> Completed</span>
+                                <span class="badge bg-success rounded-pill">@completedCount</span>
                             </a>
-                            <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary" title="Update Status">
-                                <i class="fas fa-tasks"></i>
+                            <a href="@Url.Action("Index", new { status = "Work In Progress" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-tools text-warning me-2"></i> Work In Progress</span>
+                                <span class="badge bg-warning rounded-pill">@inProgressCount</span>
                             </a>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning" title="Edit Record">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger" title="Delete Record">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            }
+                            <a href="@Url.Action("Index", new { status = "ePR Raised" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-clipboard-check text-info me-2"></i> ePR Raised</span>
+                                <span class="badge bg-info rounded-pill">@eprRaisedCount</span>
+                            </a>
+                            <a href="@Url.Action("Index", new { status = "Quotation Requested" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-file-contract text-primary me-2"></i> Quotation Requested</span>
+                                <span class="badge bg-primary rounded-pill">@quotationCount</span>
+                            </a>
+                            <a href="@Url.Action("Index", new { status = "Not Started" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-hourglass-start text-secondary me-2"></i> Not Started</span>
+                                <span class="badge bg-secondary rounded-pill">@notStartedCount</span>
+                            </a>
                         </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5>Expiry Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <canvas id="expiryStatusChart" width="100%" height="200"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="list-group">
+                            <a href="@Url.Action("Index", new { status = "Expired" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-exclamation-circle text-danger me-2"></i> Expired</span>
+                                <span class="badge bg-danger rounded-pill">@expiredCount</span>
+                            </a>
+                            <a href="@Url.Action("Index", new { status = "Expiring Soon" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-clock text-warning me-2"></i> Expiring Soon</span>
+                                <span class="badge bg-warning rounded-pill">@expiringSoonCount</span>
+                            </a>
+                            <a href="@Url.Action("Index", new { status = "Valid" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-check text-success me-2"></i> Valid</span>
+                                <span class="badge bg-success rounded-pill">@validCount</span>
+                            </a>
+                            <a href="@Url.Action("Index", new { status = "No Expiry" })" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-infinity text-secondary me-2"></i> No Expiry</span>
+                                <span class="badge bg-secondary rounded-pill">@noExpiryCount</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info text-center">
-        No records found matching the filter criteria.
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-filter me-2"></i> Filters</h5>
+        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+            <i class="fas fa-chevron-down"></i>
+        </button>
     </div>
-}
+    <div id="filterCollapse" class="collapse show">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select id="category" name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <option value="@category" @(ViewBag.SelectedCategory == category ? "selected" : "")>@category</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="plantId" class="form-label">Plant</label>
+                    <select id="plantId" name="plantId" class="form-select">
+                        <option value="">All Plants</option>
+                        @foreach (var plant in ViewBag.Plants)
+                        {
+                            <option value="@plant.Id" @(ViewBag.SelectedPlantId == plant.Id ? "selected" : "")>@plant.PlantName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <optgroup label="Process Status">
+                            <option value="Completed" @(ViewBag.SelectedStatus == "Completed" ? "selected" : "")>Completed</option>
+                            <option value="Work In Progress" @(ViewBag.SelectedStatus == "Work In Progress" || ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>Work In Progress</option>
+                            <option value="ePR Raised" @(ViewBag.SelectedStatus == "ePR Raised" || ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>ePR Raised</option>
+                            <option value="Quotation Requested" @(ViewBag.SelectedStatus == "Quotation Requested" || ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>Quotation Requested</option>
+                            <option value="Not Started" @(ViewBag.SelectedStatus == "Not Started" ? "selected" : "")>Not Started</option>
+                        </optgroup>
+                        <optgroup label="Expiration Status">
+                            <option value="Valid" @(ViewBag.SelectedStatus == "Valid" ? "selected" : "")>Valid</option>
+                            <option value="Expiring Soon" @(ViewBag.SelectedStatus == "Expiring Soon" ? "selected" : "")>Expiring Soon</option>
+                            <option value="Expired" @(ViewBag.SelectedStatus == "Expired" ? "selected" : "")>Expired</option>
+                            <option value="No Expiry" @(ViewBag.SelectedStatus == "No Expiry" ? "selected" : "")>No Expiry</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div>
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Records Display -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i> Monitoring Records</h5>
+        <span class="badge bg-secondary">@Model.Count() Records</span>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <div class="row p-3">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 col-xl-4 mb-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">@item.Monitoring.MonitoringCategory - @item.Monitoring.MonitoringName</h6>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info" title="View Details">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
+                                    <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary" title="Update Status">
+                                        <i class="fas fa-tasks"></i>
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning" title="Edit Record">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger" title="Delete Record">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Plant:</span>
+                                    <span class="fw-bold">@item.Plant.PlantName</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.Area))
+                                {
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Area:</span>
+                                        <span>@item.Area</span>
+                                    </div>
+                                }
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Frequency:</span>
+                                    <span>@{
+                                        string frequencyText = "Unknown";
+                                        int freq = item.Monitoring.MonitoringFreq;
+                                        
+                                        if (freq == 1) { frequencyText = "Monthly"; }
+                                        else if (freq == 2) { frequencyText = "Bi-Monthly"; }
+                                        else if (freq == 3) { frequencyText = "Quarterly"; }
+                                        else if (freq == 4) { frequencyText = "4 Months"; }
+                                        else if (freq == 6) { frequencyText = "Half-Yearly"; }
+                                        else if (freq == 8) { frequencyText = "8 Months"; }
+                                        else if (freq == 12) { frequencyText = "Yearly"; }
+                                        else if (freq == 15) { frequencyText = "15 Months"; }
+                                        else if (freq == 18) { frequencyText = "18 Months"; }
+                                        else if (freq == 24) { frequencyText = "Every 2 Years"; }
+                                        else if (freq == 36) { frequencyText = "Every 3 Years"; }
+                                        else if (freq == 48) { frequencyText = "Every 4 Years"; }
+                                        else if (freq == 60) { frequencyText = "Every 5 Years"; }
+                                        else { frequencyText = $"Every {freq} months"; }
+                                    }
+                                    @frequencyText</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Expiry Date:</span>
+                                    <span class="@(item.ExpDate.HasValue ? (item.ExpDate < DateTime.Now ? "text-danger" : (item.ExpDate < DateTime.Now.AddDays(30) ? "text-warning" : "")) : "")">
+                                        @(item.ExpDate.HasValue ? item.ExpDate.Value.ToString("dd/MM/yyyy") : "Not set")
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge @item.ProcStatusCssClass text-white">@item.ProcStatus</span>
+                                    <span class="badge @item.ExpStatusCssClass text-white">@item.ExpStatus</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info m-3 text-center">
+                <i class="fas fa-info-circle me-2"></i> No records found matching the filter criteria.
+            </div>
+        }
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -173,6 +313,61 @@
             // Auto-submit form when select fields change
             $("#category, #plantId, #status").change(function() {
                 $(this).closest("form").submit();
+            });
+            
+            // Process Status Chart
+            var processCtx = document.getElementById('processStatusChart').getContext('2d');
+            var processChart = new Chart(processCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Completed', 'Work In Progress', 'ePR Raised', 'Quotation Requested', 'Not Started'],
+                    datasets: [{
+                        data: [@completedCount, @inProgressCount, @eprRaisedCount, @quotationCount, @notStartedCount],
+                        backgroundColor: [
+                            '#198754', // success - green (Completed)
+                            '#ffc107', // warning - yellow (Work In Progress)
+                            '#0dcaf0', // info - blue (ePR Raised)
+                            '#0d6efd', // primary - blue (Quotation Requested)
+                            '#6c757d'  // secondary - gray (Not Started)
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Expiry Status Chart
+            var expiryCtx = document.getElementById('expiryStatusChart').getContext('2d');
+            var expiryChart = new Chart(expiryCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Expired', 'Expiring Soon', 'Valid', 'No Expiry'],
+                    datasets: [{
+                        data: [@expiredCount, @expiringSoonCount, @validCount, @noExpiryCount],
+                        backgroundColor: [
+                            '#dc3545', // danger - red (Expired)
+                            '#ffc107', // warning - yellow (Expiring Soon)
+                            '#198754', // success - green (Valid)
+                            '#6c757d'  // secondary - gray (No Expiry)
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
             });
         });
     </script>
