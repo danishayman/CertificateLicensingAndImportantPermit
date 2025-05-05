@@ -54,10 +54,20 @@ namespace CLIP.Controllers
             if (!string.IsNullOrEmpty(status))
             {
                 // Process status filters
-                if (status == "Completed" || status == "In Progress" || status == "In Preparation" || 
-                    status == "In Quotation" || status == "Not Started")
+                if (status == "Completed" || status == "Work In Progress" || status == "ePR Raised" || 
+                    status == "Quotation Requested" || status == "Not Started" ||
+                    status == "In Progress" || status == "In Preparation" || status == "In Quotation")
                 {
-                    query = query.Where(p => p.ProcStatus == status);
+                    // Handle backward compatibility with old status names
+                    string normalizedStatus = status;
+                    if (status == "In Progress") normalizedStatus = "Work In Progress";
+                    if (status == "In Preparation") normalizedStatus = "ePR Raised";
+                    if (status == "In Quotation") normalizedStatus = "Quotation Requested";
+                    
+                    query = query.Where(p => p.ProcStatus == normalizedStatus || 
+                                       (status == "Work In Progress" && p.ProcStatus == "In Progress") ||
+                                       (status == "ePR Raised" && p.ProcStatus == "In Preparation") ||
+                                       (status == "Quotation Requested" && p.ProcStatus == "In Quotation"));
                 }
                 // Expiration status filters
                 else if (status == "Expiring Soon")
@@ -102,9 +112,9 @@ namespace CLIP.Controllers
                 "All",
                 // Process Statuses
                 "Completed",
-                "In Progress",
-                "In Preparation",
-                "In Quotation",
+                "Work In Progress",
+                "ePR Raised",
+                "Quotation Requested",
                 "Not Started",
                 // Expiration Statuses
                 "Valid",
@@ -576,11 +586,14 @@ namespace CLIP.Controllers
                 {
                     case "Completed":
                         return "bg-success";
-                    case "In Progress":
+                    case "Work In Progress":
+                    case "In Progress": // For backward compatibility
                         return "bg-warning";
-                    case "In Preparation":
+                    case "ePR Raised":
+                    case "In Preparation": // For backward compatibility
                         return "bg-info";
-                    case "In Quotation":
+                    case "Quotation Requested":
+                    case "In Quotation": // For backward compatibility
                         return "bg-secondary";
                     default:
                         return "";

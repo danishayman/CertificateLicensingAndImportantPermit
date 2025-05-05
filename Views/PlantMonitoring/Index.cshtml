@@ -54,9 +54,9 @@
                     <option value="">All Status</option>
                     <optgroup label="Process Status">
                         <option value="Completed" @(ViewBag.SelectedStatus == "Completed" ? "selected" : "")>Completed</option>
-                        <option value="In Progress" @(ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>In Progress</option>
-                        <option value="In Preparation" @(ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>In Preparation</option>
-                        <option value="In Quotation" @(ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>In Quotation</option>
+                        <option value="Work In Progress" @(ViewBag.SelectedStatus == "Work In Progress" || ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>Work In Progress</option>
+                        <option value="ePR Raised" @(ViewBag.SelectedStatus == "ePR Raised" || ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>ePR Raised</option>
+                        <option value="Quotation Requested" @(ViewBag.SelectedStatus == "Quotation Requested" || ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>Quotation Requested</option>
                         <option value="Not Started" @(ViewBag.SelectedStatus == "Not Started" ? "selected" : "")>Not Started</option>
                     </optgroup>
                     <optgroup label="Expiration Status">

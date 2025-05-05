@@ -56,7 +56,7 @@
                         {
                             foreach (var r in data[m.MonitoringID][plantId]) 
                             {
-                                if (r.ProcStatus == "In Progress" || r.ProcStatus == "In Preparation" || r.ProcStatus == "In Quotation")
+                                if (r.ProcStatus == "Work In Progress" || r.ProcStatus == "ePR Raised" || r.ProcStatus == "Quotation Requested")
                                 {
                                     inProgressCount++;
                                 }
@@ -65,7 +65,7 @@
                     }
                 }
                 <h2 class="display-4">@inProgressCount</h2>
-                <p class="lead mb-0">In Progress</p>
+                <p class="lead mb-0">Active Records</p>
             </div>
         </div>
     </div>
@@ -100,7 +100,7 @@
                 @{
                     int expiredCount = 0;
                     foreach (var m in monitoringTypes)
-                    {
+                        {
                         if (!data.ContainsKey(m.MonitoringID)) { continue; }
                         foreach (var plantId in data[m.MonitoringID].Keys)
                         {
@@ -136,7 +136,7 @@
                         @{
                             var distinctCategories = new List<string>();
                             foreach (var m in monitoringTypes)
-                            {
+                    {
                                 if (!distinctCategories.Contains(m.MonitoringCategory))
                                 {
                                     distinctCategories.Add(m.MonitoringCategory);
@@ -168,9 +168,9 @@
                     <select id="statusFilter" class="form-control">
                         <option value="all">All Statuses</option>
                         <option value="Not Started">Not Started</option>
-                        <option value="In Quotation">In Quotation</option>
-                        <option value="In Preparation">In Preparation</option>
-                        <option value="In Progress">In Progress</option>
+                        <option value="Quotation Requested">Quotation Requested</option>
+                        <option value="ePR Raised">ePR Raised</option>
+                        <option value="Work In Progress">Work In Progress</option>
                         <option value="Completed">Completed</option>
                     </select>
                 </div>
@@ -194,7 +194,7 @@
             </div>
             <div class="card-body">
                 @foreach (var plantId in data[monitoring.MonitoringID].Keys)
-                {
+                            {
                     var plantFound = null as dynamic;
                                     foreach (var p in plants)
                                     {
@@ -202,51 +202,39 @@
                                         {
                                             plantFound = p;
                                             break;
-                        }
-                    }
-                    
+                                        }
+                                }
+                                
                     if (plantFound == null) { continue; }
                     
                     <div class="plant-section mb-4" data-plant-id="@plantId">
                         <h6 class="mb-3 pl-2 border-left border-primary plant-title">@plantFound.PlantName</h6>
                         
                         @foreach (var record in data[monitoring.MonitoringID][plantId])
-                        {
+                                {
                             <div class="monitoring-record mb-4 p-3 bg-light rounded status-item" data-status="@record.ProcStatus">
-                                <!-- Expiry Status Badge -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <span class="expiry-badge badge @record.ExpStatusCssClass">
-                                            @record.ExpStatus
-                                            @{
-                                                try 
-                                                {
-                                                    if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
-                                                    {
-                                                        <span> - @record.ExpDate.Value.ToString("dd/MM/yyyy")</span>
-                                                    }
-                                                }
-                                                catch { /* Ignore conversion errors */ }
-                                            }
-                                        </span>
-                                    </div>
-                                    <div class="col-md-6 text-right">
+                                <!-- Progress Timeline -->
+                                <div class="progress-tracker-container">
+                                    <div class="progress-tracker-header">
+                                        <h6 class="tracker-title">Process Status</h6>
                                         <span class="badge @record.ProcStatusCssClass">@record.ProcStatus</span>
                                     </div>
-                                </div>
-                                
-                                <!-- Progress Timeline -->
-                                <div class="progress-tracker">
-                                    <div class="progress-track"></div>
                                     
-                                    <!-- Quotation Stage -->
-                                    <div class="progress-step @(GetStepClass(record, 1))">
-                                        <div class="step-icon">
-                                            <i class="fas fa-file-invoice"></i>
-                                        </div>
-                                        <div class="step-info">
-                                            <p class="step-title">Quotation</p>
-                                            <p class="step-date">
+                                    <div class="progress-tracker-horizontal">
+                                        <!-- Progress Track Line -->
+                                        <div class="progress-track-line"></div>
+                                        
+                                        <!-- Quotation Stage -->
+                                        <div class="progress-step-container">
+                                            <div class="progress-circle @(GetStepComplete(record, 1) ? "completed" : GetStepActive(record, 1) ? "active" : "")">
+                                                <i class="fas fa-file-contract"></i>
+                                                @if (GetStepComplete(record, 1))
+                                                {
+                                                    <span class="check-icon"><i class="fas fa-check"></i></span>
+                                                }
+                                            </div>
+                                            <div class="progress-label"> Request Quotation</div>
+                                            <div class="progress-date">
                                                 @{
                                                     try 
                                                     {
@@ -264,18 +252,20 @@
                                                         <span class="text-muted">Not started</span>
                                                     }
                                                 }
-                                            </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Preparation Stage -->
-                                    <div class="progress-step @(GetStepClass(record, 2))">
-                                        <div class="step-icon">
-                                            <i class="fas fa-clipboard-list"></i>
-                                        </div>
-                                        <div class="step-info">
-                                            <p class="step-title">Preparation</p>
-                                            <p class="step-date">
+                                        
+                                        <!-- Preparation Stage -->
+                                        <div class="progress-step-container">
+                                            <div class="progress-circle @(GetStepComplete(record, 2) ? "completed" : GetStepActive(record, 2) ? "active" : "")">
+                                                <i class="fas fa-clipboard-check"></i>
+                                                @if (GetStepComplete(record, 2))
+                                                {
+                                                    <span class="check-icon"><i class="fas fa-check"></i></span>
+                                                }
+                                            </div>
+                                            <div class="progress-label">Raise ePR</div>
+                                            <div class="progress-date">
                                                 @{
                                                     try 
                                                     {
@@ -293,18 +283,20 @@
                                                         <span class="text-muted">Not started</span>
                                                     }
                                                 }
-                                            </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Work Stage -->
-                                    <div class="progress-step @(GetStepClass(record, 3))">
-                                        <div class="step-icon">
-                                            <i class="fas fa-hard-hat"></i>
-                                        </div>
-                                        <div class="step-info">
-                                            <p class="step-title">Work Execution</p>
-                                            <p class="step-date">
+                                        
+                                        <!-- Work Stage -->
+                                        <div class="progress-step-container">
+                                            <div class="progress-circle @(GetStepComplete(record, 3) ? "completed" : GetStepActive(record, 3) ? "active" : "")">
+                                                <i class="fas fa-tools"></i>
+                                                @if (GetStepComplete(record, 3))
+                                                {
+                                                    <span class="check-icon"><i class="fas fa-check"></i></span>
+                                                }
+                                            </div>
+                                            <div class="progress-label">Work Execution</div>
+                                            <div class="progress-date">
                                                 @{
                                                     try 
                                                     {
@@ -322,18 +314,20 @@
                                                         <span class="text-muted">Not started</span>
                                                     }
                                                 }
-                                            </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Completion Stage -->
-                                    <div class="progress-step @(GetStepClass(record, 4))">
-                                        <div class="step-icon">
-                                            <i class="fas fa-check-circle"></i>
-                                        </div>
-                                        <div class="step-info">
-                                            <p class="step-title">Completed</p>
-                                            <p class="step-date">
+                                        
+                                        <!-- Completion Stage -->
+                                        <div class="progress-step-container">
+                                            <div class="progress-circle @(GetStepComplete(record, 4) ? "completed" : GetStepActive(record, 4) ? "active" : "")">
+                                                <i class="fas fa-certificate"></i>
+                                                @if (GetStepComplete(record, 4))
+                                                {
+                                                    <span class="check-icon"><i class="fas fa-check"></i></span>
+                                                }
+                                            </div>
+                                            <div class="progress-label">Completion</div>
+                                            <div class="progress-date">
                                                 @{
                                                     try 
                                                     {
@@ -351,7 +345,25 @@
                                                         <span class="text-muted">Not completed</span>
                                                     }
                                                 }
-                                            </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="expiry-status mt-2">
+                                        <div class="expiry-badge-container">
+                                            <span class="badge @record.ExpStatusCssClass expiry-badge">
+                                                @record.ExpStatus
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+                                                        {
+                                                            <span> - @record.ExpDate.Value.ToString("dd/MM/yyyy")</span>
+                                                        }
+                                                    }
+                                                    catch { /* Ignore conversion errors */ }
+                                                }
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -368,7 +380,7 @@
                                     </div>
                                 </div>
                             </div>
-                        }
+                    }
                     </div>
                 }
             </div>
@@ -438,146 +450,185 @@
 
 <style>
 /* Progress Tracker Styles */
-.progress-tracker {
+.progress-tracker-container {
+    margin: 30px 0 15px;
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0;
-    padding: 0 30px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
 }
 
-.progress-track {
+.progress-tracker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e4e4e4;
+}
+
+.tracker-title {
+    margin: 0;
+    font-weight: 600;
+    color: #495057;
+}
+
+.progress-status {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.progress-tracker-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding: 0 20px;
+    margin-bottom: 15px;
+}
+
+.progress-track-line {
     position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
+    top: 25px;
+    left: 50px;
+    right: 50px;
     height: 4px;
-    background-color: #e9ecef;
-    transform: translateY(-50%);
+    background-color: #e4e4e4;
     z-index: 1;
 }
 
-.progress-step {
+.progress-step-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
     position: relative;
     z-index: 2;
-    text-align: center;
-    width: 25%;
 }
 
-.step-icon {
-    width: 40px;
-    height: 40px;
+.progress-circle {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background-color: #f8f9fa;
-    border: 3px solid #dee2e6;
-    color: #6c757d;
+    background-color: #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px;
-    font-size: 16px;
+    font-size: 20px;
+    color: #6c757d;
+    border: 3px solid #e4e4e4;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.step-info {
+.progress-circle.completed {
+    background-color: #3766c5;
+    border-color: #3766c5;
+    color: white;
+}
+
+.progress-circle.active {
+    background-color: #f15a4a;
+    border-color: #f15a4a;
+    color: white;
+}
+
+.check-icon {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.progress-label {
     margin-top: 10px;
-}
-
-.step-title {
     font-weight: 600;
-    margin-bottom: 5px;
     font-size: 14px;
 }
 
-.step-date {
+.progress-date {
     font-size: 12px;
     color: #6c757d;
-    margin: 0;
+    text-align: center;
+    margin-top: 5px;
 }
 
-/* Step States */
-.progress-step.completed .step-icon {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
+.expiry-status {
+    text-align: right;
+    padding-top: 10px;
+    border-top: 1px solid #e4e4e4;
 }
 
-.progress-step.current .step-icon {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-}
-
-.completed-step {
-    background-color: #28a745;
-    border-color: #28a745;
-    color: white;
-}
-
-.current-step {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: white;
-}
-
-/* Plant Section Styles */
-.plant-title {
-    font-weight: 600;
-    color: #495057;
-    border-left-width: 4px !important;
-}
-
-/* Animation */
-.progress-step {
-    transition: all 0.3s ease;
-}
-
-.progress-step:hover {
-    transform: translateY(-5px);
+.expiry-badge-container {
+    display: inline-block;
 }
 
 .expiry-badge {
     font-size: 90%;
+    padding: 5px 10px;
 }
 
 .monitoring-record {
     transition: all 0.3s ease;
     border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .monitoring-record:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 /* Responsive adjustments */
 @@media (max-width: 768px) {
-    .progress-tracker {
+    .progress-tracker-horizontal {
         flex-direction: column;
         align-items: flex-start;
-        padding: 0;
     }
     
-    .progress-track {
+    .progress-track-line {
         display: none;
     }
     
-    .progress-step {
-        display: flex;
+    .progress-step-container {
         width: 100%;
+        flex-direction: row;
         margin-bottom: 15px;
         align-items: center;
     }
     
-    .step-icon {
-        margin: 0 15px 0 0;
+    .progress-circle {
+        margin-right: 15px;
     }
     
-    .step-info {
-        text-align: left;
+    .progress-label {
         margin-top: 0;
+        margin-right: 15px;
+        min-width: 100px;
     }
+    
+    .progress-date {
+        margin-top: 0;
+        text-align: left;
     }
-</style> 
+
+    .expiry-status {
+        text-align: left;
+    }
+}
+</style>
 
 @functions {
     private int GetCurrentStage(dynamic record)
@@ -599,6 +650,18 @@
         {
             return 0; // Default to Not Started if there's an error
         }
+    }
+    
+    private bool GetStepComplete(dynamic record, int stepNumber)
+    {
+        int currentStage = GetCurrentStage(record);
+        return stepNumber < currentStage;
+    }
+    
+    private bool GetStepActive(dynamic record, int stepNumber)
+    {
+        int currentStage = GetCurrentStage(record);
+        return stepNumber == currentStage;
     }
     
     private string GetStepClass(dynamic record, int stepNumber)

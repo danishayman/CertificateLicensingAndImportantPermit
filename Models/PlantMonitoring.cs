@@ -120,11 +120,11 @@ namespace CLIP.Models
             if (WorkCompleteDate.HasValue)
                 ProcStatus = "Completed";
             else if (WorkDate.HasValue)
-                ProcStatus = "In Progress";
+                ProcStatus = "Work In Progress";
             else if (EprDate.HasValue)
-                ProcStatus = "In Preparation";
+                ProcStatus = "ePR Raised";
             else if (QuoteDate.HasValue)
-                ProcStatus = "In Quotation";
+                ProcStatus = "Quotation Requested";
             else
                 ProcStatus = "Not Started";
         }
@@ -158,11 +158,11 @@ namespace CLIP.Models
                 {
                     case "Completed":
                         return "bg-success";
-                    case "In Progress":
+                    case "Work In Progress":
                         return "bg-warning";
-                    case "In Preparation":
+                    case "ePR Raised":
                         return "bg-warning";
-                    case "In Quotation":
+                    case "Quotation Requested":
                         return "bg-secondary";
                     default:
                         return "";
