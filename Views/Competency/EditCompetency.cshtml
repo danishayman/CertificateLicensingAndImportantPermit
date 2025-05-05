@@ -37,8 +37,10 @@
                                     <label class="form-check-label" for="noValidityPeriod">No validity period</label>
                                 </div>
                             </div>
-                            @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", step = "0.5", placeholder = "Enter validity period in years" })
-                            <small class="form-text text-muted">Values are stored in months. Example: 1 year = 12 months, 0.5 years = 6 months</small>
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", step = "1", placeholder = "Enter validity period" })
+                                <span class="input-group-text">years</span>
+                            </div>
                             @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
                         </div>
                         
@@ -86,7 +88,7 @@
             // Convert validity months to years for display
             var validityMonths = $('#ValidityMonths').val();
             if (validityMonths) {
-                $('#ValidityMonths').val((validityMonths / 12).toFixed(1).replace(/\.0$/, ''));
+                $('#ValidityMonths').val(Math.floor(validityMonths / 12));
             }
             
             $('#noValidityPeriod').change(function() {
@@ -103,15 +105,22 @@
                 $('#ValidityMonths').prop('disabled', true);
             }
             
-            // When submitting the form, convert years back to months
-            $('form').submit(function() {
+            // Prevent enter key from submitting the form
+            $('#ValidityMonths').keydown(function(event) {
+                if (event.keyCode === 13) { // Enter key
+                    event.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Only convert years to months when the Save button is clicked
+            $('button[type="submit"]').click(function() {
                 if (!$('#noValidityPeriod').is(':checked')) {
-                    var years = parseFloat($('#ValidityMonths').val());
+                    var years = parseInt($('#ValidityMonths').val());
                     if (!isNaN(years)) {
-                        $('#ValidityMonths').val(Math.round(years * 12));
+                        $('#ValidityMonths').val(years * 12);
                     }
                 }
-                return true;
             });
         });
     </script>

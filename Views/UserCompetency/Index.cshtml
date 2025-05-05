@@ -83,7 +83,7 @@
                                         <span class="badge bg-success me-1">@certifiedCount Certified</span>
                                         @if (module.ValidityMonths.HasValue)
                                         {
-                                            <span class="badge bg-info">@(Math.Round((double)module.ValidityMonths.Value / 12, 1)) Years Validity</span>
+                                            <span class="badge bg-info">@(Math.Floor((double)module.ValidityMonths.Value / 12)) Years Validity</span>
                                         }
                                     </div>
                                 </div>

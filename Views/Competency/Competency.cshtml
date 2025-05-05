@@ -60,7 +60,7 @@
                             <tr>
                                 <td>@module.ModuleName</td>
                                 <td>@(string.IsNullOrEmpty(module.Description) ? "-" : module.Description)</td>
-                                <td>@(module.ValidityMonths.HasValue ? Math.Round((double)module.ValidityMonths.Value / 12, 1).ToString() + " years" : "No validity")</td>
+                                <td>@(module.ValidityMonths.HasValue ? Math.Floor((double)module.ValidityMonths.Value / 12).ToString() + " years" : "No validity")</td>
                                 <td>@(string.IsNullOrEmpty(module.PointType) ? "-" : module.PointType)</td>
                                 <td>@(module.TotalPoints.HasValue ? module.TotalPoints.ToString() : "-")</td>
                                 @if (User.IsInRole("Admin"))
