@@ -188,6 +188,7 @@ namespace CLIP.Controllers
                     ExpStatus = pm.ExpStatus,
                     ExpDate = pm.ExpDate,
                     QuoteDate = pm.QuoteDate,
+                    EprDate = pm.EprDate,
                     WorkDate = pm.WorkDate,
                     WorkCompleteDate = pm.WorkCompleteDate
                 };
@@ -563,7 +564,48 @@ namespace CLIP.Controllers
         public string ExpStatus { get; set; }
         public DateTime? ExpDate { get; set; }
         public DateTime? QuoteDate { get; set; }
+        public DateTime? EprDate { get; set; }
         public DateTime? WorkDate { get; set; }
         public DateTime? WorkCompleteDate { get; set; }
+
+        public string ProcStatusCssClass
+        {
+            get
+            {
+                switch (ProcStatus)
+                {
+                    case "Completed":
+                        return "bg-success";
+                    case "In Progress":
+                        return "bg-warning";
+                    case "In Preparation":
+                        return "bg-info";
+                    case "In Quotation":
+                        return "bg-secondary";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        public string ExpStatusCssClass
+        {
+            get
+            {
+                switch (ExpStatus)
+                {
+                    case "Expired":
+                        return "bg-danger";
+                    case "Expiring Soon":
+                        return "bg-warning";
+                    case "Valid":
+                        return "bg-success";
+                    case "No Expiry":
+                        return "bg-secondary";
+                    default:
+                        return "";
+                }
+            }
+        }
     }
 } 

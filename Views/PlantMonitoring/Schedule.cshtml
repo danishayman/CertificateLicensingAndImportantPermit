@@ -1,6 +1,6 @@
 @using System.Linq
 @{
-    ViewBag.Title = "Monitoring Schedule";
+    ViewBag.Title = "Monitoring Progress Tracker";
     var monitoringTypes = ViewBag.MonitoringTypes;
     var plants = ViewBag.Plants;
     var data = ViewBag.Data;
@@ -9,13 +9,13 @@
     var isAdmin = ViewBag.IsAdmin;
 }
 
-<h2>Monitoring Schedule</h2>
+<h2>Monitoring Progress Tracker</h2>
 
 <div class="row mb-3">
     <div class="col-md-12">
         <div class="btn-group">
             @Html.ActionLink("List View", "Index", null, new { @class = "btn btn-outline-primary" })
-            @Html.ActionLink("Schedule View", "Schedule", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Progress View", "Schedule", null, new { @class = "btn btn-primary" })
             @Html.ActionLink("Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
         </div>
         @if (isAdmin)
@@ -27,207 +27,373 @@
     </div>
 </div>
 
+<!-- Summary Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                @{
+                    int typeCount = 0;
+                    if (monitoringTypes != null)
+                    {
+                        typeCount = monitoringTypes.Count;
+                    }
+                }
+                <h2 class="display-4">@typeCount</h2>
+                <p class="lead mb-0">Monitoring Types</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                @{
+                    int inProgressCount = 0;
+                    foreach (var m in monitoringTypes)
+                    {
+                        if (!data.ContainsKey(m.MonitoringID)) { continue; }
+                        foreach (var plantId in data[m.MonitoringID].Keys)
+                        {
+                            foreach (var r in data[m.MonitoringID][plantId]) 
+                            {
+                                if (r.ProcStatus == "In Progress" || r.ProcStatus == "In Preparation" || r.ProcStatus == "In Quotation")
+                                {
+                                    inProgressCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+                <h2 class="display-4">@inProgressCount</h2>
+                <p class="lead mb-0">In Progress</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                @{
+                    int completedCount = 0;
+                    foreach (var m in monitoringTypes)
+                    {
+                        if (!data.ContainsKey(m.MonitoringID)) { continue; }
+                        foreach (var plantId in data[m.MonitoringID].Keys)
+                        {
+                            foreach (var r in data[m.MonitoringID][plantId])
+                            {
+                                if (r.ProcStatus == "Completed")
+                                {
+                                    completedCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+                <h2 class="display-4">@completedCount</h2>
+                <p class="lead mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                @{
+                    int expiredCount = 0;
+                    foreach (var m in monitoringTypes)
+                    {
+                        if (!data.ContainsKey(m.MonitoringID)) { continue; }
+                        foreach (var plantId in data[m.MonitoringID].Keys)
+                        {
+                            foreach (var r in data[m.MonitoringID][plantId])
+                            {
+                                if (r.ExpStatus == "Expired")
+                                {
+                                    expiredCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+                <h2 class="display-4">@expiredCount</h2>
+                <p class="lead mb-0">Expired</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Panel -->
 <div class="card mb-4">
     <div class="card-header">
-        <h5>@currentYear Monitoring Schedule</h5>
+        <h5>Filters</h5>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-bordered monitoring-schedule">
-                <thead>
-                    <tr class="bg-light">
-                        <th rowspan="2" style="width: 5%;">No.</th>
-                        <th rowspan="2" style="width: 15%;">Type of Monitoring</th>
-                        <th rowspan="2" style="width: 10%;">Area</th>
-                        <th rowspan="2" style="width: 5%;">Freq</th>
-                        <th colspan="12" class="text-center">@currentYear</th>
-                    </tr>
-                    <tr class="bg-light">
-                        @for (int month = 0; month < 12; month++)
-                        {
-                            <th class="text-center" style="width: 5%;">@monthNames[month].Substring(0, 3)</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        int categoryCount = 0;
-                        string currentCategory = null;
-                    }
-                    
-                    @foreach (var monitoring in monitoringTypes)
-                    {
-                        if (currentCategory != monitoring.MonitoringCategory)
-                        {
-                            currentCategory = monitoring.MonitoringCategory;
-                            categoryCount++;
-                            
-                            <tr class="bg-secondary text-white">
-                                <td class="align-middle">@categoryCount</td>
-                                <td class="align-middle" colspan="14">@monitoring.MonitoringCategory</td>
-                            </tr>
-                        }
-                        
-                        bool hasAnyPlantForMonitoring = data != null && data.ContainsKey(monitoring.MonitoringID) && data[monitoring.MonitoringID].Count > 0;
-                        
-                        if (hasAnyPlantForMonitoring)
-                        {
-                            foreach (var plantId in data[monitoring.MonitoringID].Keys)
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter" class="form-control">
+                        <option value="all">All Categories</option>
+                        @{
+                            var distinctCategories = new List<string>();
+                            foreach (var m in monitoringTypes)
                             {
-                                // Find the plant by ID without using a lambda expression
-                                dynamic plantFound = null;
-                                if (plants != null)
+                                if (!distinctCategories.Contains(m.MonitoringCategory))
                                 {
+                                    distinctCategories.Add(m.MonitoringCategory);
+                                }
+                            }
+                            foreach (var category in distinctCategories)
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="plantFilter">Plant</label>
+                    <select id="plantFilter" class="form-control">
+                        <option value="all">All Plants</option>
+                        @foreach (var plant in plants)
+                        {
+                            <option value="@plant.Id">@plant.PlantName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" class="form-control">
+                        <option value="all">All Statuses</option>
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Quotation">In Quotation</option>
+                        <option value="In Preparation">In Preparation</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Trackers -->
+<div id="progressTrackers">
+    @foreach (var monitoring in monitoringTypes)
+    {
+        if (!data.ContainsKey(monitoring.MonitoringID) || data[monitoring.MonitoringID].Keys.Count == 0)
+        {
+            continue;
+        }
+        
+        <div class="card mb-4 monitoring-item" data-category="@monitoring.MonitoringCategory">
+            <div class="card-header">
+                <h5>@monitoring.MonitoringName - @monitoring.MonitoringCategory</h5>
+            </div>
+            <div class="card-body">
+                @foreach (var plantId in data[monitoring.MonitoringID].Keys)
+                {
+                    var plantFound = null as dynamic;
                                     foreach (var p in plants)
                                     {
                                         if (p.Id == plantId)
                                         {
                                             plantFound = p;
                                             break;
-                                        }
-                                    }
-                                }
-                                
-                                if (plantFound == null)
-                                {
-                                    continue;
-                                }
-                                
-                                var records = data[monitoring.MonitoringID][plantId];
-                                var distinctAreas = new List<string>();
-                                
-                                // Get distinct areas manually
-                                foreach (var record in records)
-                                {
-                                    string recordArea = record.Area ?? string.Empty;
-                                    if (!distinctAreas.Contains(recordArea))
-                                    {
-                                        distinctAreas.Add(recordArea);
-                                    }
-                                }
-                                
-                                foreach (var area in distinctAreas)
-                                {
-                                    // Get records for this area manually
-                                    var areaRecords = new List<dynamic>();
-                                    foreach (var record in records)
-                                    {
-                                        string recordArea = record.Area ?? string.Empty;
-                                        if (recordArea == area)
-                                        {
-                                            areaRecords.Add(record);
-                                        }
-                                    }
-                                    
-                                    <tr>
-                                        <td></td>
-                                        <td>@monitoring.MonitoringName</td>
-                                        <td>
-                                            @plantFound.PlantName
-                                            @if (!string.IsNullOrEmpty(area))
-                                            {
-                                                <span>@area</span>
-                                            }
-                                        </td>
-                                        <td>@monitoring.MonitoringFreq</td>
-                                        
-                                        @for (int month = 0; month < 12; month++)
-                                        {
-                                            <td class="text-center">
-                                                @{
-                                                    // Filter records for this month manually instead of using LINQ
-                                                    var monthRecords = new List<dynamic>();
-                                                    foreach (var record in areaRecords)
-                                                    {
-                                                        bool matchesMonth = false;
-                                                        
-                                                        // Check each date field
-                                                        if (record.QuoteDate != null && 
-                                                            record.QuoteDate.Month == month + 1 && 
-                                                            record.QuoteDate.Year == currentYear)
-                                                        {
-                                                            matchesMonth = true;
-                                                        }
-                                                        else if (record.WorkDate != null && 
-                                                                record.WorkDate.Month == month + 1 && 
-                                                                record.WorkDate.Year == currentYear)
-                                                        {
-                                                            matchesMonth = true;
-                                                        }
-                                                        else if (record.ExpDate != null && 
-                                                                record.ExpDate.Month == month + 1 && 
-                                                                record.ExpDate.Year == currentYear)
-                                                        {
-                                                            matchesMonth = true;
-                                                        }
-                                                        
-                                                        if (matchesMonth)
-                                                        {
-                                                            monthRecords.Add(record);
-                                                        }
-                                                    }
-                                                    
-                                                    foreach (var record in monthRecords)
-                                                    {
-                                                        string bgClass = "bg-secondary"; // Default
-                                                        
-                                                        // Use ProcStatus for the background color
-                                                        if (record.ProcStatus == "Completed")
-                                                        {
-                                                            bgClass = "bg-success"; // Green for completed
-                                                        }
-                                                        else if (record.ProcStatus == "In Progress")
-                                                        {
-                                                            bgClass = "bg-warning"; // Yellow for in progress
-                                                        }
-                                                        else if (record.ProcStatus == "In Preparation")
-                                                        {
-                                                            bgClass = "bg-info"; // Blue for preparation
-                                                        }
-                                                        else if (record.ProcStatus == "In Quotation")
-                                                        {
-                                                            bgClass = "bg-secondary"; // Gray for quote stage
-                                                        }
-                                                        
-                                                        // Add a border if expiring/expired
-                                                        string expBorder = "";
-                                                        if (record.ExpStatus == "Expired")
-                                                        {
-                                                            expBorder = "border border-danger";
-                                                        }
-                                                        else if (record.ExpStatus == "Expiring Soon")
-                                                        {
-                                                            expBorder = "border border-warning";
-                                                        }
-                                                        
-                                                        <div class="@bgClass @expBorder" style="height: 24px; width: 100%;">
-                                                            <a href="@Url.Action("Details", new { id = record.Id })" 
-                                                               class="d-block w-100 h-100 text-white"
-                                                               title="@record.ProcStatus - @record.ExpStatus | @(record.ExpDate != null ? "Expiry: " + record.ExpDate.ToString("dd/MM/yyyy") : "No expiry date")">
-                                                                &nbsp;
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                }
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td></td>
-                                <td>@monitoring.MonitoringName</td>
-                                <td colspan="14" class="text-center">No scheduled monitoring</td>
-                            </tr>
                         }
                     }
-                </tbody>
-            </table>
+                    
+                    if (plantFound == null) { continue; }
+                    
+                    <div class="plant-section mb-4" data-plant-id="@plantId">
+                        <h6 class="mb-3 pl-2 border-left border-primary plant-title">@plantFound.PlantName</h6>
+                        
+                        @foreach (var record in data[monitoring.MonitoringID][plantId])
+                        {
+                            <div class="monitoring-record mb-4 p-3 bg-light rounded status-item" data-status="@record.ProcStatus">
+                                <!-- Expiry Status Badge -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <span class="expiry-badge badge @record.ExpStatusCssClass">
+                                            @record.ExpStatus
+                                            @{
+                                                try 
+                                                {
+                                                    if (record.ExpDate != null && record.ExpDate != DateTime.MinValue)
+                                                    {
+                                                        <span> - @record.ExpDate.Value.ToString("dd/MM/yyyy")</span>
+                                                    }
+                                                }
+                                                catch { /* Ignore conversion errors */ }
+                                            }
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <span class="badge @record.ProcStatusCssClass">@record.ProcStatus</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Progress Timeline -->
+                                <div class="progress-tracker">
+                                    <div class="progress-track"></div>
+                                    
+                                    <!-- Quotation Stage -->
+                                    <div class="progress-step @(GetStepClass(record, 1))">
+                                        <div class="step-icon">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <p class="step-title">Quotation</p>
+                                            <p class="step-date">
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.QuoteDate != null && record.QuoteDate != DateTime.MinValue)
+                                                        {
+                                                            @record.QuoteDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Not started</span>
+                                                        }
+                                                    }
+                                                    catch 
+                                                    {
+                                                        <span class="text-muted">Not started</span>
+                                                    }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Preparation Stage -->
+                                    <div class="progress-step @(GetStepClass(record, 2))">
+                                        <div class="step-icon">
+                                            <i class="fas fa-clipboard-list"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <p class="step-title">Preparation</p>
+                                            <p class="step-date">
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.EprDate != null && record.EprDate != DateTime.MinValue)
+                                                        {
+                                                            @record.EprDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Not started</span>
+                                                        }
+                                                    }
+                                                    catch 
+                                                    {
+                                                        <span class="text-muted">Not started</span>
+                                                    }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Work Stage -->
+                                    <div class="progress-step @(GetStepClass(record, 3))">
+                                        <div class="step-icon">
+                                            <i class="fas fa-hard-hat"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <p class="step-title">Work Execution</p>
+                                            <p class="step-date">
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.WorkDate != null && record.WorkDate != DateTime.MinValue)
+                                                        {
+                                                            @record.WorkDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Not started</span>
+                                                        }
+                                                    }
+                                                    catch 
+                                                    {
+                                                        <span class="text-muted">Not started</span>
+                                                    }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Completion Stage -->
+                                    <div class="progress-step @(GetStepClass(record, 4))">
+                                        <div class="step-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="step-info">
+                                            <p class="step-title">Completed</p>
+                                            <p class="step-date">
+                                                @{
+                                                    try 
+                                                    {
+                                                        if (record.WorkCompleteDate != null && record.WorkCompleteDate != DateTime.MinValue)
+                                                        {
+                                                            @record.WorkCompleteDate.ToString("dd/MM/yyyy")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Not completed</span>
+                                                        }
+                                                    }
+                                                    catch 
+                                                    {
+                                                        <span class="text-muted">Not completed</span>
+                                                    }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="row mt-3">
+                                    <div class="col-md-12 text-right">
+                                        <a href="@Url.Action("Details", new { id = record.Id })" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                        <a href="@Url.Action("UpdateStatus", new { id = record.Id })" class="btn btn-sm btn-secondary">
+                                            <i class="fas fa-edit"></i> Update Status
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
         </div>
+    }
+    
+    @{
+        bool hasRecords = false;
+        foreach (var m in monitoringTypes)
+        {
+            if (data.ContainsKey(m.MonitoringID) && data[m.MonitoringID].Keys.Count > 0)
+            {
+                hasRecords = true;
+                break;
+            }
+        }
+        
+        if (!hasRecords)
+        {
+            <div class="alert alert-info">
+                <h4 class="alert-heading">No monitoring records found</h4>
+                <p>There are currently no monitoring records to display. Please add some records to see them here.</p>
     </div>
+        }
+    }
 </div>
 
 <div class="card mb-4">
@@ -236,22 +402,34 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="d-flex align-items-center mb-2">
-                    <div class="bg-secondary" style="width: 24px; height: 24px;"></div>
-                    <div class="ml-2">Request Quotation</div>
+                    <div class="step-icon completed-step">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="ml-2">Completed Step</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="d-flex align-items-center mb-2">
-                    <div class="bg-warning" style="width: 24px; height: 24px;"></div>
-                    <div class="ml-2">Raise ePR</div>
+                    <div class="step-icon current-step">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <div class="ml-2">Current Step</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="d-flex align-items-center mb-2">
-                    <div class="bg-success" style="width: 24px; height: 24px;"></div>
-                    <div class="ml-2">Performing Work</div>
+                    <div class="step-icon">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="ml-2">Future Step</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge bg-danger">Expired</span>
+                    <div class="ml-2">Expired Record</div>
                 </div>
             </div>
         </div>
@@ -259,8 +437,230 @@
 </div>
 
 <style>
-    .monitoring-schedule th, .monitoring-schedule td {
-        padding: 4px;
-        font-size: 0.9rem;
+/* Progress Tracker Styles */
+.progress-tracker {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 0 30px;
+}
+
+.progress-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #e9ecef;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.progress-step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 25%;
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 3px solid #dee2e6;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 16px;
+}
+
+.step-info {
+    margin-top: 10px;
+}
+
+.step-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.step-date {
+    font-size: 12px;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Step States */
+.progress-step.completed .step-icon {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.progress-step.current .step-icon {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+.completed-step {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.current-step {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+/* Plant Section Styles */
+.plant-title {
+    font-weight: 600;
+    color: #495057;
+    border-left-width: 4px !important;
+}
+
+/* Animation */
+.progress-step {
+    transition: all 0.3s ease;
+}
+
+.progress-step:hover {
+    transform: translateY(-5px);
+}
+
+.expiry-badge {
+    font-size: 90%;
+}
+
+.monitoring-record {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.monitoring-record:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@@media (max-width: 768px) {
+    .progress-tracker {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+    }
+    
+    .progress-track {
+        display: none;
+    }
+    
+    .progress-step {
+        display: flex;
+        width: 100%;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    
+    .step-icon {
+        margin: 0 15px 0 0;
+    }
+    
+    .step-info {
+        text-align: left;
+        margin-top: 0;
+    }
     }
 </style> 
+
+@functions {
+    private int GetCurrentStage(dynamic record)
+    {
+        try
+        {
+            if (record.WorkCompleteDate != null && record.WorkCompleteDate != DateTime.MinValue)
+                return 4; // Completed
+            else if (record.WorkDate != null && record.WorkDate != DateTime.MinValue)
+                return 3; // Work Execution
+            else if (record.EprDate != null && record.EprDate != DateTime.MinValue)
+                return 2; // Preparation
+            else if (record.QuoteDate != null && record.QuoteDate != DateTime.MinValue)
+                return 1; // Quotation
+            else
+                return 0; // Not Started
+        }
+        catch
+        {
+            return 0; // Default to Not Started if there's an error
+        }
+    }
+    
+    private string GetStepClass(dynamic record, int stepNumber)
+    {
+        int currentStage = GetCurrentStage(record);
+        
+        if (stepNumber < currentStage)
+            return "completed";
+        else if (stepNumber == currentStage)
+            return "current";
+        else
+            return "";
+    }
+}
+
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        // Filter functionality
+        $("#categoryFilter, #plantFilter, #statusFilter").change(function() {
+            applyFilters();
+        });
+        
+        function applyFilters() {
+            var categoryFilter = $("#categoryFilter").val();
+            var plantFilter = $("#plantFilter").val();
+            var statusFilter = $("#statusFilter").val();
+            
+            // Reset visibility
+            $(".monitoring-item").show();
+            $(".plant-section").show();
+            $(".status-item").show();
+            
+            // Apply category filter
+            if (categoryFilter !== "all") {
+                $(".monitoring-item").not("[data-category='" + categoryFilter + "']").hide();
+            }
+            
+            // Apply plant filter
+            if (plantFilter !== "all") {
+                $(".plant-section").not("[data-plant-id='" + plantFilter + "']").hide();
+            }
+            
+            // Apply status filter
+            if (statusFilter !== "all") {
+                $(".status-item").not("[data-status='" + statusFilter + "']").hide();
+                
+                // Hide plants with no visible items
+                $(".plant-section").each(function() {
+                    if($(this).find(".status-item:visible").length === 0) {
+                        $(this).hide();
+                    }
+                });
+                
+                // Hide monitoring items with no visible plants
+                $(".monitoring-item").each(function() {
+                    if($(this).find(".plant-section:visible").length === 0) {
+                        $(this).hide();
+                    }
+                });
+            }
+        }
+    });
+</script>
+} 
