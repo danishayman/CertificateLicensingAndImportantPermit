@@ -47,7 +47,12 @@
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 @Html.LabelFor(m => m.PointType, "Point Type", new { @class = "form-label" })
-                                @Html.TextBoxFor(m => m.PointType, new { @class = "form-control", placeholder = "Enter point type" })
+                                @Html.DropDownListFor(m => m.PointType, 
+                                    new List<SelectListItem> { 
+                                        new SelectListItem { Text = "Continuing Professional Development (CPD)", Value = "CPD" },
+                                        new SelectListItem { Text = "Continuing Education Program (CEP)", Value = "CEP" }
+                                    },
+                                    "Select point type", new { @class = "form-control" })
                                 @Html.ValidationMessageFor(m => m.PointType, "", new { @class = "text-danger" })
                             </div>
                             
