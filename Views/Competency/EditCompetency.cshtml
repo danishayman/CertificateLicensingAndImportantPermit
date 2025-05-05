@@ -30,14 +30,15 @@
                         </div>
                         
                         <div class="mb-3">
-                            @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Months)", new { @class = "form-label" })
+                            @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Years)", new { @class = "form-label" })
                             <div class="d-flex align-items-center mb-2">
                                 <div class="form-check me-3">
                                     <input type="checkbox" id="noValidityPeriod" class="form-check-input" />
                                     <label class="form-check-label" for="noValidityPeriod">No validity period</label>
                                 </div>
                             </div>
-                            @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter validity period" })
+                            @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", step = "0.5", placeholder = "Enter validity period in years" })
+                            <small class="form-text text-muted">Values are stored in months. Example: 1 year = 12 months, 0.5 years = 6 months</small>
                             @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
                         </div>
                         
@@ -82,6 +83,12 @@
     
     <script>
         $(document).ready(function() {
+            // Convert validity months to years for display
+            var validityMonths = $('#ValidityMonths').val();
+            if (validityMonths) {
+                $('#ValidityMonths').val((validityMonths / 12).toFixed(1).replace(/\.0$/, ''));
+            }
+            
             $('#noValidityPeriod').change(function() {
                 if($(this).is(':checked')) {
                     $('#ValidityMonths').val('').prop('disabled', true);
@@ -95,6 +102,17 @@
                 $('#noValidityPeriod').prop('checked', true);
                 $('#ValidityMonths').prop('disabled', true);
             }
+            
+            // When submitting the form, convert years back to months
+            $('form').submit(function() {
+                if (!$('#noValidityPeriod').is(':checked')) {
+                    var years = parseFloat($('#ValidityMonths').val());
+                    if (!isNaN(years)) {
+                        $('#ValidityMonths').val(Math.round(years * 12));
+                    }
+                }
+                return true;
+            });
         });
     </script>
 } 
