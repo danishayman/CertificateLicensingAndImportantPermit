@@ -203,7 +203,7 @@
                                                         <div class="@bgClass @expBorder" style="height: 24px; width: 100%;">
                                                             <a href="@Url.Action("Details", new { id = record.Id })" 
                                                                class="d-block w-100 h-100 text-white"
-                                                               title="@record.ProcStatus - @record.ExpStatus">
+                                                               title="@record.ProcStatus - @record.ExpStatus | @(record.ExpDate != null ? "Expiry: " + record.ExpDate.ToString("dd/MM/yyyy") : "No expiry date")">
                                                                 &nbsp;
                                                             </a>
                                                         </div>

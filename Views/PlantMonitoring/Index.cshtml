@@ -121,7 +121,7 @@
                         @if (item.ExpDate.HasValue)
                         {
                             <span class="@(item.ExpDate < DateTime.Now ? "text-danger" : (item.ExpDate < DateTime.Now.AddDays(30) ? "text-warning" : ""))">
-                                @item.ExpDate.Value.ToString("yyyy-MM-dd")
+                                @item.ExpDate.Value.ToString("dd/MM/yyyy")
                             </span>
                         }
                         else

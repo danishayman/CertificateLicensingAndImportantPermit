@@ -35,7 +35,7 @@
                     <dd class="col-sm-9">
                         @if (Model.ExpDate.HasValue)
                         {
-                            <span>@Model.ExpDate.Value.ToString("yyyy-MM-dd")</span>
+                            <span>@Model.ExpDate.Value.ToString("dd/MM/yyyy")</span>
                         }
                         else
                         {
@@ -43,9 +43,14 @@
                         }
                     </dd>
                     
-                    <dt class="col-sm-3">Current Status:</dt>
+                    <dt class="col-sm-3">Process Status:</dt>
                     <dd class="col-sm-9">
-                        <span class="badge @Model.StatusCssClass">@Model.Status</span>
+                        <span class="badge @Model.ProcStatusCssClass">@Model.ProcStatus</span>
+                    </dd>
+                    
+                    <dt class="col-sm-3">Expiration Status:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge @Model.ExpStatusCssClass">@Model.ExpStatus</span>
                     </dd>
                 </dl>
             </div>
