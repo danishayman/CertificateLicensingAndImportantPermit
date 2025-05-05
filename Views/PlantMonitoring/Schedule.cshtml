@@ -169,19 +169,41 @@
                                                     
                                                     foreach (var record in monthRecords)
                                                     {
-                                                        string bgClass = "bg-secondary"; // Gray for quote stage
+                                                        string bgClass = "bg-secondary"; // Default
                                                         
-                                                        if (record.WorkCompleteDate != null)
+                                                        // Use ProcStatus for the background color
+                                                        if (record.ProcStatus == "Completed")
                                                         {
                                                             bgClass = "bg-success"; // Green for completed
                                                         }
-                                                        else if (record.WorkDate != null)
+                                                        else if (record.ProcStatus == "In Progress")
                                                         {
                                                             bgClass = "bg-warning"; // Yellow for in progress
                                                         }
+                                                        else if (record.ProcStatus == "In Preparation")
+                                                        {
+                                                            bgClass = "bg-info"; // Blue for preparation
+                                                        }
+                                                        else if (record.ProcStatus == "In Quotation")
+                                                        {
+                                                            bgClass = "bg-secondary"; // Gray for quote stage
+                                                        }
                                                         
-                                                        <div class="@bgClass" style="height: 24px; width: 100%;">
-                                                            <a href="@Url.Action("Details", new { id = record.Id })" class="d-block w-100 h-100 text-white">
+                                                        // Add a border if expiring/expired
+                                                        string expBorder = "";
+                                                        if (record.ExpStatus == "Expired")
+                                                        {
+                                                            expBorder = "border border-danger";
+                                                        }
+                                                        else if (record.ExpStatus == "Expiring Soon")
+                                                        {
+                                                            expBorder = "border border-warning";
+                                                        }
+                                                        
+                                                        <div class="@bgClass @expBorder" style="height: 24px; width: 100%;">
+                                                            <a href="@Url.Action("Details", new { id = record.Id })" 
+                                                               class="d-block w-100 h-100 text-white"
+                                                               title="@record.ProcStatus - @record.ExpStatus">
                                                                 &nbsp;
                                                             </a>
                                                         </div>

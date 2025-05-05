@@ -52,13 +52,19 @@
                 <label for="status" class="mr-2">Status:</label>
                 <select id="status" name="status" class="form-control">
                     <option value="">All Status</option>
-                    @foreach (var status in ViewBag.StatusList)
-                    {
-                        if (status != "All")
-                        {
-                            <option value="@status" @(ViewBag.SelectedStatus == status ? "selected" : "")>@status</option>
-                        }
-                    }
+                    <optgroup label="Process Status">
+                        <option value="Completed" @(ViewBag.SelectedStatus == "Completed" ? "selected" : "")>Completed</option>
+                        <option value="In Progress" @(ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>In Progress</option>
+                        <option value="In Preparation" @(ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>In Preparation</option>
+                        <option value="In Quotation" @(ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>In Quotation</option>
+                        <option value="Not Started" @(ViewBag.SelectedStatus == "Not Started" ? "selected" : "")>Not Started</option>
+                    </optgroup>
+                    <optgroup label="Expiration Status">
+                        <option value="Valid" @(ViewBag.SelectedStatus == "Valid" ? "selected" : "")>Valid</option>
+                        <option value="Expiring Soon" @(ViewBag.SelectedStatus == "Expiring Soon" ? "selected" : "")>Expiring Soon</option>
+                        <option value="Expired" @(ViewBag.SelectedStatus == "Expired" ? "selected" : "")>Expired</option>
+                        <option value="No Expiry" @(ViewBag.SelectedStatus == "No Expiry" ? "selected" : "")>No Expiry</option>
+                    </optgroup>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary mb-2">Filter</button>
@@ -76,7 +82,8 @@
                 <th>Area</th>
                 <th>Frequency</th>
                 <th>Expiry Date</th>
-                <th>Status</th>
+                <th>Process Status</th>
+                <th>Expiration Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -123,7 +130,10 @@
                         }
                     </td>
                     <td>
-                        <span class="badge @item.StatusCssClass">@item.Status</span>
+                        <span class="badge @item.ProcStatusCssClass">@item.ProcStatus</span>
+                    </td>
+                    <td>
+                        <span class="badge @item.ExpStatusCssClass">@item.ExpStatus</span>
                     </td>
                     <td>
                         <div class="btn-group">

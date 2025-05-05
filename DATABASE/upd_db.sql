@@ -36,3 +36,5 @@ ADD
     QuoteDoc NVARCHAR(MAX) NULL,
     ePRDoc NVARCHAR(MAX)NULL,
     WorkDoc NVARCHAR(MAX) NULL;
+    ProcStatus NVARCHAR(50) NULL;
+    ExpStatus NVARCHAR(50) NULL;

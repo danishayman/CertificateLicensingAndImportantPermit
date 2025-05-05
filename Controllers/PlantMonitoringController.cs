@@ -53,35 +53,23 @@ namespace CLIP.Controllers
 
             if (!string.IsNullOrEmpty(status))
             {
-                // Filter by status
-                if (status == "Completed")
+                // Process status filters
+                if (status == "Completed" || status == "In Progress" || status == "In Preparation" || 
+                    status == "In Quotation" || status == "Not Started")
                 {
-                    query = query.Where(p => p.WorkCompleteDate != null);
+                    query = query.Where(p => p.ProcStatus == status);
                 }
-                else if (status == "In Progress")
-                {
-                    query = query.Where(p => p.WorkDate != null && p.WorkCompleteDate == null);
-                }
-                else if (status == "In Preparation")
-                {
-                    query = query.Where(p => p.EprDate != null && p.WorkDate == null);
-                }
-                else if (status == "In Quotation")
-                {
-                    query = query.Where(p => p.QuoteDate != null && p.EprDate == null);
-                }
-                else if (status == "Not Started")
-                {
-                    query = query.Where(p => p.QuoteDate == null);
-                }
+                // Expiration status filters
                 else if (status == "Expiring Soon")
                 {
                     var thirtyDaysFromNow = DateTime.Now.AddDays(30);
-                    query = query.Where(p => p.ExpDate != null && p.ExpDate <= thirtyDaysFromNow && p.ExpDate > DateTime.Now);
+                    query = query.Where(p => p.ExpStatus == "Expiring Soon" || 
+                                          (p.ExpDate != null && p.ExpDate <= thirtyDaysFromNow && p.ExpDate > DateTime.Now));
                 }
                 else if (status == "Expired")
                 {
-                    query = query.Where(p => p.ExpDate != null && p.ExpDate < DateTime.Now);
+                    query = query.Where(p => p.ExpStatus == "Expired" || 
+                                          (p.ExpDate != null && p.ExpDate < DateTime.Now));
                 }
                 
                 ViewBag.SelectedStatus = status;
@@ -112,13 +100,17 @@ namespace CLIP.Controllers
             ViewBag.StatusList = new List<string>
             {
                 "All",
+                // Process Statuses
                 "Completed",
                 "In Progress",
                 "In Preparation",
                 "In Quotation",
                 "Not Started",
+                // Expiration Statuses
+                "Valid",
                 "Expiring Soon",
-                "Expired"
+                "Expired",
+                "No Expiry"
             };
 
             // Group by Month for schedule view
@@ -192,7 +184,8 @@ namespace CLIP.Controllers
                 {
                     Id = pm.Id,
                     Area = pm.Area,
-                    Status = pm.Status,
+                    ProcStatus = pm.ProcStatus,
+                    ExpStatus = pm.ExpStatus,
                     ExpDate = pm.ExpDate,
                     QuoteDate = pm.QuoteDate,
                     WorkDate = pm.WorkDate,
@@ -263,6 +256,7 @@ namespace CLIP.Controllers
         {
             if (ModelState.IsValid)
             {
+                plantMonitoring.CalculateStatuses();
                 db.PlantMonitorings.Add(plantMonitoring);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -299,6 +293,7 @@ namespace CLIP.Controllers
         {
             if (ModelState.IsValid)
             {
+                plantMonitoring.CalculateStatuses();
                 db.Entry(plantMonitoring).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -421,6 +416,9 @@ namespace CLIP.Controllers
                 plantMonitoring.WorkSubmitDate = model.WorkSubmitDate;
                 plantMonitoring.WorkCompleteDate = model.WorkCompleteDate;
                 plantMonitoring.WorkUserAssign = model.WorkUserAssign;
+
+                // Calculate and set statuses
+                plantMonitoring.CalculateStatuses();
 
                 // Handle file uploads
                 if (quoteDocument != null && quoteDocument.ContentLength > 0)
@@ -561,7 +559,8 @@ namespace CLIP.Controllers
     {
         public int Id { get; set; }
         public string Area { get; set; }
-        public string Status { get; set; }
+        public string ProcStatus { get; set; }
+        public string ExpStatus { get; set; }
         public DateTime? ExpDate { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? WorkDate { get; set; }

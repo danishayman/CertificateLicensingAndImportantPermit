@@ -99,6 +99,14 @@ namespace CLIP.Models
         [Display(Name = "Remarks")]
         public string Remarks { get; set; }
 
+        [StringLength(50)]
+        [Display(Name = "Process Status")]
+        public string ProcStatus { get; set; }
+
+        [StringLength(50)]
+        [Display(Name = "Expiration Status")]
+        public string ExpStatus { get; set; }
+
         // Navigation properties
         [ForeignKey("PlantID")]
         public virtual Plant Plant { get; set; }
@@ -106,31 +114,47 @@ namespace CLIP.Models
         [ForeignKey("MonitoringID")]
         public virtual Monitoring Monitoring { get; set; }
 
-        // Helper properties for status determination
-        [NotMapped]
-        public string Status
+        // Helper method to calculate process status
+        public void CalculateProcStatus()
         {
-            get
-            {
-                if (WorkCompleteDate.HasValue)
-                    return "Completed";
-                else if (WorkDate.HasValue)
-                    return "In Progress";
-                else if (EprDate.HasValue)
-                    return "In Preparation";
-                else if (QuoteDate.HasValue)
-                    return "In Quotation";
-                else
-                    return "Not Started";
-            }
+            if (WorkCompleteDate.HasValue)
+                ProcStatus = "Completed";
+            else if (WorkDate.HasValue)
+                ProcStatus = "In Progress";
+            else if (EprDate.HasValue)
+                ProcStatus = "In Preparation";
+            else if (QuoteDate.HasValue)
+                ProcStatus = "In Quotation";
+            else
+                ProcStatus = "Not Started";
+        }
+
+        // Helper method to calculate expiration status
+        public void CalculateExpStatus()
+        {
+            if (!ExpDate.HasValue)
+                ExpStatus = "No Expiry";
+            else if (ExpDate < DateTime.Now)
+                ExpStatus = "Expired";
+            else if (ExpDate < DateTime.Now.AddDays(30))
+                ExpStatus = "Expiring Soon";
+            else
+                ExpStatus = "Valid";
+        }
+
+        // Helper method to calculate both statuses
+        public void CalculateStatuses()
+        {
+            CalculateProcStatus();
+            CalculateExpStatus();
         }
 
         [NotMapped]
-        public string StatusCssClass
+        public string ProcStatusCssClass
         {
             get
             {
-                switch (Status)
+                switch (ProcStatus)
                 {
                     case "Completed":
                         return "bg-success";
@@ -139,6 +163,27 @@ namespace CLIP.Models
                     case "In Preparation":
                         return "bg-warning";
                     case "In Quotation":
+                        return "bg-secondary";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        [NotMapped]
+        public string ExpStatusCssClass
+        {
+            get
+            {
+                switch (ExpStatus)
+                {
+                    case "Expired":
+                        return "bg-danger";
+                    case "Expiring Soon":
+                        return "bg-warning";
+                    case "Valid":
+                        return "bg-success";
+                    case "No Expiry":
                         return "bg-secondary";
                     default:
                         return "";
