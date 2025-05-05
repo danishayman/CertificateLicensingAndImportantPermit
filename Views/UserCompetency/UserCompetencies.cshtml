@@ -8,7 +8,7 @@
         <h1>Competencies for @ViewBag.User.UserName</h1>
         <div>
             <a href="@Url.Action("Index", "UserCompetency")" class="btn btn-outline-secondary me-2">
-                <i class="fas fa-arrow-left me-2"></i>Back to All Competencies
+                <i class="fas fa-arrow-left me-2"></i>Back
             </a>
             @if (User.IsInRole("Admin"))
             {
@@ -125,6 +125,7 @@
                             <th>Completion Date</th>
                             <th>Expiry Date</th>
                             <th>Remarks</th>
+                            <th>Buildings</th>
                             @if (User.IsInRole("Admin"))
                             {
                                 <th>Actions</th>
@@ -137,7 +138,6 @@
                             <tr data-module="@item.CompetencyModule.ModuleName" data-status="@item.Status">
                                 <td>
                                     <div>@item.CompetencyModule.ModuleName</div>
-                                    <small class="text-muted">@(item.CompetencyModule.IsMandatory ? "Mandatory" : "Optional")</small>
                                 </td>
                                 <td>
                                     @switch (item.Status)
@@ -185,6 +185,20 @@
                                     }
                                 </td>
                                 <td>@(string.IsNullOrEmpty(item.Remarks) ? "-" : item.Remarks)</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Building))
+                                    {
+                                        var buildings = item.Building.Split(',');
+                                        foreach (var building in buildings)
+                                        {
+                                            <span class="badge bg-info me-1">@building</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <td>

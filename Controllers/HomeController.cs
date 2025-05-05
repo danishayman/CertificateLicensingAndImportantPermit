@@ -206,7 +206,9 @@ namespace CLIP.Controllers
                 competency.ModuleName = model.ModuleName;
                 competency.Description = model.Description;
                 competency.ValidityMonths = model.ValidityMonths;
-                competency.IsMandatory = model.IsMandatory;
+                competency.PointType = model.PointType;
+                competency.TotalPoints = model.TotalPoints;
+                competency.AnnualPointDeduction = model.AnnualPointDeduction;
                 
                 db.SaveChanges();
                 
@@ -215,7 +217,6 @@ namespace CLIP.Controllers
             }
             
             return View(model);
-
         }
     }
 }

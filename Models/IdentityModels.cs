@@ -14,6 +14,7 @@ namespace CLIP.Models
         {
             UserPlants = new HashSet<UserPlant>();
             UserCompetencies = new HashSet<UserCompetency>();
+            UserPoints = new HashSet<UserPoint>();
         }
 
         public string EmpID { get; set; }
@@ -21,6 +22,7 @@ namespace CLIP.Models
         // Navigation properties
         public virtual ICollection<UserPlant> UserPlants { get; set; }
         public virtual ICollection<UserCompetency> UserCompetencies { get; set; }
+        public virtual ICollection<UserPoint> UserPoints { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -45,6 +47,7 @@ namespace CLIP.Models
 
         public DbSet<CompetencyModule> CompetencyModules { get; set; }
         public DbSet<UserCompetency> UserCompetencies { get; set; }
+        public DbSet<UserPoint> UserPoints { get; set; }
         public DbSet<Plant> Plants { get; set; }
         public DbSet<UserPlant> UserPlants { get; set; }
         public DbSet<AreaPlant> AreaPlants { get; set; }
@@ -67,6 +70,19 @@ namespace CLIP.Models
                 .HasRequired(uc => uc.CompetencyModule)
                 .WithMany(cm => cm.UserCompetencies)
                 .HasForeignKey(uc => uc.CompetencyModuleId)
+                .WillCascadeOnDelete(false);
+
+            // Configure UserPoint relationships
+            modelBuilder.Entity<UserPoint>()
+                .HasRequired(up => up.User)
+                .WithMany(u => u.UserPoints)
+                .HasForeignKey(up => up.UserId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserPoint>()
+                .HasRequired(up => up.CompetencyModule)
+                .WithMany(cm => cm.UserPoints)
+                .HasForeignKey(up => up.CompetencyModuleId)
                 .WillCascadeOnDelete(false);
 
             // Configure UserPlant relationships

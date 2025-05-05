@@ -79,6 +79,7 @@
                             <th>Status</th>
                             <th>Completion Date</th>
                             <th>Expiry Date</th>
+                            <th>Buildings</th>
                         </tr>
                     </thead>
                     <tbody id="competencyTableBody">
@@ -87,7 +88,6 @@
                             <tr data-module="@item.CompetencyModule.ModuleName" data-status="@item.Status">
                                 <td>
                                     <div>@item.CompetencyModule.ModuleName</div>
-                                    <small class="text-muted">@(item.CompetencyModule.IsMandatory ? "Mandatory" : "Optional")</small>
                                 </td>
                                 <td>@(string.IsNullOrEmpty(item.CompetencyModule.Description) ? "-" : item.CompetencyModule.Description)</td>
                                 <td>
@@ -117,7 +117,11 @@
                                 <td>
                                     @if (item.ExpiryDate.HasValue)
                                     {
-                                        if (item.ExpiryDate.Value < DateTime.Today.AddMonths(1))
+                                        if (item.ExpiryDate.Value < DateTime.Today)
+                                        {
+                                            <span class="text-danger">@item.ExpiryDate.Value.ToShortDateString()</span>
+                                        }
+                                        else if (item.ExpiryDate.Value < DateTime.Today.AddMonths(1))
                                         {
                                             <span class="text-warning">@item.ExpiryDate.Value.ToShortDateString()</span>
                                         }
@@ -129,6 +133,20 @@
                                     else
                                     {
                                         <span>-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Building))
+                                    {
+                                        var buildings = item.Building.Split(',');
+                                        foreach (var building in buildings)
+                                        {
+                                            <span class="badge bg-info me-1">@building</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
                                     }
                                 </td>
                             </tr>
@@ -161,7 +179,6 @@
                                 <tr>
                                     <td>
                                         <div>@item.CompetencyModule.ModuleName</div>
-                                        <small class="text-muted">@(item.CompetencyModule.IsMandatory ? "Mandatory" : "Optional")</small>
                                     </td>
                                     <td>@(string.IsNullOrEmpty(item.CompetencyModule.Description) ? "-" : item.CompetencyModule.Description)</td>
                                     <td>@(item.CompletionDate.HasValue ? item.CompletionDate.Value.ToShortDateString() : "-")</td>

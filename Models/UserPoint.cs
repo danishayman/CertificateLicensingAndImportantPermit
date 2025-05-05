@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CLIP.Models
 {
-    public class UserCompetency
+    public class UserPoint
     {
         public int Id { get; set; }
         
@@ -14,19 +14,12 @@ namespace CLIP.Models
         [Required]
         public int CompetencyModuleId { get; set; }
         
-        [Required]
-        [StringLength(50)]
-        public string Status { get; set; } // 'Not Started', 'In Progress', 'Completed', 'Expired'
+        public int? PointsEarned { get; set; }
+        
+        public int? PointsRemaining { get; set; }
         
         [Column(TypeName = "Date")]
-        public DateTime? CompletionDate { get; set; }
-        
-        [Column(TypeName = "Date")]
-        public DateTime? ExpiryDate { get; set; }
-        
-        public string Remarks { get; set; }
-        
-        public string Building { get; set; }
+        public DateTime? LastEvaluatedDate { get; set; }
 
         // Navigation properties
         [ForeignKey("UserId")]

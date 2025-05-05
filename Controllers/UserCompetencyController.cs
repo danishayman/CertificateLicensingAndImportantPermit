@@ -16,12 +16,19 @@ namespace CLIP.Controllers
         public ActionResult Index()
         {
             var db = new ApplicationDbContext();
-            var userCompetencies = db.UserCompetencies
-                .Include(uc => uc.User)
-                .Include(uc => uc.CompetencyModule)
+            
+            // Get all competency modules
+            var competencyModules = db.CompetencyModules
+                .Include(cm => cm.UserCompetencies.Select(uc => uc.User))
                 .ToList();
             
-            return View(userCompetencies);
+            return View(competencyModules);
+        }
+
+        // Legacy action - redirects to main view
+        public ActionResult UserView()
+        {
+            return RedirectToAction("Index");
         }
 
         // GET: UserCompetency/Assign
@@ -39,7 +46,7 @@ namespace CLIP.Controllers
         // POST: UserCompetency/Assign
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Assign(UserCompetency model)
+        public ActionResult Assign(UserCompetency model, string[] Building)
         {
             if (ModelState.IsValid)
             {
@@ -78,6 +85,12 @@ namespace CLIP.Controllers
                     }
                 }
                 
+                // Process selected buildings
+                if (Building != null && Building.Length > 0)
+                {
+                    model.Building = string.Join(",", Building);
+                }
+                
                 db.UserCompetencies.Add(model);
                 db.SaveChanges();
                 
@@ -111,13 +124,19 @@ namespace CLIP.Controllers
             // Prepare status dropdown items with new options
             ViewBag.Statuses = new List<string> 
             {
-                "Requested",
-                "Course attended",
-                "Examination passed",
-                "FTR Submitted",
-                "Interview",
-                "Completed"
+                "Pending",
+                "Certified"
             };
+            
+            // Set up the selected buildings if any
+            if (!string.IsNullOrEmpty(userCompetency.Building))
+            {
+                ViewBag.SelectedBuildings = userCompetency.Building.Split(',');
+            }
+            else
+            {
+                ViewBag.SelectedBuildings = new string[] { };
+            }
             
             return View(userCompetency);
         }
@@ -125,7 +144,7 @@ namespace CLIP.Controllers
         // POST: UserCompetency/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(UserCompetency model)
+        public ActionResult Edit(UserCompetency model, string[] Building)
         {
             if (ModelState.IsValid)
             {
@@ -143,8 +162,18 @@ namespace CLIP.Controllers
                 userCompetency.CompletionDate = model.CompletionDate;
                 userCompetency.Remarks = model.Remarks;
                 
-                // If status is changed to "Completed" and no completion date is set, set it to today
-                if (model.Status == "Completed" && !userCompetency.CompletionDate.HasValue)
+                // Process selected buildings
+                if (Building != null && Building.Length > 0)
+                {
+                    userCompetency.Building = string.Join(",", Building);
+                }
+                else
+                {
+                    userCompetency.Building = null;
+                }
+                
+                // If status is changed to "Certified" and no completion date is set, set it to today
+                if (model.Status == "Certified" && !userCompetency.CompletionDate.HasValue)
                 {
                     userCompetency.CompletionDate = DateTime.Today;
                     
@@ -165,16 +194,25 @@ namespace CLIP.Controllers
                 return RedirectToAction("Index");
             }
             
-            // If we got this far, something failed; reload form
+            // If we got this far, something failed; reload validation
+            var context = new ApplicationDbContext();
+            
+            // Prepare status dropdown items with new options
             ViewBag.Statuses = new List<string> 
             {
-                "Requested",
-                "Course attended",
-                "Examination passed",
-                "FTR Submitted",
-                "Interview",
-                "Completed"
+                "Pending",
+                "Certified"
             };
+            
+            // Set up the selected buildings if any
+            if (Building != null && Building.Length > 0)
+            {
+                ViewBag.SelectedBuildings = Building;
+            }
+            else
+            {
+                ViewBag.SelectedBuildings = new string[] { };
+            }
             
             return View(model);
         }

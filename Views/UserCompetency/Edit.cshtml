@@ -60,10 +60,171 @@
                             <textarea class="form-control" id="Remarks" name="Remarks" rows="3">@Model.Remarks</textarea>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Assigned Buildings</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="form-check">
+                                                @{
+                                                    bool hasOverallInari = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Overall Inari")
+                                                            {
+                                                                hasOverallInari = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input" type="checkbox" name="Building" value="Overall Inari" id="buildingOverall" @(hasOverallInari ? "checked" : "")>
+                                                <label class="form-check-label fw-bold" for="buildingOverall">Overall Inari</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant1 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 1")
+                                                            {
+                                                                hasPlant1 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 1" id="building1" @(hasPlant1 ? "checked" : "")>
+                                                <label class="form-check-label" for="building1">Plant 1</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant3 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 3")
+                                                            {
+                                                                hasPlant3 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 3" id="building3" @(hasPlant3 ? "checked" : "")>
+                                                <label class="form-check-label" for="building3">Plant 3</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant34 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 34")
+                                                            {
+                                                                hasPlant34 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 34" id="building34" @(hasPlant34 ? "checked" : "")>
+                                                <label class="form-check-label" for="building34">Plant 34</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant55 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 55")
+                                                            {
+                                                                hasPlant55 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 55" id="building55" @(hasPlant55 ? "checked" : "")>
+                                                <label class="form-check-label" for="building55">Plant 55</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant13 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 13")
+                                                            {
+                                                                hasPlant13 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 13" id="building13" @(hasPlant13 ? "checked" : "")>
+                                                <label class="form-check-label" for="building13">Plant 13</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant21 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 21")
+                                                            {
+                                                                hasPlant21 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 21" id="building21" @(hasPlant21 ? "checked" : "")>
+                                                <label class="form-check-label" for="building21">Plant 21</label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                @{
+                                                    bool hasPlant5 = false;
+                                                    if (ViewBag.SelectedBuildings != null)
+                                                    {
+                                                        foreach (var building in ViewBag.SelectedBuildings)
+                                                        {
+                                                            if (building == "Plant 5")
+                                                            {
+                                                                hasPlant5 = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                <input class="form-check-input building-specific" type="checkbox" name="Building" value="Plant 5" id="building5" @(hasPlant5 ? "checked" : "")>
+                                                <label class="form-check-label" for="building5">Plant 5</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted">Select all buildings that apply</small>
+                        </div>
+
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle me-2"></i>
                             <small>
-                                When status is set to "Completed", the expiry date will be automatically calculated based on the competency module's validity period.
+                                When status is set to "Certified", the expiry date will be automatically calculated based on the competency module's validity period.
                             </small>
                         </div>
 
@@ -98,15 +259,52 @@
                     })
             })()
 
-            // Handle completion date auto-setting when status changes to Completed
+            // Handle completion date auto-setting when status changes to Certified
             $('#Status').on('change', function() {
-                if ($(this).val() === 'Completed' && $('#CompletionDate').val() === '') {
+                if ($(this).val() === 'Certified' && $('#CompletionDate').val() === '') {
                     var today = new Date();
                     var dd = String(today.getDate()).padStart(2, '0');
                     var mm = String(today.getMonth() + 1).padStart(2, '0');
                     var yyyy = today.getFullYear();
                     today = yyyy + '-' + mm + '-' + dd;
                     $('#CompletionDate').val(today);
+                }
+            });
+            
+            // Initialize the buildings checkboxes state
+            function initBuildingCheckboxes() {
+                if ($('#buildingOverall').is(':checked')) {
+                    $('.building-specific').prop('checked', false);
+                    $('.building-specific').prop('disabled', true);
+                } else if ($('.building-specific:checked').length > 0) {
+                    $('#buildingOverall').prop('disabled', true);
+                }
+            }
+            
+            // Run on page load
+            initBuildingCheckboxes();
+            
+            // Handle Overall Inari checkbox interaction
+            $('#buildingOverall').on('change', function() {
+                if ($(this).is(':checked')) {
+                    // Disable all specific building checkboxes
+                    $('.building-specific').prop('checked', false);
+                    $('.building-specific').prop('disabled', true);
+                } else {
+                    // Enable all specific building checkboxes
+                    $('.building-specific').prop('disabled', false);
+                }
+            });
+
+            // Handle specific building checkboxes
+            $('.building-specific').on('change', function() {
+                if ($('.building-specific:checked').length > 0) {
+                    // Disable Overall Inari checkbox
+                    $('#buildingOverall').prop('checked', false);
+                    $('#buildingOverall').prop('disabled', true);
+                } else {
+                    // Enable Overall Inari checkbox
+                    $('#buildingOverall').prop('disabled', false);
                 }
             });
         });

@@ -228,6 +228,7 @@
     <Compile Include="Models\PlantMonitoring.cs" />
     <Compile Include="Models\UserCompetency.cs" />
     <Compile Include="Models\UserPlant.cs" />
+    <Compile Include="Models\UserPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

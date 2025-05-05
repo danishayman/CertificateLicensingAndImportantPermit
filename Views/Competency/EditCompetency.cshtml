@@ -29,24 +29,35 @@
                             @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                         </div>
                         
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Months)", new { @class = "form-label" })
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="form-check me-3">
-                                        <input type="checkbox" id="noValidityPeriod" class="form-check-input" />
-                                        <label class="form-check-label" for="noValidityPeriod">No validity period</label>
-                                    </div>
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ValidityMonths, "Validity Period (Months)", new { @class = "form-label" })
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="form-check me-3">
+                                    <input type="checkbox" id="noValidityPeriod" class="form-check-input" />
+                                    <label class="form-check-label" for="noValidityPeriod">No validity period</label>
                                 </div>
-                                @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter validity period" })
-                                @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
+                            </div>
+                            @Html.TextBoxFor(m => m.ValidityMonths, new { @class = "form-control", type = "number", min = "1", placeholder = "Enter validity period" })
+                            @Html.ValidationMessageFor(m => m.ValidityMonths, "", new { @class = "text-danger" })
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                @Html.LabelFor(m => m.PointType, "Point Type", new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.PointType, new { @class = "form-control", placeholder = "Enter point type" })
+                                @Html.ValidationMessageFor(m => m.PointType, "", new { @class = "text-danger" })
                             </div>
                             
-                            <div class="col-md-6">
-                                <div class="form-check mt-4">
-                                    @Html.CheckBoxFor(m => m.IsMandatory, new { @class = "form-check-input" })
-                                    @Html.LabelFor(m => m.IsMandatory, "Is this module mandatory?", new { @class = "form-check-label" })
-                                </div>
+                            <div class="col-md-4">
+                                @Html.LabelFor(m => m.TotalPoints, "Total Points", new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.TotalPoints, new { @class = "form-control", type = "number", min = "0", placeholder = "Enter total points" })
+                                @Html.ValidationMessageFor(m => m.TotalPoints, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="col-md-4">
+                                @Html.LabelFor(m => m.AnnualPointDeduction, "Annual Point Deduction", new { @class = "form-label" })
+                                @Html.TextBoxFor(m => m.AnnualPointDeduction, new { @class = "form-control", type = "number", min = "0", placeholder = "Enter deduction points" })
+                                @Html.ValidationMessageFor(m => m.AnnualPointDeduction, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         

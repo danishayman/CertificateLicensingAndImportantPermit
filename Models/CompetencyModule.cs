@@ -9,6 +9,7 @@ namespace CLIP.Models
         public CompetencyModule()
         {
             UserCompetencies = new HashSet<UserCompetency>();
+            UserPoints = new HashSet<UserPoint>();
         }
 
         public int Id { get; set; }
@@ -21,9 +22,14 @@ namespace CLIP.Models
         
         public int? ValidityMonths { get; set; }
         
-        public bool IsMandatory { get; set; }
-
-        // Navigation property
+        public string PointType { get; set; }
+        
+        public int? TotalPoints { get; set; }
+        
+        public int? AnnualPointDeduction { get; set; }
+        
+        // Navigation properties
         public virtual ICollection<UserCompetency> UserCompetencies { get; set; }
+        public virtual ICollection<UserPoint> UserPoints { get; set; }
     }
 } 
