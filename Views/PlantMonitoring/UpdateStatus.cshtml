@@ -60,7 +60,7 @@
         <!-- Quotation Phase -->
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Quotation Phase</h5>
                 </div>
                 <div class="card-body">
@@ -100,8 +100,8 @@
                             @if (!string.IsNullOrEmpty(Model.QuoteDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -154,8 +154,8 @@
                             @if (!string.IsNullOrEmpty(Model.EprDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -208,8 +208,8 @@
                             @if (!string.IsNullOrEmpty(Model.WorkDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -222,8 +222,12 @@
 
     <div class="form-group row">
         <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            @Html.ActionLink("Back to Details", "Details", new { id = Model.Id }, new { @class = "btn btn-secondary" })
+            <button type="submit" class="btn btn-primary" title="Save Changes">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary" title="Back to Details">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         </div>
     </div>
 }

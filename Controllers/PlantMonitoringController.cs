@@ -594,7 +594,7 @@ namespace CLIP.Controllers
                         return "bg-info";
                     case "Quotation Requested":
                     case "In Quotation": // For backward compatibility
-                        return "bg-secondary";
+                        return "bg-primary";
                     default:
                         return "";
                 }

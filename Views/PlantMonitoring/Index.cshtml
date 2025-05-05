@@ -130,26 +130,26 @@
                         }
                     </td>
                     <td>
-                        <span class="badge @item.ProcStatusCssClass">@item.ProcStatus</span>
+                        <span class="badge @item.ProcStatusCssClass text-white">@item.ProcStatus</span>
                     </td>
                     <td>
-                        <span class="badge @item.ExpStatusCssClass">@item.ExpStatus</span>
+                        <span class="badge @item.ExpStatusCssClass text-white">@item.ExpStatus</span>
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
-                                <i class="fas fa-info-circle"></i> Details
+                            <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info" title="View Details">
+                                <i class="fas fa-info-circle"></i>
                             </a>
-                            <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary">
-                                <i class="fas fa-tasks"></i> Update
+                            <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary" title="Update Status">
+                                <i class="fas fa-tasks"></i>
                             </a>
                             @if (User.IsInRole("Admin"))
                             {
-                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning" title="Edit Record">
+                                    <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
+                                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger" title="Delete Record">
+                                    <i class="fas fa-trash"></i>
                                 </a>
                             }
                         </div>
