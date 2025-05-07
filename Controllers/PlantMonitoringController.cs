@@ -18,7 +18,7 @@ namespace CLIP.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: PlantMonitoring
-        public ActionResult Index(string category = null, int? plantId = null, string status = null)
+        public ActionResult Index(string category = null, int? plantId = null, string status = null, string monitoringType = null, int? frequency = null)
         {
             // Get all plant monitoring items with plant and monitoring details
             var query = db.PlantMonitorings
@@ -53,36 +53,38 @@ namespace CLIP.Controllers
 
             if (!string.IsNullOrEmpty(status))
             {
-                // Process status filters
+                // Process and expiry statuses
                 if (status == "Completed" || status == "Work In Progress" || status == "ePR Raised" || 
-                    status == "Quotation Requested" || status == "Not Started" ||
-                    status == "In Progress" || status == "In Preparation" || status == "In Quotation")
+                    status == "Quotation Requested" || status == "Not Started" || status == "In Progress" || 
+                    status == "In Preparation" || status == "In Quotation")
                 {
-                    // Handle backward compatibility with old status names
-                    string normalizedStatus = status;
-                    if (status == "In Progress") normalizedStatus = "Work In Progress";
-                    if (status == "In Preparation") normalizedStatus = "ePR Raised";
-                    if (status == "In Quotation") normalizedStatus = "Quotation Requested";
+                    // Handle legacy status names
+                    if (status == "In Progress") status = "Work In Progress";
+                    if (status == "In Preparation") status = "ePR Raised";
+                    if (status == "In Quotation") status = "Quotation Requested";
                     
-                    query = query.Where(p => p.ProcStatus == normalizedStatus || 
-                                       (status == "Work In Progress" && p.ProcStatus == "In Progress") ||
-                                       (status == "ePR Raised" && p.ProcStatus == "In Preparation") ||
-                                       (status == "Quotation Requested" && p.ProcStatus == "In Quotation"));
+                    query = query.Where(p => p.ProcStatus == status);
                 }
-                // Expiration status filters
-                else if (status == "Expiring Soon")
+                else
                 {
-                    var thirtyDaysFromNow = DateTime.Now.AddDays(30);
-                    query = query.Where(p => p.ExpStatus == "Expiring Soon" || 
-                                          (p.ExpDate != null && p.ExpDate <= thirtyDaysFromNow && p.ExpDate > DateTime.Now));
+                    query = query.Where(p => p.ExpStatus == status);
                 }
-                else if (status == "Expired")
-                {
-                    query = query.Where(p => p.ExpStatus == "Expired" || 
-                                          (p.ExpDate != null && p.ExpDate < DateTime.Now));
-                }
-                
+
                 ViewBag.SelectedStatus = status;
+            }
+
+            // New filter for monitoring type
+            if (!string.IsNullOrEmpty(monitoringType))
+            {
+                query = query.Where(p => p.Monitoring.MonitoringName == monitoringType);
+                ViewBag.SelectedMonitoringType = monitoringType;
+            }
+
+            // New filter for frequency
+            if (frequency.HasValue)
+            {
+                query = query.Where(p => p.Monitoring.MonitoringFreq == frequency.Value);
+                ViewBag.SelectedFrequency = frequency.Value;
             }
 
             // Load plants and monitoring categories for filtering
@@ -105,6 +107,13 @@ namespace CLIP.Controllers
                 .Select(m => m.MonitoringCategory)
                 .Distinct()
                 .OrderBy(c => c)
+                .ToList();
+
+            // Add monitoring types for the filter
+            ViewBag.MonitoringTypes = db.Monitorings
+                .Select(m => m.MonitoringName)
+                .Distinct()
+                .OrderBy(t => t)
                 .ToList();
 
             ViewBag.StatusList = new List<string>

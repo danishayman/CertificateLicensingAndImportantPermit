@@ -40,7 +40,7 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.Id)
-    
+
     <div class="row">
         <div class="col-md-12 mb-4">
             <div class="card">
@@ -73,7 +73,7 @@
 
 <div class="row">
     <!-- Quotation Phase Form -->
-    <div class="col-md-4">
+        <div class="col-md-4">
         @using (Html.BeginForm("UpdateQuotation", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
@@ -134,10 +134,10 @@
                 </div>
             </div>
         }
-    </div>
-    
+        </div>
+        
     <!-- Preparation Phase Form -->
-    <div class="col-md-4">
+        <div class="col-md-4">
         @using (Html.BeginForm("UpdateEpr", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
@@ -198,10 +198,10 @@
                 </div>
             </div>
         }
-    </div>
-    
+        </div>
+        
     <!-- Work Execution Phase Form -->
-    <div class="col-md-4">
+        <div class="col-md-4">
         @using (Html.BeginForm("UpdateWork", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
             @Html.AntiForgeryToken()
@@ -263,11 +263,11 @@
                 </div>
             </div>
         }
+        </div>
     </div>
-</div>
 
 <div class="row mb-4">
-    <div class="col-md-12">
+        <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary" title="Back to Details">

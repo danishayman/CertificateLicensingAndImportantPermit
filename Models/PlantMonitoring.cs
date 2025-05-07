@@ -163,6 +163,8 @@ namespace CLIP.Models
                     case "ePR Raised":
                         return "bg-warning";
                     case "Quotation Requested":
+                        return "bg-primary";
+                    case "Not Started":
                         return "bg-secondary";
                     default:
                         return "";
