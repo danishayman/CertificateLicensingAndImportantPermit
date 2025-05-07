@@ -46,6 +46,7 @@
                         <label class="col-sm-2 col-form-label">Expiry Date:</label>
                         <div class="col-sm-4">
                             @Html.TextBoxFor(model => model.ExpDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            <small class="form-text text-muted">Will be automatically set to 1 year after completion date if work is completed.</small>
                             @Html.ValidationMessageFor(model => model.ExpDate, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -58,7 +59,7 @@
         <!-- Quotation Phase -->
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0">Quotation Phase</h5>
                 </div>
                 <div class="card-body">
@@ -156,6 +157,7 @@
                         <label class="col-sm-4 col-form-label">Complete:</label>
                         <div class="col-sm-8">
                             @Html.TextBoxFor(model => model.WorkCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            <small class="form-text text-muted">When completed, renewal date will be set to 1 year from this date.</small>
                         </div>
                     </div>
                     

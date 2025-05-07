@@ -18,7 +18,7 @@ namespace CLIP.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: PlantMonitoring
-        public ActionResult Index(string category = null, int? plantId = null, string status = null)
+        public ActionResult Index(string category = null, int? plantId = null, string status = null, string monitoringType = null, int? frequency = null)
         {
             // Get all plant monitoring items with plant and monitoring details
             var query = db.PlantMonitorings
@@ -53,26 +53,38 @@ namespace CLIP.Controllers
 
             if (!string.IsNullOrEmpty(status))
             {
-                // Process status filters
-                if (status == "Completed" || status == "In Progress" || status == "In Preparation" || 
-                    status == "In Quotation" || status == "Not Started")
+                // Process and expiry statuses
+                if (status == "Completed" || status == "Work In Progress" || status == "ePR Raised" || 
+                    status == "Quotation Requested" || status == "Not Started" || status == "In Progress" || 
+                    status == "In Preparation" || status == "In Quotation")
                 {
+                    // Handle legacy status names
+                    if (status == "In Progress") status = "Work In Progress";
+                    if (status == "In Preparation") status = "ePR Raised";
+                    if (status == "In Quotation") status = "Quotation Requested";
+                    
                     query = query.Where(p => p.ProcStatus == status);
                 }
-                // Expiration status filters
-                else if (status == "Expiring Soon")
+                else
                 {
-                    var thirtyDaysFromNow = DateTime.Now.AddDays(30);
-                    query = query.Where(p => p.ExpStatus == "Expiring Soon" || 
-                                          (p.ExpDate != null && p.ExpDate <= thirtyDaysFromNow && p.ExpDate > DateTime.Now));
+                    query = query.Where(p => p.ExpStatus == status);
                 }
-                else if (status == "Expired")
-                {
-                    query = query.Where(p => p.ExpStatus == "Expired" || 
-                                          (p.ExpDate != null && p.ExpDate < DateTime.Now));
-                }
-                
+
                 ViewBag.SelectedStatus = status;
+            }
+
+            // New filter for monitoring type
+            if (!string.IsNullOrEmpty(monitoringType))
+            {
+                query = query.Where(p => p.Monitoring.MonitoringName == monitoringType);
+                ViewBag.SelectedMonitoringType = monitoringType;
+            }
+
+            // New filter for frequency
+            if (frequency.HasValue)
+            {
+                query = query.Where(p => p.Monitoring.MonitoringFreq == frequency.Value);
+                ViewBag.SelectedFrequency = frequency.Value;
             }
 
             // Load plants and monitoring categories for filtering
@@ -97,14 +109,21 @@ namespace CLIP.Controllers
                 .OrderBy(c => c)
                 .ToList();
 
+            // Add monitoring types for the filter
+            ViewBag.MonitoringTypes = db.Monitorings
+                .Select(m => m.MonitoringName)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToList();
+
             ViewBag.StatusList = new List<string>
             {
                 "All",
                 // Process Statuses
                 "Completed",
-                "In Progress",
-                "In Preparation",
-                "In Quotation",
+                "Work In Progress",
+                "ePR Raised",
+                "Quotation Requested",
                 "Not Started",
                 // Expiration Statuses
                 "Valid",
@@ -188,6 +207,7 @@ namespace CLIP.Controllers
                     ExpStatus = pm.ExpStatus,
                     ExpDate = pm.ExpDate,
                     QuoteDate = pm.QuoteDate,
+                    EprDate = pm.EprDate,
                     WorkDate = pm.WorkDate,
                     WorkCompleteDate = pm.WorkCompleteDate
                 };
@@ -256,6 +276,13 @@ namespace CLIP.Controllers
         {
             if (ModelState.IsValid)
             {
+                // If WorkCompleteDate is present (meaning the monitoring is completed),
+                // set the renewal date (ExpDate) to 1 year from completion
+                if (plantMonitoring.WorkCompleteDate.HasValue)
+                {
+                    plantMonitoring.ExpDate = plantMonitoring.WorkCompleteDate.Value.AddYears(1);
+                }
+                
                 plantMonitoring.CalculateStatuses();
                 db.PlantMonitorings.Add(plantMonitoring);
                 db.SaveChanges();
@@ -293,6 +320,13 @@ namespace CLIP.Controllers
         {
             if (ModelState.IsValid)
             {
+                // If WorkCompleteDate is present (meaning the monitoring is completed),
+                // set the renewal date (ExpDate) to 1 year from completion
+                if (plantMonitoring.WorkCompleteDate.HasValue)
+                {
+                    plantMonitoring.ExpDate = plantMonitoring.WorkCompleteDate.Value.AddYears(1);
+                }
+                
                 plantMonitoring.CalculateStatuses();
                 db.Entry(plantMonitoring).State = EntityState.Modified;
                 db.SaveChanges();
@@ -416,6 +450,13 @@ namespace CLIP.Controllers
                 plantMonitoring.WorkSubmitDate = model.WorkSubmitDate;
                 plantMonitoring.WorkCompleteDate = model.WorkCompleteDate;
                 plantMonitoring.WorkUserAssign = model.WorkUserAssign;
+                
+                // If WorkCompleteDate is present (meaning the monitoring is completed),
+                // set the renewal date (ExpDate) to 1 year from completion
+                if (model.WorkCompleteDate.HasValue)
+                {
+                    plantMonitoring.ExpDate = model.WorkCompleteDate.Value.AddYears(1);
+                }
 
                 // Calculate and set statuses
                 plantMonitoring.CalculateStatuses();
@@ -517,6 +558,9 @@ namespace CLIP.Controllers
                 db.Entry(plantMonitoring).State = EntityState.Modified;
                 db.SaveChanges();
 
+                // Success message
+                TempData["SuccessMessage"] = "Expiry date and remarks successfully updated.";
+
                 return RedirectToAction("Details", new { id = plantMonitoring.Id });
             }
 
@@ -544,6 +588,246 @@ namespace CLIP.Controllers
             return View(model);
         }
 
+        // POST: PlantMonitoring/UpdateExpiry/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateExpiry(int id, PlantMonitoring model)
+        {
+            var plantMonitoring = db.PlantMonitorings.Find(id);
+            if (plantMonitoring == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            // Update only expiry and remarks
+            plantMonitoring.ExpDate = model.ExpDate;
+            plantMonitoring.Remarks = model.Remarks;
+            
+            // Calculate statuses after update
+            plantMonitoring.CalculateStatuses();
+            
+            db.Entry(plantMonitoring).State = EntityState.Modified;
+            db.SaveChanges();
+
+            // Success message
+            TempData["SuccessMessage"] = "Expiry date and remarks successfully updated.";
+
+            // Redirect back to the update page
+            return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+        }
+
+        // POST: PlantMonitoring/UpdateQuotation/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateQuotation(int id, PlantMonitoring model, HttpPostedFileBase quoteDocument)
+        {
+            var plantMonitoring = db.PlantMonitorings.Find(id);
+            if (plantMonitoring == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            // Update only quotation phase
+            plantMonitoring.QuoteDate = model.QuoteDate;
+            plantMonitoring.QuoteSubmitDate = model.QuoteSubmitDate;
+            plantMonitoring.QuoteCompleteDate = model.QuoteCompleteDate;
+            plantMonitoring.QuoteUserAssign = model.QuoteUserAssign;
+
+            // Handle document upload
+            if (quoteDocument != null && quoteDocument.ContentLength > 0)
+            {
+                // Check file size (20MB limit)
+                if (quoteDocument.ContentLength > 20 * 1024 * 1024)
+                {
+                    TempData["ErrorMessage"] = "The quote document exceeds the maximum file size of 20MB.";
+                    return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+                }
+
+                string fileName = Path.GetFileName(quoteDocument.FileName);
+                string uniqueFileName = $"Quote_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                
+                quoteDocument.SaveAs(path);
+                plantMonitoring.QuoteDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+            }
+            
+            // Calculate statuses after update
+            plantMonitoring.CalculateStatuses();
+            
+            db.Entry(plantMonitoring).State = EntityState.Modified;
+            db.SaveChanges();
+
+            // Success message
+            TempData["SuccessMessage"] = "Quotation phase successfully updated.";
+
+            // Redirect back to the update page
+            return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+        }
+
+        // POST: PlantMonitoring/UpdateEpr/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateEpr(int id, PlantMonitoring model, HttpPostedFileBase eprDocument)
+        {
+            var plantMonitoring = db.PlantMonitorings.Find(id);
+            if (plantMonitoring == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            // Update only ePR phase
+            plantMonitoring.EprDate = model.EprDate;
+            plantMonitoring.EprSubmitDate = model.EprSubmitDate;
+            plantMonitoring.EprCompleteDate = model.EprCompleteDate;
+            plantMonitoring.EprUserAssign = model.EprUserAssign;
+
+            // Handle document upload
+            if (eprDocument != null && eprDocument.ContentLength > 0)
+            {
+                // Check file size (20MB limit)
+                if (eprDocument.ContentLength > 20 * 1024 * 1024)
+                {
+                    TempData["ErrorMessage"] = "The EPR document exceeds the maximum file size of 20MB.";
+                    return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+                }
+
+                string fileName = Path.GetFileName(eprDocument.FileName);
+                string uniqueFileName = $"EPR_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                
+                eprDocument.SaveAs(path);
+                plantMonitoring.EprDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+            }
+            
+            // Calculate statuses after update
+            plantMonitoring.CalculateStatuses();
+            
+            db.Entry(plantMonitoring).State = EntityState.Modified;
+            db.SaveChanges();
+
+            // Success message
+            TempData["SuccessMessage"] = "EPR phase successfully updated.";
+
+            // Redirect back to the update page
+            return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+        }
+
+        // POST: PlantMonitoring/UpdateWork/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateWork(int id, PlantMonitoring model, HttpPostedFileBase workDocument)
+        {
+            var plantMonitoring = db.PlantMonitorings.Find(id);
+            if (plantMonitoring == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Check if user has access to this plant monitoring record
+            if (!User.IsInRole("Admin"))
+            {
+                var userId = User.Identity.GetUserId();
+                var userHasAccessToPlant = db.UserPlants
+                    .Any(up => up.UserId == userId && up.PlantId == plantMonitoring.PlantID);
+                
+                if (!userHasAccessToPlant)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
+            }
+
+            // Update only work execution phase
+            plantMonitoring.WorkDate = model.WorkDate;
+            plantMonitoring.WorkSubmitDate = model.WorkSubmitDate;
+            plantMonitoring.WorkCompleteDate = model.WorkCompleteDate;
+            plantMonitoring.WorkUserAssign = model.WorkUserAssign;
+
+            // If WorkCompleteDate is present (meaning the monitoring is completed),
+            // set the renewal date (ExpDate) to 1 year from completion
+            if (model.WorkCompleteDate.HasValue)
+            {
+                plantMonitoring.ExpDate = model.WorkCompleteDate.Value.AddYears(1);
+            }
+
+            // Handle document upload
+            if (workDocument != null && workDocument.ContentLength > 0)
+            {
+                // Check file size (20MB limit)
+                if (workDocument.ContentLength > 20 * 1024 * 1024)
+                {
+                    TempData["ErrorMessage"] = "The work document exceeds the maximum file size of 20MB.";
+                    return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+                }
+
+                string fileName = Path.GetFileName(workDocument.FileName);
+                string uniqueFileName = $"Work_{id}_{DateTime.Now.ToString("yyyyMMddHHmmss")}_{fileName}";
+                string path = Path.Combine(Server.MapPath("~/uploads/Monitoring"), uniqueFileName);
+                
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                
+                workDocument.SaveAs(path);
+                plantMonitoring.WorkDoc = $"~/uploads/Monitoring/{uniqueFileName}";
+            }
+            
+            // Calculate statuses after update
+            plantMonitoring.CalculateStatuses();
+            
+            db.Entry(plantMonitoring).State = EntityState.Modified;
+            db.SaveChanges();
+
+            // Success message
+            TempData["SuccessMessage"] = "Work execution phase successfully updated.";
+
+            // Redirect back to the update page
+            return RedirectToAction("UpdateStatus", new { id = plantMonitoring.Id });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -563,7 +847,51 @@ namespace CLIP.Controllers
         public string ExpStatus { get; set; }
         public DateTime? ExpDate { get; set; }
         public DateTime? QuoteDate { get; set; }
+        public DateTime? EprDate { get; set; }
         public DateTime? WorkDate { get; set; }
         public DateTime? WorkCompleteDate { get; set; }
+
+        public string ProcStatusCssClass
+        {
+            get
+            {
+                switch (ProcStatus)
+                {
+                    case "Completed":
+                        return "bg-success";
+                    case "Work In Progress":
+                    case "In Progress": // For backward compatibility
+                        return "bg-warning";
+                    case "ePR Raised":
+                    case "In Preparation": // For backward compatibility
+                        return "bg-info";
+                    case "Quotation Requested":
+                    case "In Quotation": // For backward compatibility
+                        return "bg-primary";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        public string ExpStatusCssClass
+        {
+            get
+            {
+                switch (ExpStatus)
+                {
+                    case "Expired":
+                        return "bg-danger";
+                    case "Expiring Soon":
+                        return "bg-warning";
+                    case "Valid":
+                        return "bg-success";
+                    case "No Expiry":
+                        return "bg-secondary";
+                    default:
+                        return "";
+                }
+            }
+        }
     }
 } 

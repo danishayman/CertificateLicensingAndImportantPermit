@@ -19,31 +19,43 @@
     </div>
 </div>
 
-@using (Html.BeginForm("UpdateStatus", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+        <strong>Error:</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Expiry Date & Remarks Form -->
+@using (Html.BeginForm("UpdateExpiry", "PlantMonitoring", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.Id)
-    @Html.HiddenFor(model => model.PlantID)
-    @Html.HiddenFor(model => model.MonitoringID)
-    @Html.HiddenFor(model => model.Area)
-    @Html.HiddenFor(model => model.QuoteDoc)
-    @Html.HiddenFor(model => model.EprDoc)
-    @Html.HiddenFor(model => model.WorkDoc)
-    @Html.HiddenFor(model => model.ProcStatus)
-    @Html.HiddenFor(model => model.ExpStatus)
 
     <div class="row">
-        <!-- Expiry Date -->
         <div class="col-md-12 mb-4">
             <div class="card">
-                <div class="card-header">
-                    <h5>Expiry Date & Remarks</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Expiry Date & Remarks</h5>
+                    <button type="submit" class="btn btn-sm btn-primary" title="Save Expiry & Remarks">
+                        <i class="fas fa-save"></i> Save
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Expiry Date:</label>
                         <div class="col-sm-4">
                             @Html.TextBoxFor(model => model.ExpDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            <small class="form-text text-muted">Will be automatically set to 1 year after completion date when work is completed.</small>
                         </div>
                     </div>
                     
@@ -56,25 +68,36 @@
                 </div>
             </div>
         </div>
+    </div>
+}
 
-        <!-- Quotation Phase -->
+<div class="row">
+    <!-- Quotation Phase Form -->
         <div class="col-md-4">
+        @using (Html.BeginForm("UpdateQuotation", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            
             <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Quotation Phase</h5>
+                    <button type="submit" class="btn btn-sm btn-light" title="Save Quotation Phase">
+                        <i class="fas fa-save"></i>
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.QuoteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Submit:</label>
                         <div class="col-sm-8">
                             @Html.TextBoxFor(model => model.QuoteSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Start:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.QuoteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
                         </div>
                     </div>
                     
@@ -88,7 +111,8 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Assigned:</label>
                         <div class="col-sm-8">
-                            @Html.EditorFor(model => model.QuoteUserAssign, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.EditorFor(model => model.QuoteUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
+                            <div class="invalid-feedback">Please assign someone to this phase.</div>
                         </div>
                     </div>
                     
@@ -100,8 +124,8 @@
                             @if (!string.IsNullOrEmpty(Model.QuoteDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -109,26 +133,35 @@
                     </div>
                 </div>
             </div>
+        }
         </div>
         
-        <!-- Preparation Phase -->
+    <!-- Preparation Phase Form -->
         <div class="col-md-4">
+        @using (Html.BeginForm("UpdateEpr", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            
             <div class="card mb-4">
-                <div class="card-header bg-warning text-white">
+                <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Raise ePR Phase</h5>
+                    <button type="submit" class="btn btn-sm btn-light" title="Save ePR Phase">
+                        <i class="fas fa-save"></i>
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.EprDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Submit:</label>
                         <div class="col-sm-8">
                             @Html.TextBoxFor(model => model.EprSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Start:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.EprDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
                         </div>
                     </div>
                     
@@ -142,7 +175,8 @@
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Assigned:</label>
                         <div class="col-sm-8">
-                            @Html.EditorFor(model => model.EprUserAssign, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.EditorFor(model => model.EprUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
+                            <div class="invalid-feedback">Please assign someone to this phase.</div>
                         </div>
                     </div>
                     
@@ -154,8 +188,8 @@
                             @if (!string.IsNullOrEmpty(Model.EprDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -163,22 +197,24 @@
                     </div>
                 </div>
             </div>
+        }
         </div>
         
-        <!-- Work Execution Phase -->
+    <!-- Work Execution Phase Form -->
         <div class="col-md-4">
+        @using (Html.BeginForm("UpdateWork", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            
             <div class="card mb-4">
-                <div class="card-header bg-success text-white">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Work Execution Phase</h5>
+                    <button type="submit" class="btn btn-sm btn-light" title="Save Work Phase">
+                        <i class="fas fa-save"></i>
+                    </button>
                 </div>
                 <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.WorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Submit:</label>
                         <div class="col-sm-8">
@@ -187,16 +223,25 @@
                     </div>
                     
                     <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Start:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.WorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Complete:</label>
                         <div class="col-sm-8">
                             @Html.TextBoxFor(model => model.WorkCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            <small class="form-text text-muted">When completed, renewal date will be set to 1 year from this date.</small>
                         </div>
                     </div>
                     
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Assigned:</label>
                         <div class="col-sm-8">
-                            @Html.EditorFor(model => model.WorkUserAssign, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.EditorFor(model => model.WorkUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
+                            <div class="invalid-feedback">Please assign someone to this phase.</div>
                         </div>
                     </div>
                     
@@ -208,8 +253,8 @@
                             @if (!string.IsNullOrEmpty(Model.WorkDoc))
                             {
                                 <div class="mt-2">
-                                    <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info">
-                                        <i class="fas fa-file-download"></i> View Document
+                                    <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                        <i class="fas fa-file-download"></i>
                                     </a>
                                 </div>
                             }
@@ -217,16 +262,21 @@
                     </div>
                 </div>
             </div>
+        }
         </div>
     </div>
 
-    <div class="form-group row">
+<div class="row mb-4">
         <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">Save Changes</button>
-            @Html.ActionLink("Back to Details", "Details", new { id = Model.Id }, new { @class = "btn btn-secondary" })
+        <div class="card">
+            <div class="card-body">
+                <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary" title="Back to Details">
+                    <i class="fas fa-arrow-left"></i> Back to Details
+                </a>
+            </div>
         </div>
     </div>
-}
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
@@ -250,7 +300,9 @@
             // Form submission validation
             $('form').on('submit', function(e) {
                 var isValid = true;
-                $('.file-upload').each(function() {
+                
+                // Validate file uploads
+                $(this).find('.file-upload').each(function() {
                     var fileInput = $(this)[0];
                     var maxSize = parseInt($(this).data('max-size')) * 1024 * 1024;
                     
@@ -265,7 +317,29 @@
                     }
                 });
                 
+                // Validate assignee fields
+                $(this).find('.assignee-field').each(function() {
+                    if ($(this).val().trim() === '') {
+                        if ($(this).closest('.card-body').find('input[type="date"]').filter(function() { 
+                            return $(this).val() !== ''; 
+                        }).length > 0) {
+                            // Only validate if any date field in this section has a value
+                            $(this).addClass('is-invalid');
+                            isValid = false;
+                        }
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+                
                 return isValid;
+            });
+            
+            // Clear validation on input
+            $('.assignee-field').on('input', function() {
+                if ($(this).val().trim() !== '') {
+                    $(this).removeClass('is-invalid');
+                }
             });
         });
     </script>

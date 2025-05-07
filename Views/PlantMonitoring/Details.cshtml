@@ -9,15 +9,23 @@
 <div class="row">
     <div class="col-md-12 mb-3">
         <div class="btn-group">
-            @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+            <a href="@Url.Action("Index")" class="btn btn-secondary" title="Back to List">
+                <i class="fas fa-arrow-left"></i>
+            </a>
             @if (User.IsInRole("Admin"))
             {
-                @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning" title="Edit Record">
+                    <i class="fas fa-edit"></i>
+                </a>
             }
-            @Html.ActionLink("Update Status", "UpdateStatus", new { id = Model.Id }, new { @class = "btn btn-primary" })
+            <a href="@Url.Action("UpdateStatus", new { id = Model.Id })" class="btn btn-primary" title="Update Status">
+                <i class="fas fa-tasks"></i>
+            </a>
             @if (User.IsInRole("Admin"))
             {
-                @Html.ActionLink("Delete", "Delete", new { id = Model.Id }, new { @class = "btn btn-danger" })
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger" title="Delete Record">
+                    <i class="fas fa-trash"></i>
+                </a>
             }
         </div>
     </div>
@@ -78,7 +86,7 @@
 <div class="row">
     <div class="col-md-4">
         <div class="card mb-4">
-            <div class="card-header bg-secondary text-white">
+            <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Quotation Phase</h5>
             </div>
             <div class="card-body">
@@ -107,8 +115,8 @@
                     <dd class="col-sm-6">
                         @if (!string.IsNullOrEmpty(Model.QuoteDoc))
                         {
-                            <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info">
-                                <i class="fas fa-file-download"></i> View
+                            <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                <i class="fas fa-file-download"></i>
                             </a>
                         }
                         else
@@ -152,8 +160,8 @@
                     <dd class="col-sm-6">
                         @if (!string.IsNullOrEmpty(Model.EprDoc))
                         {
-                            <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info">
-                                <i class="fas fa-file-download"></i> View
+                            <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                <i class="fas fa-file-download"></i>
                             </a>
                         }
                         else
@@ -197,8 +205,8 @@
                     <dd class="col-sm-6">
                         @if (!string.IsNullOrEmpty(Model.WorkDoc))
                         {
-                            <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info">
-                                <i class="fas fa-file-download"></i> View
+                            <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                <i class="fas fa-file-download"></i>
                             </a>
                         }
                         else

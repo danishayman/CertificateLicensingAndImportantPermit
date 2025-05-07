@@ -2,34 +2,199 @@
 
 @{
     ViewBag.Title = "Monitoring Records";
+    var recordCount = Model.Count();
+    var expiredCount = Model.Count(i => i.ExpStatus == "Expired");
+    var expiringCount = Model.Count(i => i.ExpStatus == "Expiring Soon");
+    var validCount = Model.Count(i => i.ExpStatus == "Valid" || i.ExpStatus == "No Expiry");
+    var completedCount = Model.Count(i => i.ProcStatus == "Completed");
+    var workInProgressCount = Model.Count(i => i.ProcStatus == "Work In Progress");
+    var eprRaisedCount = Model.Count(i => i.ProcStatus == "ePR Raised");
+    var quotationRequestedCount = Model.Count(i => i.ProcStatus == "Quotation Requested");
+    var notStartedCount = Model.Count(i => i.ProcStatus == "Not Started");
+    
+    // Calculate percentages for progress bars
+    var expiredPercent = recordCount > 0 ? (int)Math.Round((double)expiredCount / recordCount * 100) : 0;
+    var expiringPercent = recordCount > 0 ? (int)Math.Round((double)expiringCount / recordCount * 100) : 0;
+    var validPercent = recordCount > 0 ? (int)Math.Round((double)validCount / recordCount * 100) : 0;
+    
+    var completedPercent = recordCount > 0 ? (int)Math.Round((double)completedCount / recordCount * 100) : 0;
+    var inProgressPercent = recordCount > 0 ? (int)Math.Round((double)(workInProgressCount + eprRaisedCount + quotationRequestedCount) / recordCount * 100) : 0;
+    var notStartedPercent = recordCount > 0 ? (int)Math.Round((double)notStartedCount / recordCount * 100) : 0;
 }
 
-<h2>Monitoring Records</h2>
-
-<div class="row mb-3">
-    <div class="col-md-12">
-        <div class="btn-group">
-            @Html.ActionLink("List View", "Index", null, new { @class = "btn btn-primary" })
-            @Html.ActionLink("Schedule View", "Schedule", null, new { @class = "btn btn-outline-primary" })
-            @Html.ActionLink("Monitoring Types", "Index", "Monitoring", null, new { @class = "btn btn-outline-secondary" })
-        </div>
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Monitoring Dashboard</h1>
+    <div class="d-flex">
         @if (User.IsInRole("Admin"))
         {
-            <a href="@Url.Action("Create")" class="btn btn-success float-right">
-                <i class="fas fa-plus"></i> Add New Record
+            <a href="@Url.Action("Create")" class="btn btn-sm btn-success shadow-sm mr-2">
+                <i class="fas fa-plus fa-sm"></i> Add New Record
             </a>
         }
+        <a href="@Url.Action("Schedule")" class="btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-calendar fa-sm"></i> View Schedule
+        </a>
     </div>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5>Filters</h5>
+<!-- Content Row -->
+<div class="row mb-4">
+    <!-- Total Records Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Records</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@recordCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Completed Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@completedCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Soon Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Expiring Soon</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@expiringCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expired Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Expired</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@expiredCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Row -->
+<div class="row mb-4">
+    <!-- Process Status Overview -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Process Status Overview</h6>
+            </div>
+            <div class="card-body">
+                <h4 class="small font-weight-bold">Completed <span class="float-right">@completedCount (@completedPercent%)</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: @completedPercent%" aria-valuenow="@completedPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <h4 class="small font-weight-bold">Work In Progress <span class="float-right">@workInProgressCount</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-warning" role="progressbar" style="width: @(recordCount > 0 ? (int)Math.Round((double)workInProgressCount / recordCount * 100) : 0)%" aria-valuenow="@(recordCount > 0 ? (int)Math.Round((double)workInProgressCount / recordCount * 100) : 0)" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <h4 class="small font-weight-bold">ePR Raised <span class="float-right">@eprRaisedCount</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: @(recordCount > 0 ? (int)Math.Round((double)eprRaisedCount / recordCount * 100) : 0)%" aria-valuenow="@(recordCount > 0 ? (int)Math.Round((double)eprRaisedCount / recordCount * 100) : 0)" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <h4 class="small font-weight-bold">Quotation Requested <span class="float-right">@quotationRequestedCount</span></h4>
+                <div class="progress mb-4">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: @(recordCount > 0 ? (int)Math.Round((double)quotationRequestedCount / recordCount * 100) : 0)%" aria-valuenow="@(recordCount > 0 ? (int)Math.Round((double)quotationRequestedCount / recordCount * 100) : 0)" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <h4 class="small font-weight-bold">Not Started <span class="float-right">@notStartedCount (@notStartedPercent%)</span></h4>
+                <div class="progress">
+                    <div class="progress-bar bg-secondary" role="progressbar" style="width: @notStartedPercent%" aria-valuenow="@notStartedPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiry Status Overview -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Expiry Status Overview</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <div class="d-flex justify-content-center">
+                        <div style="width: 200px; height: 200px;">
+                            <div class="progress-circle">
+                                <div class="progress-circle-overlay text-center">
+                                    <span class="progress-circle-percent mb-0">@validPercent%</span>
+                                    <p class="text-muted mt-0">Valid</p>
+                                </div>
+                                <svg viewBox="0 0 36 36" class="circular-chart">
+                                    <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="circle" stroke-dasharray="@validPercent, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Valid (@validCount)
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-warning"></i> Expiring Soon (@expiringCount)
+                        </span>
+                        <span>
+                            <i class="fas fa-circle text-danger"></i> Expired (@expiredCount)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-filter mr-1"></i> Filter Records
+        </h6>
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+    <div class="collapse show" id="filterCollapse">
     <div class="card-body">
-        <form method="get" class="form-inline">
-            <div class="form-group mr-3 mb-2">
-                <label for="category" class="mr-2">Category:</label>
+            <form method="get" class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="category" class="form-label">Category</label>
                 <select id="category" name="category" class="form-control">
                     <option value="">All Categories</option>
                     @foreach (var category in ViewBag.Categories)
@@ -38,8 +203,37 @@
                     }
                 </select>
             </div>
-            <div class="form-group mr-3 mb-2">
-                <label for="plantId" class="mr-2">Plant:</label>
+                <div class="col-md-4 mb-3">
+                    <label for="monitoringType" class="form-label">Monitoring Type</label>
+                    <select id="monitoringType" name="monitoringType" class="form-control">
+                        <option value="">All Types</option>
+                        @foreach (var type in ViewBag.MonitoringTypes ?? new List<string>())
+                        {
+                            <option value="@type" @(ViewBag.SelectedMonitoringType == type ? "selected" : "")>@type</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="frequency" class="form-label">Frequency</label>
+                    <select id="frequency" name="frequency" class="form-control">
+                        <option value="">All Frequencies</option>
+                        <option value="1" @(ViewBag.SelectedFrequency == 1 ? "selected" : "")>Monthly</option>
+                        <option value="2" @(ViewBag.SelectedFrequency == 2 ? "selected" : "")>Bi-Monthly</option>
+                        <option value="3" @(ViewBag.SelectedFrequency == 3 ? "selected" : "")>Quarterly</option>
+                        <option value="4" @(ViewBag.SelectedFrequency == 4 ? "selected" : "")>4 Months</option>
+                        <option value="6" @(ViewBag.SelectedFrequency == 6 ? "selected" : "")>Half-Yearly</option>
+                        <option value="8" @(ViewBag.SelectedFrequency == 8 ? "selected" : "")>8 Months</option>
+                        <option value="12" @(ViewBag.SelectedFrequency == 12 ? "selected" : "")>Yearly</option>
+                        <option value="15" @(ViewBag.SelectedFrequency == 15 ? "selected" : "")>15 Months</option>
+                        <option value="18" @(ViewBag.SelectedFrequency == 18 ? "selected" : "")>18 Months</option>
+                        <option value="24" @(ViewBag.SelectedFrequency == 24 ? "selected" : "")>Every 2 Years</option>
+                        <option value="36" @(ViewBag.SelectedFrequency == 36 ? "selected" : "")>Every 3 Years</option>
+                        <option value="48" @(ViewBag.SelectedFrequency == 48 ? "selected" : "")>Every 4 Years</option>
+                        <option value="60" @(ViewBag.SelectedFrequency == 60 ? "selected" : "")>Every 5 Years</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="plantId" class="form-label">Plant</label>
                 <select id="plantId" name="plantId" class="form-control">
                     <option value="">All Plants</option>
                     @foreach (var plant in ViewBag.Plants)
@@ -48,15 +242,15 @@
                     }
                 </select>
             </div>
-            <div class="form-group mr-3 mb-2">
-                <label for="status" class="mr-2">Status:</label>
+                <div class="col-md-4 mb-3">
+                    <label for="status" class="form-label">Status</label>
                 <select id="status" name="status" class="form-control">
                     <option value="">All Status</option>
                     <optgroup label="Process Status">
                         <option value="Completed" @(ViewBag.SelectedStatus == "Completed" ? "selected" : "")>Completed</option>
-                        <option value="In Progress" @(ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>In Progress</option>
-                        <option value="In Preparation" @(ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>In Preparation</option>
-                        <option value="In Quotation" @(ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>In Quotation</option>
+                            <option value="Work In Progress" @(ViewBag.SelectedStatus == "Work In Progress" || ViewBag.SelectedStatus == "In Progress" ? "selected" : "")>Work In Progress</option>
+                            <option value="ePR Raised" @(ViewBag.SelectedStatus == "ePR Raised" || ViewBag.SelectedStatus == "In Preparation" ? "selected" : "")>ePR Raised</option>
+                            <option value="Quotation Requested" @(ViewBag.SelectedStatus == "Quotation Requested" || ViewBag.SelectedStatus == "In Quotation" ? "selected" : "")>Quotation Requested</option>
                         <option value="Not Started" @(ViewBag.SelectedStatus == "Not Started" ? "selected" : "")>Not Started</option>
                     </optgroup>
                     <optgroup label="Expiration Status">
@@ -67,14 +261,36 @@
                     </optgroup>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary mb-2">Filter</button>
+                <div class="col-12 text-right">
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary mr-2">
+                        <i class="fas fa-undo"></i> Reset
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
         </form>
+        </div>
     </div>
 </div>
 
+<!-- Results Table -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-table mr-1"></i> Monitoring Records 
+            @if(!string.IsNullOrEmpty(ViewBag.SelectedCategory) || ViewBag.SelectedPlantId > 0 || 
+               !string.IsNullOrEmpty(ViewBag.SelectedStatus) || !string.IsNullOrEmpty(ViewBag.SelectedMonitoringType) || 
+               ViewBag.SelectedFrequency > 0)
+            {
+                <span class="text-muted font-weight-normal ml-2">(Filtered Results)</span>
+            }
+        </h6>
+    </div>
+    <div class="card-body">
 <div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="thead-dark">
+            <table class="table table-bordered table-hover" id="recordsTable" width="100%" cellspacing="0">
+                <thead>
             <tr>
                 <th>Monitoring Type</th>
                 <th>Category</th>
@@ -84,7 +300,7 @@
                 <th>Expiry Date</th>
                 <th>Process Status</th>
                 <th>Expiration Status</th>
-                <th>Actions</th>
+                        <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -94,7 +310,7 @@
                     <td>@item.Monitoring.MonitoringName</td>
                     <td>@item.Monitoring.MonitoringCategory</td>
                     <td>@item.Plant.PlantName</td>
-                    <td>@item.Area</td>
+                            <td>@(string.IsNullOrEmpty(item.Area) ? "-" : item.Area)</td>
                     <td>
                         @{
                             string frequencyText = "Unknown";
@@ -120,36 +336,36 @@
                     <td>
                         @if (item.ExpDate.HasValue)
                         {
-                            <span class="@(item.ExpDate < DateTime.Now ? "text-danger" : (item.ExpDate < DateTime.Now.AddDays(30) ? "text-warning" : ""))">
+                                    <span class="@(item.ExpDate < DateTime.Now ? "text-danger font-weight-bold" : (item.ExpDate < DateTime.Now.AddDays(30) ? "text-warning font-weight-bold" : ""))">
                                 @item.ExpDate.Value.ToString("dd/MM/yyyy")
                             </span>
                         }
                         else
                         {
-                            <span>Not set</span>
+                                    <span class="text-muted">Not set</span>
                         }
                     </td>
                     <td>
-                        <span class="badge @item.ProcStatusCssClass">@item.ProcStatus</span>
+                                <span class="badge @item.ProcStatusCssClass text-white px-2 py-1">@item.ProcStatus</span>
                     </td>
                     <td>
-                        <span class="badge @item.ExpStatusCssClass">@item.ExpStatus</span>
+                                <span class="badge @item.ExpStatusCssClass text-white px-2 py-1">@item.ExpStatus</span>
                     </td>
-                    <td>
+                            <td class="text-center">
                         <div class="btn-group">
-                            <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
-                                <i class="fas fa-info-circle"></i> Details
+                                    <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info" title="View Details" data-toggle="tooltip">
+                                        <i class="fas fa-info-circle"></i>
                             </a>
-                            <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary">
-                                <i class="fas fa-tasks"></i> Update
+                                    <a href="@Url.Action("UpdateStatus", new { id = item.Id })" class="btn btn-sm btn-primary" title="Update Status" data-toggle="tooltip">
+                                        <i class="fas fa-tasks"></i>
                             </a>
                             @if (User.IsInRole("Admin"))
                             {
-                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Edit
+                                        <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-warning" title="Edit Record" data-toggle="tooltip">
+                                            <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
+                                        <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-sm btn-danger" title="Delete Record" data-toggle="tooltip">
+                                            <i class="fas fa-trash"></i>
                                 </a>
                             }
                         </div>
@@ -162,18 +378,118 @@
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info text-center">
-        No records found matching the filter criteria.
+            <div class="alert alert-info text-center mt-3">
+                <i class="fas fa-info-circle mr-2"></i> No records found matching the filter criteria.
+            </div>
+        }
     </div>
-}
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b !important;
+    }
+    .text-xs {
+        font-size: 0.7rem;
+    }
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+    .text-gray-300 {
+        color: #dddfeb !important;
+    }
+    
+    /* Progress circle styles */
+    .progress-circle {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .progress-circle-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+    }
+    
+    .progress-circle-percent {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #5a5c69;
+    }
+    
+    .circular-chart {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    
+    .circle-bg {
+        fill: none;
+        stroke: #eee;
+        stroke-width: 3.8;
+    }
+    
+    .circle {
+        fill: none;
+        stroke: #1cc88a;
+        stroke-width: 3.8;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+    }
+    
+    /* Dashboard styles */
+    .small {
+        font-size: 0.875rem;
+    }
+    .progress {
+        height: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
 
 @section Scripts {
     <script>
         $(document).ready(function() {
+            // Enable tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+            
             // Auto-submit form when select fields change
-            $("#category, #plantId, #status").change(function() {
+            $("#category, #plantId, #status, #monitoringType, #frequency").change(function() {
                 $(this).closest("form").submit();
             });
+            
+            // Add data table functionalities
+            if ($.fn.DataTable) {
+                $('#recordsTable').DataTable({
+                    "paging": true,
+                    "ordering": true,
+                    "info": true,
+                    "searching": true,
+                    "responsive": true,
+                    "pageLength": 25,
+                    "language": {
+                        "lengthMenu": "Show _MENU_ records per page",
+                        "zeroRecords": "No matching records found",
+                        "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                        "infoEmpty": "Showing 0 to 0 of 0 records",
+                        "infoFiltered": "(filtered from _MAX_ total records)"
+                    }
+                });
+            }
         });
     </script>
 } 
