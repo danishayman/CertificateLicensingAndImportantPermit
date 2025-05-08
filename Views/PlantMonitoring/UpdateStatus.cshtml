@@ -3,6 +3,21 @@
 @{
     ViewBag.Title = "Update Monitoring Status";
     var isAdmin = ViewBag.IsAdmin;
+    
+    // Determine which phases are completed
+    bool isQuotationCompleted = Model.QuoteCompleteDate.HasValue;
+    bool isEprCompleted = Model.EprCompleteDate.HasValue;
+    bool isWorkCompleted = Model.WorkCompleteDate.HasValue;
+    
+    // Determine active tab
+    string activeTab = "quotation";
+    if (isQuotationCompleted && !isEprCompleted) {
+        activeTab = "epr";
+    } else if (isQuotationCompleted && isEprCompleted && !isWorkCompleted) {
+        activeTab = "work";
+    } else if (isQuotationCompleted && isEprCompleted && isWorkCompleted) {
+        activeTab = "summary";
+    }
 }
 
 <h2>Update Monitoring Status</h2>
@@ -71,203 +86,453 @@
     </div>
 }
 
-<div class="row">
-    <!-- Quotation Phase Form -->
-        <div class="col-md-4">
-        @using (Html.BeginForm("UpdateQuotation", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.Id)
-            
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Quotation Phase</h5>
-                    <button type="submit" class="btn btn-sm btn-light" title="Save Quotation Phase">
-                        <i class="fas fa-save"></i>
-                    </button>
+<!-- Phase Navigation Tabs -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs" id="phasesTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "quotation" ? "active" : "")" 
+                        id="quotation-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#quotation" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="quotation" 
+                        aria-selected="@(activeTab == "quotation" ? "true" : "false")">
+                    <i class="fas fa-file-invoice-dollar me-1"></i> 1. Quotation Phase
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "epr" ? "active" : "") @(!isQuotationCompleted ? "disabled" : "")" 
+                        id="epr-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#epr" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="epr" 
+                        aria-selected="@(activeTab == "epr" ? "true" : "false")"
+                        @(!isQuotationCompleted ? "disabled" : "")>
+                    <i class="fas fa-file-contract me-1"></i> 2. Raise ePR Phase
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "work" ? "active" : "") @(!isEprCompleted ? "disabled" : "")" 
+                        id="work-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#work" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="work" 
+                        aria-selected="@(activeTab == "work" ? "true" : "false")"
+                        @(!isEprCompleted ? "disabled" : "")>
+                    <i class="fas fa-tools me-1"></i> 3. Work Execution Phase
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(activeTab == "summary" ? "active" : "") @(!isWorkCompleted ? "disabled" : "")" 
+                        id="summary-tab" 
+                        data-bs-toggle="tab" 
+                        data-bs-target="#summary" 
+                        type="button" 
+                        role="tab" 
+                        aria-controls="summary" 
+                        aria-selected="@(activeTab == "summary" ? "true" : "false")"
+                        @(!isWorkCompleted ? "disabled" : "")>
+                    <i class="fas fa-clipboard-check me-1"></i> 4. Summary
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Phase Tab Content -->
+<div class="tab-content" id="phasesContent">
+    <!-- Quotation Phase Tab -->
+    <div class="tab-pane fade @(activeTab == "quotation" ? "show active" : "")" id="quotation" role="tabpanel" aria-labelledby="quotation-tab">
+        <div class="card border-primary mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i> Quotation Phase</h5>
+                <span class="badge bg-light text-primary">Step 1 of 3</span>
+            </div>
+            <div class="card-body">
+                <!-- Status indicator -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="text-primary mb-0">Phase Status</h6>
+                        <span class="badge @(Model.QuoteCompleteDate.HasValue ? "bg-success" : "bg-secondary")">
+                            @(Model.QuoteCompleteDate.HasValue ? "Completed" : "In Progress")
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        @{
+                            int progressPercentage = 0;
+                            if (Model.QuoteSubmitDate.HasValue) { progressPercentage = 25; }
+                            if (Model.QuoteDate.HasValue) { progressPercentage = 50; }
+                            if (!string.IsNullOrEmpty(Model.QuoteUserAssign)) { progressPercentage = 75; }
+                            if (Model.QuoteCompleteDate.HasValue) { progressPercentage = 100; }
+                        }
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: @progressPercentage%;" 
+                             aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Submit:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.QuoteSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
+                
+                @using (Html.BeginForm("UpdateQuotation", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
                     
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.QuoteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Complete:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.QuoteCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Assigned:</label>
-                        <div class="col-sm-8">
-                            @Html.EditorFor(model => model.QuoteUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
-                            <div class="invalid-feedback">Please assign someone to this phase.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Document:</label>
-                        <div class="col-sm-8">
-                            <input type="file" name="quoteDocument" class="form-control-file file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
-                            <small class="form-text text-muted">Max file size: 20MB</small>
-                            @if (!string.IsNullOrEmpty(Model.QuoteDoc))
-                            {
-                                <div class="mt-2">
-                                    <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
-                                        <i class="fas fa-file-download"></i>
-                                    </a>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Submit Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
+                                    @Html.TextBoxFor(model => model.QuoteSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
                                 </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label class="form-label">Start Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-play-circle"></i></span>
+                                    @Html.TextBoxFor(model => model.QuoteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label class="form-label">Complete Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+                                    @Html.TextBoxFor(model => model.QuoteCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                </div>
+                                <small class="form-text text-muted">Setting a completion date will unlock the next phase.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Assigned To</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    @Html.EditorFor(model => model.QuoteUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required", placeholder = "Enter name or ID" } })
+                                </div>
+                                <div class="invalid-feedback">Please assign someone to this phase.</div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label class="form-label">Document</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
+                                    <input type="file" name="quoteDocument" class="form-control file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
+                                </div>
+                                <small class="form-text text-muted">Max file size: 20MB</small>
+                                @if (!string.IsNullOrEmpty(Model.QuoteDoc))
+                                {
+                                    <div class="mt-2 p-2 bg-light rounded d-flex align-items-center">
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        <a href="@Url.Content(Model.QuoteDoc)" target="_blank" class="text-decoration-none">
+                                            View Current Document
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Complete this phase to proceed</small>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save
+                            </button>
+                            @if (isQuotationCompleted)
+                            {
+                                <button type="button" class="btn btn-success ms-2" onclick="activateTab('epr-tab')">
+                                    <i class="fas fa-arrow-right me-1"></i> Next Phase
+                                </button>
                             }
                         </div>
                     </div>
-                </div>
+                }
             </div>
-        }
-        </div>
-        
-    <!-- Preparation Phase Form -->
-        <div class="col-md-4">
-        @using (Html.BeginForm("UpdateEpr", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.Id)
             
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Raise ePR Phase</h5>
-                    <button type="submit" class="btn btn-sm btn-light" title="Save ePR Phase">
-                        <i class="fas fa-save"></i>
-                    </button>
+            @if (isQuotationCompleted)
+            {
+                <div class="card-footer bg-success bg-opacity-10 text-success">
+                    <i class="fas fa-check-circle me-1"></i> Completed on @Model.QuoteCompleteDate.Value.ToString("MMM dd, yyyy")
                 </div>
-                <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Submit:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.EprSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.EprDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Complete:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.EprCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Assigned:</label>
-                        <div class="col-sm-8">
-                            @Html.EditorFor(model => model.EprUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
-                            <div class="invalid-feedback">Please assign someone to this phase.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Document:</label>
-                        <div class="col-sm-8">
-                            <input type="file" name="eprDocument" class="form-control-file file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
-                            <small class="form-text text-muted">Max file size: 20MB</small>
-                            @if (!string.IsNullOrEmpty(Model.EprDoc))
-                            {
-                                <div class="mt-2">
-                                    <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
-                                        <i class="fas fa-file-download"></i>
-                                    </a>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        </div>
-        
-    <!-- Work Execution Phase Form -->
-        <div class="col-md-4">
-        @using (Html.BeginForm("UpdateWork", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.Id)
-            
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Work Execution Phase</h5>
-                    <button type="submit" class="btn btn-sm btn-light" title="Save Work Phase">
-                        <i class="fas fa-save"></i>
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Submit:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.WorkSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Start:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.WorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Complete:</label>
-                        <div class="col-sm-8">
-                            @Html.TextBoxFor(model => model.WorkCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-                            <small class="form-text text-muted">When completed, renewal date will be set to 1 year from this date.</small>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Assigned:</label>
-                        <div class="col-sm-8">
-                            @Html.EditorFor(model => model.WorkUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
-                            <div class="invalid-feedback">Please assign someone to this phase.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Document:</label>
-                        <div class="col-sm-8">
-                            <input type="file" name="workDocument" class="form-control-file file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
-                            <small class="form-text text-muted">Max file size: 20MB</small>
-                            @if (!string.IsNullOrEmpty(Model.WorkDoc))
-                            {
-                                <div class="mt-2">
-                                    <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
-                                        <i class="fas fa-file-download"></i>
-                                    </a>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
+            }
         </div>
     </div>
 
+    <!-- ePR Phase Tab -->
+    <div class="tab-pane fade @(activeTab == "epr" ? "show active" : "")" id="epr" role="tabpanel" aria-labelledby="epr-tab">
+        <div class="card border-warning mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">Raise ePR Phase</h5>
+            </div>
+            <div class="card-body">
+                @if (!isQuotationCompleted)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> You must complete the Quotation Phase before proceeding to the ePR Phase.
+                    </div>
+                }
+                else
+                {
+                    using (Html.BeginForm("UpdateEpr", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id)
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Submit Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.EprSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Start Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.EprDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Complete Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.EprCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                <small class="form-text text-muted">Setting a completion date will unlock the next phase.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Assigned To:</label>
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.EprUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
+                                <div class="invalid-feedback">Please assign someone to this phase.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Document:</label>
+                            <div class="col-sm-9">
+                                <input type="file" name="eprDocument" class="form-control file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
+                                <small class="form-text text-muted">Max file size: 20MB</small>
+                                @if (!string.IsNullOrEmpty(Model.EprDoc))
+                                {
+                                    <div class="mt-2">
+                                        <a href="@Url.Content(Model.EprDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                            <i class="fas fa-file-download"></i> View Document
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="activateTab('quotation-tab')">
+                                    <i class="fas fa-arrow-left"></i> Back to Quotation
+                                </button>
+                                <button type="submit" class="btn btn-warning ms-2">
+                                    <i class="fas fa-save"></i> Save ePR Phase
+                                </button>
+                                @if (isEprCompleted)
+                                {
+                                    <button type="button" class="btn btn-success ms-2" onclick="activateTab('work-tab')">
+                                        <i class="fas fa-arrow-right"></i> Proceed to Work Phase
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Work Execution Phase Tab -->
+    <div class="tab-pane fade @(activeTab == "work" ? "show active" : "")" id="work" role="tabpanel" aria-labelledby="work-tab">
+        <div class="card border-success mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Work Execution Phase</h5>
+            </div>
+            <div class="card-body">
+                @if (!isEprCompleted)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> You must complete the ePR Phase before proceeding to the Work Execution Phase.
+                    </div>
+                }
+                else
+                {
+                    using (Html.BeginForm("UpdateWork", "PlantMonitoring", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id)
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Submit Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.WorkSubmitDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Start Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.WorkDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Complete Date:</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(model => model.WorkCompleteDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                                <small class="form-text text-muted">When completed, renewal date will be set to 1 year from this date.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Assigned To:</label>
+                            <div class="col-sm-9">
+                                @Html.EditorFor(model => model.WorkUserAssign, new { htmlAttributes = new { @class = "form-control assignee-field", required = "required" } })
+                                <div class="invalid-feedback">Please assign someone to this phase.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row mb-3">
+                            <label class="col-sm-3 col-form-label">Document:</label>
+                            <div class="col-sm-9">
+                                <input type="file" name="workDocument" class="form-control file-upload" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png" data-max-size="20" />
+                                <small class="form-text text-muted">Max file size: 20MB</small>
+                                @if (!string.IsNullOrEmpty(Model.WorkDoc))
+                                {
+                                    <div class="mt-2">
+                                        <a href="@Url.Content(Model.WorkDoc)" target="_blank" class="btn btn-sm btn-info" title="View Document">
+                                            <i class="fas fa-file-download"></i> View Document
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-12 text-end">
+                                <button type="button" class="btn btn-secondary" onclick="activateTab('epr-tab')">
+                                    <i class="fas fa-arrow-left"></i> Back to ePR
+                                </button>
+                                <button type="submit" class="btn btn-success ms-2">
+                                    <i class="fas fa-save"></i> Save Work Phase
+                                </button>
+                                @if (isWorkCompleted)
+                                {
+                                    <button type="button" class="btn btn-info ms-2" onclick="activateTab('summary-tab')">
+                                        <i class="fas fa-arrow-right"></i> View Summary
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Tab -->
+    <div class="tab-pane fade @(activeTab == "summary" ? "show active" : "")" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+        <div class="card border-info mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Monitoring Summary</h5>
+            </div>
+            <div class="card-body">
+                @if (!isWorkCompleted)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i> You must complete the Work Execution Phase to view the summary.
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i> All phases have been completed successfully!
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <th colspan="3" class="bg-primary text-white">Quotation Phase</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="width: 33%">Submit Date</th>
+                                            <th style="width: 33%">Completion Date</th>
+                                            <th style="width: 33%">Assigned To</th>
+                                        </tr>
+                                        <tr>
+                                            <td>@(Model.QuoteSubmitDate.HasValue ? Model.QuoteSubmitDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@(Model.QuoteCompleteDate.HasValue ? Model.QuoteCompleteDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@Model.QuoteUserAssign</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <th colspan="3" class="bg-warning text-white">ePR Phase</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Submit Date</th>
+                                            <th>Completion Date</th>
+                                            <th>Assigned To</th>
+                                        </tr>
+                                        <tr>
+                                            <td>@(Model.EprSubmitDate.HasValue ? Model.EprSubmitDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@(Model.EprCompleteDate.HasValue ? Model.EprCompleteDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@Model.EprUserAssign</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <th colspan="3" class="bg-success text-white">Work Execution Phase</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Submit Date</th>
+                                            <th>Completion Date</th>
+                                            <th>Assigned To</th>
+                                        </tr>
+                                        <tr>
+                                            <td>@(Model.WorkSubmitDate.HasValue ? Model.WorkSubmitDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@(Model.WorkCompleteDate.HasValue ? Model.WorkCompleteDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td>@Model.WorkUserAssign</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <th colspan="3" class="bg-info text-white">Monitoring Information</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Next Expiry Date</th>
+                                            <th>Current Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                        <tr>
+                                            <td>@(Model.ExpDate.HasValue ? Model.ExpDate.Value.ToString("yyyy-MM-dd") : "N/A")</td>
+                                            <td><span class="badge @Model.ExpStatusCssClass">@Model.ExpStatus</span></td>
+                                            <td>@Model.Remarks</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row mb-4">
-        <div class="col-md-12">
+    <div class="col-md-12">
         <div class="card">
             <div class="card-body">
                 <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-secondary" title="Back to Details">
@@ -342,5 +607,10 @@
                 }
             });
         });
+        
+        // Function to activate a specific tab
+        function activateTab(tabId) {
+            $('#' + tabId).tab('show');
+        }
     </script>
 } 
